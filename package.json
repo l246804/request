@@ -1,0 +1,18 @@
+{
+  "private": true,
+  "packageManager": "pnpm@7.15.0",
+  "scripts": {
+    "build": "turbo run build",
+    "dev": "turbo run dev",
+    "lint": "turbo run lint"
+  },
+  "devDependencies": {
+    "@antfu/eslint-config": "^0.39.7",
+    "@tsconfig/node18": "^18.2.0",
+    "@types/node": "^18.16.17",
+    "eslint": "^8.44.0",
+    "eslint-define-config": "^1.21.0",
+    "turbo": "latest",
+    "typescript": "^5.1.6"
+  }
+}

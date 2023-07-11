@@ -1,0 +1,7 @@
+{
+  "name": "shared",
+  "private": true,
+  "license": "MIT",
+  "main": "src/index.tsx",
+  "types": "src/index.tsx"
+}
