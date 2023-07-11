@@ -1,0 +1,10 @@
+{
+  "extends": "@tsconfig/node18/tsconfig.json",
+  "include": [
+    "packages/*/**/*.ts"
+  ],
+  "compilerOptions": {
+    "module": "ESNext",
+    "types": ["node"]
+  }
+}
