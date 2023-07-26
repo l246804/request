@@ -1,6 +1,58 @@
 {
-  "name": "core",
-  "private": true,
-  "main": "src/index.tsx",
-  "types": "src/index.tsx"
+  "name": "@rhao/request",
+  "type": "module",
+  "version": "0.0.0",
+  "description": "Data request state management library.",
+  "author": "RayHao <https://github.com/l246804>",
+  "license": "MIT",
+  "homepage": "https://github.com/l246804/request",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/l246804/request"
+  },
+  "bugs": {
+    "url": "https://github.com/l246804/request/issues"
+  },
+  "keywords": [
+    "request",
+    "fetch",
+    "axios",
+    "state",
+    "vue",
+    "react",
+    "hooks"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "require": "./dist/index.cjs",
+      "import": "./dist/index.mjs"
+    },
+    "./**/*": {
+      "types": "./**/*.d.ts",
+      "require": "./**/*.cjs",
+      "import": "./**/*.mjs"
+    },
+    "./package.json": "./package.json"
+  },
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">=16"
+  },
+  "scripts": {
+    "dev": "unbuild --stub",
+    "build": "unbuild"
+  },
+  "devDependencies": {
+    "hookable": "^5.5.3"
+  }
 }

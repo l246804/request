@@ -1,8 +1,87 @@
 {
-  "prettier.enable": false,
-  "editor.defaultFormatter": "dbaeumer.vscode-eslint",
-  "cSpell.words": [
-    "antfu",
-    "nightwatch"
-  ]
+  "emmet.triggerExpansionOnTab": true,
+  "emmet.includeLanguages": {
+    "vue-html": "html",
+    "postcss": "css"
+  },
+  "files.autoSave": "onWindowChange",
+  "explorer.compactFolders": false,
+  "editor.formatOnSave": true,
+  "editor.minimap.renderCharacters": false,
+  "editor.tabSize": 2,
+  "editor.fontLigatures": true,
+  "editor.renderLineHighlight": "all",
+  "editor.renderWhitespace": "none",
+  "editor.wordWrapColumn": 100,
+  "editor.stickyTabStops": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.codeActionsOnSave": {
+    "source.fixAll": true
+  },
+  "prettier.enable": true,
+  "prettier.htmlWhitespaceSensitivity": "css",
+  "prettier.jsxSingleQuote": false,
+  "prettier.proseWrap": "preserve",
+  "prettier.quoteProps": "as-needed",
+  "prettier.tabWidth": 2,
+  "prettier.useTabs": false,
+  "prettier.vueIndentScriptAndStyle": false,
+  "prettier.semi": false,
+  "prettier.arrowParens": "always",
+  "prettier.bracketSameLine": false,
+  "prettier.bracketSpacing": true,
+  "prettier.printWidth": 100,
+  "prettier.singleQuote": true,
+  "prettier.trailingComma": "none",
+  "prettier.singleAttributePerLine": true,
+  "git.suggestSmartCommit": false,
+  "todo-tree.filtering.useBuiltInExcludes": "file and search excludes",
+  "todo-tree.highlights.defaultHighlight": {
+    "gutterIcon": true,
+    "background": "#00000000",
+    "type": "line"
+  },
+  "todo-tree.general.tags": ["BUG", "HACK", "FIXME", "TODO"],
+  "todo-tree.highlights.customHighlight": {
+    "TODO": {
+      "icon": "check-circle",
+      "foreground": "#2d8cf0"
+    },
+    "BUG": {
+      "icon": "bug",
+      "foreground": "#ed4014"
+    },
+    "HACK": {
+      "icon": "tools",
+      "foreground": "#5cadff"
+    },
+    "FIXME": {
+      "icon": "flame",
+      "foreground": "#ff9900"
+    }
+  },
+  "eslint.probe": [
+    "javascript",
+    "javascriptreact",
+    "typescript",
+    "typescriptreact",
+    "html",
+    "vue",
+    "markdown",
+    "json",
+    "jsonc"
+  ],
+  "eslint.validate": [
+    "javascript",
+    "javascriptreact",
+    "typescript",
+    "typescriptreact",
+    "html",
+    "vue",
+    "markdown",
+    "json",
+    "jsonc"
+  ],
+  "eslint.alwaysShowStatus": true,
+  "eslint.format.enable": true
 }

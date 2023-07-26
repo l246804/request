@@ -1,0 +1,61 @@
+{
+  "git": {
+    "tagName": "v${version}",
+    "commitMessage": "release: v${version}"
+  },
+  "npm": {
+    "publish": false
+  },
+  "github": {
+    "release": false
+  },
+  "hooks": {
+    "before:init": [],
+    "after:bump": "echo Successfully released ${name} v${version} to ${repo.repository}."
+  },
+  // https://github.com/release-it/release-it/blob/main/docs/plugins.md
+  "plugins": {
+    // https://github.com/release-it/release-it/blob/main/docs/changelog.md
+    "@release-it/conventional-changelog": {
+      "infile": "CHANGELOG.md",
+      "ignoreRecommendedBump": true,
+      "strictSemVer": true,
+      "preset": {
+        "name": "conventionalcommits",
+        "types": [
+          {
+            "type": "feat",
+            "section": "Features"
+          },
+          {
+            "type": "fix",
+            "section": "Bug fixes"
+          },
+          {
+            "type": "chore",
+            "section": "Chores"
+          },
+          {
+            "type": "refactor",
+            "section": "Refactors"
+          },
+          {
+            "type": "doc",
+            "section": "Docs"
+          },
+          {
+            "type": "style",
+            "section": "Styles"
+          }
+        ]
+      }
+    },
+    // https://github.com/release-it/release-it/blob/main/docs/recipes/monorepo.md
+    "@release-it/bumper": {
+      "out": {
+        "file": "package.json",
+        "path": ["dependencies.package-a", "devDependencies.package-b"]
+      }
+    }
+  }
+}
