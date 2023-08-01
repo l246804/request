@@ -52,7 +52,13 @@
     "dev": "unbuild --stub",
     "build": "unbuild"
   },
+  "dependencies": {
+    "hookable": "^5.5.3",
+    "lodash-es": "^4.17.21"
+  },
   "devDependencies": {
-    "hookable": "^5.5.3"
+    "@types/lodash-es": "^4.17.8",
+    "shared": "workspace:*",
+    "types": "workspace:*"
   }
 }

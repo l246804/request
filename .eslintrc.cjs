@@ -15,10 +15,21 @@ module.exports = defineConfig({
     'operator-linebreak': 'off', // prettier 冲突
 
     // antfu
-    'antfu/if-newline': 'off', 
+    'antfu/if-newline': 'off',
     'antfu/generic-spacing': 'off', // ts 泛型换行
+
+    // vue
+    'vue/no-setup-props-destructure': 'error',
+    'vue/component-name-in-template-casing': [
+      'error',
+      'PascalCase',
+      { registeredComponentsOnly: false },
+    ],
+    'vue/max-attributes-per-line': ['error', { singleline: 1 }],
+    'vue/singleline-html-element-content-newline': ['off'], // prettier 冲突
 
     // ts
     '@typescript-eslint/ban-ts-comment': 'off',
+    '@typescript-eslint/brace-style': 'off',
   },
 })

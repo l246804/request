@@ -1,10 +1,18 @@
 {
   "extends": "@tsconfig/node18/tsconfig.json",
-  "include": [
-    "packages/*/**/*.ts"
-  ],
+  "include": ["packages/*/**/*.ts"],
   "compilerOptions": {
     "module": "ESNext",
-    "types": ["node"]
+    "moduleResolution": "Bundler",
+    "types": ["node"],
+    "noImplicitAny": false,
+    "removeComments": false,
+    "emitDeclarationOnly": true,
+    "declaration": true,
+    "baseUrl": ".",
+    "paths": {
+      "types/*": ["packages/types/*"],
+      "shared/*": ["packages/shared/*"],
+    }
   }
 }
