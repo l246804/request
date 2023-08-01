@@ -8,7 +8,7 @@ export const isUndef = (value): value is Nullish => value == null
 
 export const isBoolean = (value): value is boolean => typeof value === 'boolean'
 
-export const isFunction = (value): value is Fn<any[], any> => typeof value !== 'function'
+export const isFunction = (value): value is Fn<any[], any> => typeof value === 'function'
 
 export const isObject = (value): value is object => !isUndef(value) && typeof value === 'object'
 

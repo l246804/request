@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/indent */
 import type { NestedHooks } from 'hookable'
-import type { Fn, Getter, MaybeArray, MaybeFn, MaybeGetter } from 'types/utils'
+import type { Getter, MaybeArray, MaybeFn, MaybeGetter } from 'types/utils'
 import type { RequestHooks } from './hooks'
 import type { RequestMiddleware } from './middleware'
 
@@ -10,7 +10,7 @@ export interface RequestBasicOptions {
   /**
    * 唯一标识生成器
    */
-  keyGenerator?: Fn<[], string>
+  keyGenerator?: Getter<string>
 
   /**
    * 是否手动执行

@@ -12,7 +12,7 @@
     "baseUrl": ".",
     "paths": {
       "types/*": ["packages/types/*"],
-      "shared/*": ["packages/shared/*"],
+      "shared/*": ["packages/shared/*"]
     }
   }
 }

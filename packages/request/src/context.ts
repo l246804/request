@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/indent */
-import type { Hookable } from 'hookable'
 import type { Fn, Getter, PromiseFn } from 'types/utils'
-import type { RequestHooks } from './hooks'
+import type { RequestHookable } from './hooks'
 import type { RequestBasicOptions, RequestOptions } from './options'
 import type { RequestResult } from './result'
 import type { RequestFetcher } from './fetcher'
@@ -28,7 +27,7 @@ export interface RequestBasicContext<TData, TParams extends unknown[] = unknown[
   /**
    * `hooks` 管理器
    */
-  hooks: Hookable<RequestHooks>
+  hooks: RequestHookable
 
   /**
    * 获取或设置 `fetcher`

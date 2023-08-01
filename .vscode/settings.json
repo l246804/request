@@ -84,5 +84,5 @@
   ],
   "eslint.alwaysShowStatus": true,
   "eslint.format.enable": true,
-  "cSpell.words": ["hookable"]
+  "cSpell.words": ["antfu", "Axios", "hookable"]
 }

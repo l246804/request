@@ -1,20 +1,19 @@
-import type { Hookable, NestedHooks } from 'hookable'
-import { createHooks } from 'hookable'
 import { assign, keysOf } from 'shared/object'
 import { createSwitch, createTimer, toValue } from 'shared/fn'
 import { isString } from 'shared/is'
-import { ensureArray } from 'shared/array'
 import { ensureError } from 'shared/error'
+import { unique } from 'shared/array'
+import type { Recordable } from 'types/utils'
 import type { RequestBasicOptions, RequestOptions } from './options'
-import { type RequestHooks, syncSerialTaskCaller } from './hooks'
 import { createCounter } from './counter'
 import type { RequestResult } from './result'
 import type { RequestFetcher } from './fetcher'
 import type { RequestBasicContext, RequestContext } from './context'
 import { createLoadingController } from './loading-controller'
-import type { RequestMiddleware } from './middleware'
 import { compose } from './compose'
 import type { RequestState } from './state'
+import { createHooks } from './hooks'
+import { sortMiddleware } from './middleware'
 
 export interface BasicRequest {
   /**
@@ -26,16 +25,6 @@ export interface BasicRequest {
    * 全局配置项
    */
   options: Required<RequestBasicOptions>
-
-  /**
-   * 全局中间件
-   */
-  middleware: RequestMiddleware[]
-
-  /**
-   * `hooks` 管理器
-   */
-  hooks: Hookable<RequestHooks>
 
   /**
    * `request`
@@ -62,25 +51,10 @@ export function createRequest(options?: RequestBasicOptions) {
     options,
   ) as Required<RequestBasicOptions>
 
-  request.middleware = request.options.middleware
-
-  request.hooks = createHooks<RequestHooks>()
-  request.options.hooks.filter(Boolean).forEach(request.hooks.addHooks)
-
   function request(fetcher: RequestFetcher<any, any[]>, opts?: RequestOptions<any, any[]>) {
-    // merge options
     const options = assign({ ready: true } as RequestOptions<any, any[]>, request.options, opts)
-    const key = options.keyGenerator()
-
-    // merge middleware
-    const middleware = ([] as RequestMiddleware<any>[])
-      .concat(request.middleware, opts?.middleware || [])
-      .filter(Boolean)
-
-    // one-time hooks
-    const onceHooks = ensureArray(opts?.hooks).filter(Boolean) as NestedHooks<
-      RequestHooks<any, any[]>
-    >[]
+    const key = options.key || options.keyGenerator() || `__request__${request.counter.next()}`
+    const hooks = createHooks()
 
     // create state
     const state: RequestState<any, any[]> = {
@@ -102,7 +76,7 @@ export function createRequest(options?: RequestBasicOptions) {
     // create basic context
     const basicContext: RequestBasicContext<any, any[]> = {
       request: request as any,
-      hooks: request.hooks,
+      hooks,
       fetcher,
       executor,
       getKey: () => key,
@@ -110,6 +84,7 @@ export function createRequest(options?: RequestBasicOptions) {
       getState: () => assign({}, state),
       mutateState: (keyOrState, value?) => {
         let mutatedValue = keyOrState
+
         if (isString(keyOrState)) {
           if (!keysOf(state).includes(keyOrState))
             return console.warn(`mutateState(): ${keyOrState} is not exist.`)
@@ -117,33 +92,52 @@ export function createRequest(options?: RequestBasicOptions) {
         }
 
         assign(state, mutatedValue)
-        basicContext.hooks.callHook('stateChange', mutatedValue)
+        hooks.callHookSync('stateChange', mutatedValue, basicContext)
       },
       mutateResult: (fn) => {
         assign(result, fn(result))
       },
     }
 
+    // last-time created contexxt
     let currentContext: RequestContext<any, any[]> | null = null
 
     // create loading-controller
-    const { show: showLoading, close: closeLoading } = createLoadingController((loading) => {
-      basicContext.hooks.callHookWith(
-        syncSerialTaskCaller,
-        'loading',
-        loading,
-        currentContext as any,
-      )
+    const { show: showLoading, close: closeLoading } = createLoadingController(
+      (loading, context) => {
+        if (!loading) currentContext = null
+        hooks.callHookSync('loadingChange', loading, context)
+      },
+    )
+
+    // merge middleware
+    const configMiddleware = unique(
+      request.options.middleware
+        .slice(0)
+        .concat(opts?.middleware || [])
+        .filter(Boolean),
+    )
+
+    // merge hooks
+    const configHooks = unique(
+      request.options.hooks
+        .slice(0)
+        .concat(opts?.hooks || [])
+        .filter(Boolean),
+    )
+
+    // register hooks
+    hooks.hook('error', (error) => {
+      const state: Recordable = { error }
+      if (toValue(options.initDataWhenError)) state.data = options.initData?.()
+      basicContext.mutateState(state)
     })
+    configHooks.forEach((configHook) => hooks.addHooks(configHook))
 
     // create executor
     async function executor(...params) {
       // if "ready" is false, do nothing
       if (!toValue(options.ready, params)) return
-
-      // register one-time hooks
-      const fns = onceHooks.map(request.hooks.addHooks)
-      const rmFn = () => fns.forEach((fn) => fn())
 
       // create switch of cancel
       const { read: isCanceled, toggle } = createSwitch()
@@ -151,19 +145,18 @@ export function createRequest(options?: RequestBasicOptions) {
         if (isCanceled()) return
         toggle(true)
         // eslint-disable-next-line @typescript-eslint/no-use-before-define
-        !silent && basicContext.hooks.callHook('cancel', context)
+        !silent && hooks.callHook('cancel', context.getState(), context)
       }
 
       // create context
-      const context: RequestContext<any, any[]> = {
+      let context = (currentContext = {
         ...basicContext,
         isCanceled,
         cancel,
-      }
-      currentContext = context
+      })
 
       // if "isCanceled()" is "true", returns
-      const wrappedMiddleware = middleware.map((mw) => {
+      const middleware = sortMiddleware(configMiddleware).map((mw) => {
         return (ctx, next) => {
           if (ctx.isCanceled()) return
           return mw(ctx, next)
@@ -171,45 +164,43 @@ export function createRequest(options?: RequestBasicOptions) {
       })
 
       // create "applyMiddleware"
-      const applyMiddleware = compose(wrappedMiddleware)
+      const applyMiddleware = compose(middleware)
 
       // applyMiddleware's next
       async function next() {
         if (isCanceled()) return
-        const data = await context.fetcher()
+        const data = await context.fetcher(...state.params)
         context.mutateState({ data })
         return data
       }
 
       // create loading timer
-      const loadingTimer = createTimer(() => showLoading(), options.loadingDelay)
+      const loadingTimer = createTimer(() => showLoading(context), options.loadingDelay)
 
       // handle error
       const errorHandler = async (err: unknown) => {
         const error = ensureError(err)
-        context.mutateState({ error })
-        await context.hooks.callHook('error', error, context)
+        await hooks.callHook('error', error, context)
       }
 
       // create cleanup
       const cleanup = () => {
         loadingTimer.clear()
-        closeLoading()
-        rmFn()
-        currentContext = null
+        closeLoading(context)
+        context = null as any
       }
 
       try {
         loadingTimer.start()
         context.mutateState({ params, error: undefined })
 
-        await context.hooks.callHook('before', state.params, context)
+        await hooks.callHook('before', state.params, context)
         if (isCanceled()) return
 
         await applyMiddleware(context, next)
 
         if (isCanceled()) return
-        await context.hooks.callHook('success', state.data, context)
+        await hooks.callHook('success', state.data, context)
       } catch (err: unknown) {
         await errorHandler(err)
       } finally {
@@ -217,7 +208,7 @@ export function createRequest(options?: RequestBasicOptions) {
       }
 
       try {
-        await context.hooks.callHook('after', context)
+        await hooks.callHook('after', context.getState(), context)
       } catch (err: unknown) {
         await errorHandler(err)
       } finally {
@@ -228,7 +219,7 @@ export function createRequest(options?: RequestBasicOptions) {
     function cancel() {
       if (currentContext) {
         currentContext.cancel()
-        closeLoading(true)
+        closeLoading(currentContext, true)
         currentContext = null
       }
     }
@@ -242,7 +233,7 @@ export function createRequest(options?: RequestBasicOptions) {
     }
 
     // init middleware
-    middleware.forEach((mw) => mw.setup?.(basicContext))
+    configMiddleware.forEach((mw) => mw.setup?.(basicContext))
 
     // automatic execute
     if (!options.manual) executor(...(options.defaultParams || []))
