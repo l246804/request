@@ -20,7 +20,10 @@
     "state",
     "vue",
     "react",
-    "hooks"
+    "hooks",
+    "compose",
+    "event",
+    "middleware"
   ],
   "publishConfig": {
     "access": "public"
@@ -46,7 +49,7 @@
     "README.md"
   ],
   "engines": {
-    "node": ">=16"
+    "node": ">=14"
   },
   "scripts": {
     "stub": "unbuild --stub",

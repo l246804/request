@@ -106,6 +106,7 @@ export function createRequest(options?: RequestBasicOptions) {
     const { show: showLoading, close: closeLoading } = createLoadingController(
       (loading, context) => {
         if (!loading) currentContext = null
+        context.mutateState({ loading })
         hooks.callHookSync('loadingChange', loading, context)
       },
     )

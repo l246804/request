@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { AxiosResponse } from 'axios'
+import { computed } from 'vue'
 import type {
   BasicRequest,
   RequestFetcher,
@@ -27,56 +28,43 @@ function mockApi(type: 'success' | 'error') {
     }, 3000)
   })
 }
+
 const { getState, run, cancel } = useRequest(mockApi, {
-  hooks: {
-    stateChange: (state) => {
-      console.log('stateChange', state)
-    },
-    cancel: (ctx) => {
-      console.log('cancel', ctx)
-    },
-    loadingChange: (loading, ctx) => {
-      console.log('loading', loading, ctx)
-    },
-    before: (params, ctx) => {
-      console.log('before', params, ctx)
-    },
-    success: (data, ctx) => {
-      console.log('success:', data, ctx)
-    },
-    error: (e, ctx) => {
-      console.log('error', e.message, ctx)
-    },
-    after: (ctx) => {
-      console.log('after called', ctx)
-    },
-  },
+  hooks: {},
 })
 
-getState().data?.toFixed(2)
+const loading = computed(() => getState().loading)
 </script>
 
 <template>
   <ElContainer style="height: 100vh; overflow: hidden">
     <ElMain>
-      <ElButton
-        type="success"
-        @click="run('success')"
-      >
-        模拟成功请求
-      </ElButton>
-      <ElButton
-        type="danger"
-        @click="run('error')"
-      >
-        模拟失败请求
-      </ElButton>
-      <ElButton
-        type="primary"
-        @click="cancel"
-      >
-        取消执行
-      </ElButton>
+      <ElCard>
+        <div>
+          <ElButton
+            type="success"
+            @click="run('success')"
+          >
+            模拟成功请求
+          </ElButton>
+          <ElButton
+            type="danger"
+            @click="run('error')"
+          >
+            模拟失败请求
+          </ElButton>
+          <ElButton
+            type="primary"
+            @click="cancel"
+          >
+            取消执行
+          </ElButton>
+        </div>
+        <p>
+          {{ loading ? '加载中...' : '' }}
+        </p>
+        <p>state: {{ getState() }}</p>
+      </ElCard>
     </ElMain>
   </ElContainer>
 </template>
