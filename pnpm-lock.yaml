@@ -48,21 +48,17 @@ importers:
         specifier: ^5.1.6
         version: 5.1.6
 
+  packages/basic-middleware: {}
+
   packages/request:
     dependencies:
+      '@rhao/request-utils':
+        specifier: workspace:*
+        version: link:../utils
       hookable:
         specifier: ^5.5.3
         version: 5.5.3
-      lodash-es:
-        specifier: ^4.17.21
-        version: 4.17.21
     devDependencies:
-      '@types/lodash-es':
-        specifier: ^4.17.8
-        version: 4.17.8
-      shared:
-        specifier: workspace:*
-        version: link:../shared
       types:
         specifier: workspace:*
         version: link:../types
@@ -70,9 +66,16 @@ importers:
         specifier: ^1.2.1
         version: 1.2.1
 
-  packages/shared: {}
-
   packages/types: {}
+
+  packages/utils:
+    devDependencies:
+      types:
+        specifier: workspace:*
+        version: link:../types
+      unbuild:
+        specifier: ^1.2.1
+        version: 1.2.1
 
   playground:
     dependencies:

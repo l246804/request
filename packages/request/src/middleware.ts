@@ -1,5 +1,5 @@
 import type { PromiseFn } from 'types/utils'
-import { isNumber } from 'shared/is'
+import { isNumber } from '@rhao/request-utils'
 import type { RequestBasicContext, RequestContext } from './context'
 
 export interface RequestMiddleware<TData = any> {

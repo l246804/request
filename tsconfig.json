@@ -7,12 +7,12 @@
     "types": ["node"],
     "noImplicitAny": false,
     "removeComments": false,
+    "downlevelIteration": true,
     "emitDeclarationOnly": true,
     "declaration": true,
     "baseUrl": ".",
     "paths": {
-      "types/*": ["packages/types/*"],
-      "shared/*": ["packages/shared/*"]
+      "types/*": ["packages/types/*"]
     }
   }
 }

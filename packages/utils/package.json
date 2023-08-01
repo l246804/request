@@ -1,11 +1,11 @@
 {
-  "name": "@rhao/request",
+  "name": "@rhao/request-utils",
   "type": "module",
   "version": "0.0.0",
-  "description": "Data request state management library.",
+  "description": "Utils of request.",
   "author": "RayHao <https://github.com/l246804>",
   "license": "MIT",
-  "homepage": "https://github.com/l246804/request",
+  "homepage": "https://github.com/l246804/request/tree/dev/packages/utils",
   "repository": {
     "type": "git",
     "url": "https://github.com/l246804/request"
@@ -14,16 +14,7 @@
     "url": "https://github.com/l246804/request/issues"
   },
   "keywords": [
-    "request",
-    "fetch",
-    "axios",
-    "state",
-    "vue",
-    "react",
-    "hooks",
-    "compose",
-    "event",
-    "middleware"
+    "utils"
   ],
   "publishConfig": {
     "access": "public"
@@ -53,10 +44,6 @@
   },
   "scripts": {
     "build": "unbuild"
-  },
-  "dependencies": {
-    "@rhao/request-utils": "workspace:*",
-    "hookable": "^5.5.3"
   },
   "devDependencies": {
     "types": "workspace:*",

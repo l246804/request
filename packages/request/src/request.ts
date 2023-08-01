@@ -1,8 +1,13 @@
-import { assign, keysOf } from 'shared/object'
-import { createSwitch, createTimer, toValue } from 'shared/fn'
-import { isString } from 'shared/is'
-import { ensureError } from 'shared/error'
-import { unique } from 'shared/array'
+import {
+  assign,
+  createSwitch,
+  createTimer,
+  ensureError,
+  isString,
+  keysOf,
+  toValue,
+  unique,
+} from '@rhao/request-utils'
 import type { Recordable } from 'types/utils'
 import type { RequestBasicOptions, RequestOptions } from './options'
 import { createCounter } from './counter'

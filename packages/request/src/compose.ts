@@ -1,4 +1,4 @@
-import { isArray, isFunction } from 'shared/is'
+import { isArray, isFunction } from '@rhao/request-utils'
 import type { RequestMiddleware } from './middleware'
 import type { RequestContext } from './context'
 
