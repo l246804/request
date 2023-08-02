@@ -26,6 +26,7 @@ export interface RequestDebounceOptions {
 
 export function RequestDebounce(initialOptions?: RequestDebounceOptions) {
   const middleware: RequestMiddleware = {
+    priority: -1000,
     setup: (ctx) => {
       const options = assign(
         { leading: false, trailing: true } as RequestDebounceOptions,

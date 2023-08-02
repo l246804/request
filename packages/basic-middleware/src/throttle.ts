@@ -22,6 +22,7 @@ export interface RequestThrottleOptions {
 
 export function RequestThrottle(initialOptions?: RequestThrottleOptions) {
   const middleware: RequestMiddleware = {
+    priority: -1000,
     setup: (ctx) => {
       const options = assign(
         {} as RequestThrottleOptions,
