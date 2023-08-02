@@ -1,3 +1,4 @@
+/* eslint-disable unused-imports/no-unused-vars */
 import type { RequestMiddleware } from '@rhao/request'
 import { assign, isUndef, mapValues, pick, toValue } from '@rhao/request-utils'
 import { throttle } from 'lodash-es'
@@ -44,7 +45,7 @@ export function RequestThrottle(initialOptions?: RequestThrottleOptions) {
 }
 
 declare module '@rhao/request' {
-  interface RequestCustomOptions {
+  interface RequestCustomOptions<TData, TParams extends unknown[] = unknown[]> {
     throttle?: RequestThrottleOptions
   }
 }

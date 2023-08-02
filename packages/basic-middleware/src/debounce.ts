@@ -1,3 +1,4 @@
+/* eslint-disable unused-imports/no-unused-vars */
 import type { RequestMiddleware } from '@rhao/request'
 import { assign, isUndef, mapValues, pick, toValue } from '@rhao/request-utils'
 import { debounce } from 'lodash-es'
@@ -48,7 +49,7 @@ export function RequestDebounce(initialOptions?: RequestDebounceOptions) {
 }
 
 declare module '@rhao/request' {
-  interface RequestCustomOptions {
+  interface RequestCustomOptions<TData, TParams extends unknown[] = unknown[]> {
     debounce?: RequestDebounceOptions
   }
 }

@@ -1,11 +1,11 @@
 import {
   assign,
   createSwitch,
-  createTimer,
   ensureError,
   isFunction,
   isString,
   keysOf,
+  pauseableTimer,
   toValue,
   unique,
 } from '@rhao/request-utils'
@@ -49,8 +49,9 @@ export function createRequest(options?: RequestBasicOptions) {
   request.options = assign(
     {
       keyGenerator: () => `__request__${request.counter.next()}`,
+      initDataWhenError: false,
       manual: false,
-      loadingDelay: undefined,
+      loadingDelay: 0,
       hooks: [],
       middleware: [],
     } as RequestBasicOptions,
@@ -77,7 +78,7 @@ export function createRequest(options?: RequestBasicOptions) {
       cancel,
       run,
       refresh,
-    }
+    } as any
 
     // create basic context
     const basicContext: RequestBasicContext<any, any[]> = {
@@ -88,6 +89,7 @@ export function createRequest(options?: RequestBasicOptions) {
       getKey: () => key,
       getOptions: () => assign({}, options),
       getState: () => assign({}, state),
+      getResult: () => assign({}, result),
       mutateState: (keyOrState, value?) => {
         let mutatedValue = keyOrState
 
@@ -100,20 +102,25 @@ export function createRequest(options?: RequestBasicOptions) {
         assign(state, mutatedValue)
         hooks.callHookSync('stateChange', mutatedValue, basicContext)
       },
-      mutateResult: (fn) => {
-        assign(result, fn(result))
+      mutateResult: (res) => {
+        assign(result, res)
       },
     }
 
-    // last-time created contexxt
+    // last-time created context
     let currentContext: RequestContext<any, any[]> | null = null
+    const isCurrentContext = (ctx: RequestContext<any, any[]>) =>
+      !!currentContext && ctx === currentContext
 
     // create loading-controller
     const { show: showLoading, close: closeLoading } = createLoadingController(
-      (loading, context) => {
+      () => state.loading,
+      (loading) => {
         if (!loading) currentContext = null
-        context.mutateState({ loading })
-        hooks.callHookSync('loadingChange', loading, context)
+        if (state.loading !== loading) {
+          basicContext.mutateState({ loading })
+          hooks.callHookSync('loadingChange', loading, basicContext)
+        }
       },
     )
 
@@ -132,6 +139,12 @@ export function createRequest(options?: RequestBasicOptions) {
       basicContext.mutateState(state)
     })
     configHooks.forEach((configHook) => hooks.addHooks(configHook))
+
+    // create loading timer
+    const loadingTimer = pauseableTimer(() => showLoading(), options.loadingDelay, {
+      timerType: 'setTimeout',
+      immediate: false,
+    })
 
     // create executor
     async function executor(...params) {
@@ -175,9 +188,6 @@ export function createRequest(options?: RequestBasicOptions) {
         return data
       }
 
-      // create loading timer
-      const loadingTimer = createTimer(() => showLoading(context), options.loadingDelay)
-
       // handle error
       const errorHandler = async (err: unknown) => {
         const error = ensureError(err)
@@ -186,13 +196,18 @@ export function createRequest(options?: RequestBasicOptions) {
 
       // create cleanup
       const cleanup = () => {
-        loadingTimer.clear()
-        closeLoading(context)
+        // "isCurrentContext(context)" must be "true"
+        if (isCurrentContext(context)) {
+          loadingTimer.pause()
+          closeLoading()
+        }
         context = null as any
       }
 
       try {
-        loadingTimer.start()
+        if (!loadingTimer.isActive() && !state.loading)
+          options.loadingDelay > 0 ? loadingTimer.resume() : loadingTimer.flush()
+
         context.mutateState({ params, error: undefined })
 
         await hooks.callHook('before', state.params, context)
@@ -220,7 +235,8 @@ export function createRequest(options?: RequestBasicOptions) {
     function cancel() {
       if (currentContext) {
         currentContext.cancel()
-        closeLoading(currentContext, true)
+        loadingTimer.pause()
+        closeLoading(true)
         currentContext = null
       }
     }
@@ -237,7 +253,7 @@ export function createRequest(options?: RequestBasicOptions) {
     configMiddleware.forEach((mw) => mw.setup?.(basicContext))
 
     // automatic execute
-    if (!options.manual) basicContext.executor(...(options.defaultParams || []))
+    if (!options.manual) result.run(...(options.defaultParams || []))
 
     return result
   }

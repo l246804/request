@@ -4,6 +4,7 @@
   "compilerOptions": {
     "module": "ESNext",
     "moduleResolution": "Bundler",
+    "lib": ["Dom"],
     "types": ["node"],
     "noImplicitAny": false,
     "removeComments": false,

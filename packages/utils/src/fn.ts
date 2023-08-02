@@ -1,31 +1,6 @@
-import type { Fn, MaybeFn, Nullable } from 'types/utils'
-import { isFunction, isUndef } from './is'
+import type { Fn, MaybeFn } from 'types/utils'
+import { isFunction } from './is'
 import { assign } from './object'
-
-export function createTimer<T extends Fn<any[], any>>(fn: T, ms?: Nullable<number>) {
-  let timer: Nullable<ReturnType<typeof setTimeout>>
-
-  function get() {
-    return timer
-  }
-
-  function start() {
-    clear()
-    if (isUndef(ms)) fn()
-    else timer = setTimeout(fn, ms)
-  }
-
-  function clear() {
-    clearTimeout(timer!)
-    timer = null
-  }
-
-  return {
-    get,
-    start,
-    clear,
-  }
-}
 
 export function toValue<
   T extends MaybeFn<any, any[]>,

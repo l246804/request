@@ -1,10 +1,23 @@
+/* eslint-disable unused-imports/no-unused-vars */
 /* eslint-disable @typescript-eslint/indent */
 import type { NestedHooks } from 'hookable'
 import type { Getter, MaybeArray, MaybeFn, MaybeGetter } from 'types/utils'
 import type { RequestHooks } from './hooks'
 import type { RequestMiddleware } from './middleware'
 
-export interface RequestCustomOptions {}
+/**
+ * "xxx.d.ts" or "xxx.ts"
+ *
+ * @example
+ * ```ts
+ * declare module '@rhao/request' {
+ *   interface RequestCustomOptions<TData, TParams extends unknown[] = unknown[]> {
+ *     custom?: {} // 自定义配置项
+ *   }
+ * }
+ * ```
+ */
+export interface RequestCustomOptions<TData, TParams extends unknown[] = unknown[]> {}
 
 export interface RequestBasicOptions {
   /**
@@ -21,7 +34,8 @@ export interface RequestBasicOptions {
   manual?: boolean
 
   /**
-   * `loading` 延迟时间，单位：`ms`
+   * `loading` 延迟时间，单位：`ms`，如果值大于 0，则启动延迟，若请求在延迟前结束则不会更新 `loading` 状态
+   * @default 0
    */
   loadingDelay?: number
 
@@ -43,7 +57,7 @@ export interface RequestBasicOptions {
 }
 
 export interface RequestOptions<TData, TParams extends unknown[] = unknown[]>
-  extends RequestCustomOptions,
+  extends RequestCustomOptions<TData, TParams>,
     Omit<RequestBasicOptions, 'hooks'> {
   /**
    * 唯一标识

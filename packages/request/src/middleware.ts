@@ -29,7 +29,9 @@ export interface RequestMiddlewareFunction<TData = any> extends BasicMiddleware<
   (context: RequestContext<TData, any[]>, next: PromiseFn): void
 }
 
-export type RequestMiddleware = RequestMiddlewareObject | RequestMiddlewareFunction
+export type RequestMiddleware<TData = any> =
+  | RequestMiddlewareObject<TData>
+  | RequestMiddlewareFunction<TData>
 
 /**
  * 统一化中间件

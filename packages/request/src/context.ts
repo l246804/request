@@ -1,3 +1,4 @@
+/* eslint-disable unused-imports/no-unused-vars */
 /* eslint-disable @typescript-eslint/indent */
 import type { Fn, Getter, PromiseFn } from 'types/utils'
 import type { RequestHookable } from './hooks'
@@ -13,10 +14,22 @@ interface MutateState<S extends RequestState<any, any[]>> {
 }
 
 interface MutateResult<TData, TParams extends unknown[]> {
-  (callback: Fn<[result: RequestResult<TData, TParams>], RequestResult<TData, TParams>>): void
+  (result: Partial<RequestResult<TData, TParams>>): void
 }
 
-export interface RequestCustomContext {}
+/**
+ * "xxx.d.ts" or "xxx.ts"
+ *
+ * @example
+ * ```ts
+ * declare module '@rhao/request' {
+ *   interface RequestCustomContext<TData, TParams extends unknown[] = unknown[]> {
+ *     custom: {} // 自定义上下文
+ *   }
+ * }
+ * ```
+ */
+export interface RequestCustomContext<TData, TParams extends unknown[] = unknown[]> {}
 
 export interface RequestBasicContext<TData, TParams extends unknown[] = unknown[]> {
   /**
@@ -55,6 +68,11 @@ export interface RequestBasicContext<TData, TParams extends unknown[] = unknown[
   getState: Getter<RequestState<TData, TParams>>
 
   /**
+   * 获取 `request()` 的结果
+   */
+  getResult: Getter<RequestResult<TData, TParams>>
+
+  /**
    * 修改 `request()` 的状态
    */
   mutateState: MutateState<RequestState<TData, TParams>>
@@ -66,7 +84,7 @@ export interface RequestBasicContext<TData, TParams extends unknown[] = unknown[
 }
 
 export interface RequestContext<TData, TParams extends unknown[] = unknown[]>
-  extends RequestCustomContext,
+  extends RequestCustomContext<TData, TParams>,
     Omit<RequestBasicContext<TData, TParams>, 'mutateResult'> {
   /**
    * 是否已取消执行

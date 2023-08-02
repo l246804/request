@@ -8,7 +8,11 @@ import type {
   RequestResult,
 } from '@rhao/request/index'
 import { createRequest } from '@rhao/request/index'
-import { RequestDebounce, RequestThrottle } from '@rhao/request-basic-middleware/index'
+import {
+  RequestDebounce,
+  RequestPolling,
+  RequestThrottle,
+} from '@rhao/request-basic-middleware/index'
 
 interface UseRequest extends BasicRequest {
   <TData, TParams extends unknown[] = unknown[]>(
@@ -19,7 +23,7 @@ interface UseRequest extends BasicRequest {
 
 const useRequest = createRequest({
   manual: true,
-  middleware: [RequestDebounce(), RequestThrottle()],
+  middleware: [RequestDebounce(), RequestThrottle(), RequestPolling({ errorRetryCount: 3 })],
 }) as UseRequest
 
 function mockApi(type: 'success' | 'error') {
@@ -32,22 +36,30 @@ function mockApi(type: 'success' | 'error') {
 }
 
 const { getState, run, cancel } = useRequest(mockApi, {
+  polling: {
+    interval: 5000,
+    whenHidden: false,
+  },
   hooks: {
     before: () => {
-      console.log('before')
+      console.log('before', Date.now())
     },
     success: () => {
-      console.log('success')
+      console.log('success', Date.now())
     },
     error: () => {
       console.log('error')
     },
     after: () => {
-      console.log('after')
+      // console.log('after')
+      console.log('after', Date.now())
+    },
+    cancel: () => {
+      console.log('cancel', Date.now())
     },
   },
   debounce: {
-    wait: 1000,
+    // wait: 1000,
   },
 })
 

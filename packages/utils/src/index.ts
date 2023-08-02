@@ -1,5 +1,7 @@
 export * from './array'
+export * from './client'
 export * from './error'
 export * from './fn'
+export * from './timer'
 export * from './is'
 export * from './object'

@@ -1,3 +1,4 @@
+/* eslint-disable unused-imports/no-unused-vars */
 import type { AwaitableFn, Fn } from 'types/utils'
 import type { HookCallback, HookKeys, Hookable } from 'hookable'
 import { createHooks as _createHooks } from 'hookable'
@@ -14,11 +15,21 @@ export type RequestHookable = Hookable<RequestHooks> & {
 }
 
 /**
- * 自定义 `hooks`
+ * "xxx.d.ts" or "xxx.ts"
+ *
+ * @example
+ * ```ts
+ * declare module '@rhao/request' {
+ *   interface RequestCustomHooks<TData, TParams extends unknown[] = unknown[]> {
+ *     custom: (value: number) => void // 自定义 hooks
+ *   }
+ * }
+ * ```
  */
-export interface RequestCustomHooks {}
+export interface RequestCustomHooks<TData, TParams extends unknown[] = unknown[]> {}
 
-export interface RequestHooks<TData = any, TParams extends unknown[] = unknown[]> {
+export interface RequestHooks<TData = any, TParams extends unknown[] = unknown[]>
+  extends RequestCustomHooks<TData, TParams> {
   /**
    * 执行 `fetcher()` 前触发
    */
@@ -49,7 +60,7 @@ export interface RequestHooks<TData = any, TParams extends unknown[] = unknown[]
   /**
    * 请求状态变更时触发，多次并发调用仅在初次和所有请求结束后触发
    */
-  loadingChange: Fn<[loading: boolean, context: RequestContext<TData, TParams>]>
+  loadingChange: Fn<[loading: boolean, context: RequestBasicContext<TData, TParams>]>
 
   /**
    * 状态变更时触发，参数为本次变更的状态

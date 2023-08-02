@@ -1,23 +1,15 @@
-import type { Fn } from 'types/utils'
-import type { RequestContext } from './context'
+import type { Fn, Getter } from 'types/utils'
 
 export function createLoadingController(
-  onToggle: Fn<[loading: boolean, context: RequestContext<any, any[]>]>,
+  loading: Getter<boolean>,
+  onToggle: Fn<[loading: boolean]>,
 ) {
-  let judgeValue = 0
-  let count = 0
-
-  function show(context: RequestContext<any, any[]>) {
-    const prevCount = count++
-    if (prevCount === judgeValue) onToggle?.(true, context)
+  function show() {
+    if (!loading()) onToggle?.(true)
   }
 
-  function close(context: RequestContext<any, any[]>, force = false) {
-    if (count === judgeValue) return
-    // 手动触发 cancel 时会被调用两次，这里在强制刷新时不自减
-    if (force) judgeValue = count
-    else count--
-    if (count === judgeValue) onToggle?.(false, context)
+  function close(force = false) {
+    if (force || loading()) onToggle?.(false)
   }
 
   return { show, close }

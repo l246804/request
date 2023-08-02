@@ -21,3 +21,7 @@ export const isNumber = (value): value is number => typeOf(value) === 'Number'
 export function isError(value): value is Error {
   return typeOf(value) === 'Error' || value instanceof Error
 }
+
+export function isClient() {
+  return typeof window !== 'undefined'
+}
