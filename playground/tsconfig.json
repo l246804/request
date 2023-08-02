@@ -19,7 +19,12 @@
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "noFallthroughCasesInSwitch": true
+    "noFallthroughCasesInSwitch": true,
+    "paths": {
+      "@rhao/request/*": ["../packages/request/src/*"],
+      "@rhao/request-utils/*": ["../packages/utils/src/*"],
+      "@rhao/request-basic-middleware/*": ["../packages/basic-middleware/src/*"]
+    }
   },
   "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.tsx", "src/**/*.vue"],
   "references": [{ "path": "./tsconfig.node.json" }]

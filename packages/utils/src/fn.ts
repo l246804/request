@@ -28,7 +28,8 @@ export function createTimer<T extends Fn<any[], any>>(fn: T, ms?: Nullable<numbe
 }
 
 export function toValue<
-  T extends MaybeFn<any, any[]>, Args extends any[] = T extends Fn<infer A> ? A : [],
+  T extends MaybeFn<any, any[]>,
+  Args extends any[] = T extends Fn<infer A> ? A : [],
 >(v: T, ...args: Args): T extends Fn<any[], infer R> ? R : T {
   return isFunction(v) ? v(...args) : v
 }
@@ -37,7 +38,7 @@ export interface CreateSwitchOptions<T = boolean, F extends Fn<any[]> = Fn<any[]
   initialState?: T
   openState?: T
   closeState?: T
-  onToggle: Fn<[T, Parameters<F>]>
+  onToggle: Fn<[state: T, ...args: Parameters<F>]>
 }
 export function createSwitch<T = boolean, F extends Fn<any[]> = Fn<any[]>>(
   options?: CreateSwitchOptions<T, F>,
@@ -54,8 +55,6 @@ export function createSwitch<T = boolean, F extends Fn<any[]> = Fn<any[]>>(
 
   function toggle(...args: Parameters<F>) {
     state = state === closeState ? openState : closeState
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-expect-error
     onToggle?.(state, ...args)
   }
 

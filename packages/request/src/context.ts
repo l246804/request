@@ -13,7 +13,7 @@ interface MutateState<S extends RequestState<any, any[]>> {
 }
 
 interface MutateResult<TData, TParams extends unknown[]> {
-  (callback: Fn<[RequestResult<TData, TParams>], RequestResult<TData, TParams>>): void
+  (callback: Fn<[result: RequestResult<TData, TParams>], RequestResult<TData, TParams>>): void
 }
 
 export interface RequestCustomContext {}
@@ -35,7 +35,7 @@ export interface RequestBasicContext<TData, TParams extends unknown[] = unknown[
   fetcher: RequestFetcher<TData, TParams>
 
   /**
-   * 获取执行器
+   * 获取或设置 `executor`
    */
   executor: PromiseFn<TParams>
 
@@ -75,7 +75,8 @@ export interface RequestContext<TData, TParams extends unknown[] = unknown[]>
 
   /**
    * 取消执行
-   * @param silent 不触发 `cancel` 事件，默认：false
+   * @param silent 不触发 `cancel` 事件
+   * @default false
    */
-  cancel: Fn<[boolean?]>
+  cancel: Fn<[silent?: boolean]>
 }

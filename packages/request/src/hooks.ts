@@ -22,37 +22,41 @@ export interface RequestHooks<TData = any, TParams extends unknown[] = unknown[]
   /**
    * 执行 `fetcher()` 前触发
    */
-  before: AwaitableFn<[TParams, RequestContext<TData, TParams>]>
+  before: AwaitableFn<[params: TParams, context: RequestContext<TData, TParams>]>
 
   /**
    * 执行 `fetcher()` 成功时触发
    */
-  success: AwaitableFn<[TData, RequestContext<TData, TParams>]>
+  success: AwaitableFn<[data: TData, context: RequestContext<TData, TParams>]>
 
   /**
    * 执行 `fetcher()` 错误时触发
    */
-  error: AwaitableFn<[Error, RequestContext<TData, TParams>]>
+  error: AwaitableFn<[error: Error, context: RequestContext<TData, TParams>]>
 
   /**
    * 执行 `fetcher()` 后触发，同 `Promise.finally`
    */
-  after: AwaitableFn<[RequestState<TData, TParams>, RequestContext<TData, TParams>]>
+  after: AwaitableFn<[state: RequestState<TData, TParams>, context: RequestContext<TData, TParams>]>
 
   /**
    * 执行 `fetcher()` 取消时触发
    */
-  cancel: AwaitableFn<[RequestState<TData, TParams>, RequestContext<TData, TParams>]>
+  cancel: AwaitableFn<
+    [state: RequestState<TData, TParams>, context: RequestContext<TData, TParams>]
+  >
 
   /**
    * 请求状态变更时触发，多次并发调用仅在初次和所有请求结束后触发
    */
-  loadingChange: Fn<[boolean, RequestContext<TData, TParams>]>
+  loadingChange: Fn<[loading: boolean, context: RequestContext<TData, TParams>]>
 
   /**
    * 状态变更时触发，参数为本次变更的状态
    */
-  stateChange: Fn<[Partial<RequestState<TData, TParams>>, RequestBasicContext<TData, TParams>]>
+  stateChange: Fn<
+    [state: Partial<RequestState<TData, TParams>>, context: RequestBasicContext<TData, TParams>]
+  >
 }
 
 const defaultTask = { run: (function_: HookCallback) => function_() }

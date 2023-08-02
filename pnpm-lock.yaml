@@ -48,7 +48,27 @@ importers:
         specifier: ^5.1.6
         version: 5.1.6
 
-  packages/basic-middleware: {}
+  packages/basic-middleware:
+    dependencies:
+      '@rhao/request':
+        specifier: workspace:*
+        version: link:../request
+      '@rhao/request-utils':
+        specifier: workspace:*
+        version: link:../utils
+      '@types/lodash-es':
+        specifier: ^4.17.8
+        version: 4.17.8
+      lodash-es:
+        specifier: ^4.17.21
+        version: 4.17.21
+    devDependencies:
+      types:
+        specifier: workspace:*
+        version: link:../types
+      unbuild:
+        specifier: ^1.2.1
+        version: 1.2.1
 
   packages/request:
     dependencies:
@@ -98,6 +118,9 @@ importers:
       '@types/lodash-es':
         specifier: ^4.17.8
         version: 4.17.8
+      '@types/node':
+        specifier: ^20.4.5
+        version: 20.4.5
       '@vitejs/plugin-vue':
         specifier: ^4.2.3
         version: 4.2.3(vite@4.4.2)(vue@3.3.4)
@@ -106,7 +129,7 @@ importers:
         version: 5.1.6
       vite:
         specifier: ^4.4.0
-        version: 4.4.2(@types/node@18.16.19)
+        version: 4.4.2(@types/node@20.4.5)
       vue-tsc:
         specifier: ^1.8.3
         version: 1.8.4(typescript@5.1.6)
@@ -1525,6 +1548,10 @@ packages:
     resolution: {integrity: sha512-IXl7o+R9iti9eBW4Wg2hx1xQDig183jj7YLn8F7udNceyfkbn1ZxmzZXuak20gR40D7pIkIY1kYGx5VIGbaHKA==}
     dev: true
 
+  /@types/node@20.4.5:
+    resolution: {integrity: sha512-rt40Nk13II9JwQBdeYqmbn2Q6IVTA5uPhvSO+JVqdXw/6/4glI6oR9ezty/A9Hg5u7JH4OmYmuQ+XvjKm0Datg==}
+    dev: true
+
   /@types/normalize-package-data@2.4.1:
     resolution: {integrity: sha512-Gj7cI7z+98M282Tqmp2K5EIsoouUEzbBJhQQzDE3jSIRk6r9gsz0oUokqIUR4u1R3dMHo0pDHM7sNOHyhulypw==}
     dev: true
@@ -1692,7 +1719,7 @@ packages:
       vite: ^4.0.0
       vue: ^3.2.25
     dependencies:
-      vite: 4.4.2(@types/node@18.16.19)
+      vite: 4.4.2(@types/node@20.4.5)
       vue: 3.3.4
     dev: true
 
@@ -6910,7 +6937,7 @@ packages:
       spdx-expression-parse: 3.0.1
     dev: true
 
-  /vite@4.4.2(@types/node@18.16.19):
+  /vite@4.4.2(@types/node@20.4.5):
     resolution: {integrity: sha512-zUcsJN+UvdSyHhYa277UHhiJ3iq4hUBwHavOpsNUGsTgjBeoBlK8eDt+iT09pBq0h9/knhG/SPrZiM7cGmg7NA==}
     engines: {node: ^14.18.0 || >=16.0.0}
     hasBin: true
@@ -6938,7 +6965,7 @@ packages:
       terser:
         optional: true
     dependencies:
-      '@types/node': 18.16.19
+      '@types/node': 20.4.5
       esbuild: 0.18.11
       postcss: 8.4.25
       rollup: 3.26.2

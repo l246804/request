@@ -26,9 +26,9 @@
       "import": "./dist/index.mjs"
     },
     "./**/*": {
-      "types": "./**/*.d.ts",
-      "require": "./**/*.cjs",
-      "import": "./**/*.mjs"
+      "types": "./dist/**/*.d.ts",
+      "require": "./dist/**/*.cjs",
+      "import": "./dist/**/*.mjs"
     },
     "./package.json": "./package.json"
   },
@@ -43,6 +43,7 @@
     "node": ">=14"
   },
   "scripts": {
+    "stub": "unbuild --stub",
     "build": "unbuild"
   },
   "devDependencies": {

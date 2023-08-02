@@ -1,6 +1,8 @@
 {
   "private": true,
   "scripts": {
+    "prepare": "pnpm run stub",
+    "stub": "turbo run stub",
     "dev": "turbo run dev",
     "build": "turbo run build",
     "lint": "turbo run lint",

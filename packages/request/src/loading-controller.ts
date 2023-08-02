@@ -1,7 +1,9 @@
 import type { Fn } from 'types/utils'
 import type { RequestContext } from './context'
 
-export function createLoadingController(onToggle: Fn<[boolean, RequestContext<any, any[]>]>) {
+export function createLoadingController(
+  onToggle: Fn<[loading: boolean, context: RequestContext<any, any[]>]>,
+) {
   let judgeValue = 0
   let count = 0
 

@@ -1,11 +1,11 @@
 {
-  "name": "@rhao/request",
+  "name": "@rhao/request-basic-middleware",
   "type": "module",
   "version": "0.0.0",
-  "description": "Data request state management library.",
+  "description": "Basic middleware of request.",
   "author": "RayHao <https://github.com/l246804>",
   "license": "MIT",
-  "homepage": "https://github.com/l246804/request",
+  "homepage": "https://github.com/l246804/request/tree/dev/packages/basic-middleware",
   "repository": {
     "type": "git",
     "url": "https://github.com/l246804/request"
@@ -14,16 +14,10 @@
     "url": "https://github.com/l246804/request/issues"
   },
   "keywords": [
+    "middleware",
     "request",
-    "fetch",
-    "axios",
-    "state",
-    "vue",
-    "react",
-    "hooks",
-    "compose",
-    "event",
-    "middleware"
+    "basic",
+    "common"
   ],
   "publishConfig": {
     "access": "public"
@@ -56,8 +50,10 @@
     "build": "unbuild"
   },
   "dependencies": {
+    "@rhao/request": "workspace:*",
     "@rhao/request-utils": "workspace:*",
-    "hookable": "^5.5.3"
+    "@types/lodash-es": "^4.17.8",
+    "lodash-es": "^4.17.21"
   },
   "devDependencies": {
     "types": "workspace:*",

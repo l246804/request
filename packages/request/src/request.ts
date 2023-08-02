@@ -3,6 +3,7 @@ import {
   createSwitch,
   createTimer,
   ensureError,
+  isFunction,
   isString,
   keysOf,
   toValue,
@@ -18,7 +19,7 @@ import { createLoadingController } from './loading-controller'
 import { compose } from './compose'
 import type { RequestState } from './state'
 import { createHooks } from './hooks'
-import { sortMiddleware } from './middleware'
+import { normalizeMiddleware } from './middleware'
 
 export interface BasicRequest {
   /**
@@ -117,20 +118,12 @@ export function createRequest(options?: RequestBasicOptions) {
     )
 
     // merge middleware
-    const configMiddleware = unique(
-      request.options.middleware
-        .slice(0)
-        .concat(opts?.middleware || [])
-        .filter(Boolean),
+    const configMiddleware = normalizeMiddleware(
+      request.options.middleware.slice(0).concat(opts?.middleware || []),
     )
 
     // merge hooks
-    const configHooks = unique(
-      request.options.hooks
-        .slice(0)
-        .concat(opts?.hooks || [])
-        .filter(Boolean),
-    )
+    const configHooks = unique(request.options.hooks.slice(0).concat(opts?.hooks || []))
 
     // register hooks
     hooks.hook('error', (error) => {
@@ -162,12 +155,14 @@ export function createRequest(options?: RequestBasicOptions) {
       })
 
       // if "isCanceled()" is "true", returns
-      const middleware = sortMiddleware(configMiddleware).map((mw) => {
-        return (ctx, next) => {
-          if (ctx.isCanceled()) return
-          return mw(ctx, next)
-        }
-      })
+      const middleware = configMiddleware
+        .filter((mw) => isFunction(mw.handler))
+        .map((mw) => {
+          return (ctx, next) => {
+            if (isCanceled()) return
+            return mw.handler!(ctx, next)
+          }
+        })
 
       // create "applyMiddleware"
       const applyMiddleware = compose(middleware)
@@ -231,7 +226,7 @@ export function createRequest(options?: RequestBasicOptions) {
     }
 
     function run(...args) {
-      return executor(...args).then(() => state.data)
+      return basicContext.executor(...args).then(() => state.data)
     }
 
     function refresh() {
@@ -242,7 +237,7 @@ export function createRequest(options?: RequestBasicOptions) {
     configMiddleware.forEach((mw) => mw.setup?.(basicContext))
 
     // automatic execute
-    if (!options.manual) executor(...(options.defaultParams || []))
+    if (!options.manual) basicContext.executor(...(options.defaultParams || []))
 
     return result
   }

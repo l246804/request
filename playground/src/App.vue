@@ -6,8 +6,9 @@ import type {
   RequestFetcher,
   RequestOptions,
   RequestResult,
-} from '../../packages/request/src'
-import { createRequest } from '../../packages/request/src'
+} from '@rhao/request/index'
+import { createRequest } from '@rhao/request/index'
+import { RequestDebounce, RequestThrottle } from '@rhao/request-basic-middleware/index'
 
 interface UseRequest extends BasicRequest {
   <TData, TParams extends unknown[] = unknown[]>(
@@ -18,6 +19,7 @@ interface UseRequest extends BasicRequest {
 
 const useRequest = createRequest({
   manual: true,
+  middleware: [RequestDebounce(), RequestThrottle()],
 }) as UseRequest
 
 function mockApi(type: 'success' | 'error') {
@@ -30,7 +32,23 @@ function mockApi(type: 'success' | 'error') {
 }
 
 const { getState, run, cancel } = useRequest(mockApi, {
-  hooks: {},
+  hooks: {
+    before: () => {
+      console.log('before')
+    },
+    success: () => {
+      console.log('success')
+    },
+    error: () => {
+      console.log('error')
+    },
+    after: () => {
+      console.log('after')
+    },
+  },
+  debounce: {
+    wait: 1000,
+  },
 })
 
 const loading = computed(() => getState().loading)

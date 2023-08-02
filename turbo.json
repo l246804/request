@@ -7,6 +7,9 @@
       "outputs": ["dist/**"]
     },
     "lint": {},
+    "stub": {
+      "cache": false
+    },
     "dev": {
       "cache": false,
       "persistent": true

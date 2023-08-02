@@ -30,3 +30,17 @@ export function omit<T extends object, K extends keyof T = keyof T>(o: T, keys: 
     : Recordable
   return fromEntries(toEntries(o || {}).filter(([k]) => !keys.includes(k as K))) as OmitResult
 }
+
+export function mapKeys<T extends object>(
+  o: T,
+  callback: (value: any, key: string, object: T) => string,
+) {
+  return fromEntries(toEntries(o || {}).map(([key, value]) => [callback(value, key, o), value]))
+}
+
+export function mapValues<T extends object>(
+  o: T,
+  callback: (value: any, key: string, object: T) => any,
+) {
+  return fromEntries(toEntries(o || {}).map(([key, value]) => [key, callback(value, key, o)]))
+}
