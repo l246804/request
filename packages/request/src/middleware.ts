@@ -10,21 +10,21 @@ interface BasicMiddleware<TData = any> {
   priority?: number
 
   /**
-   * 安装中间件时触发，可设置 `request()` 返回结果
+   * 执行 `request()` 时触发，可自定义 `request()` 相关功能
    */
   setup?: (context: RequestBasicContext<TData, any[]>) => void
 }
 
 export interface RequestMiddlewareObject<TData = any> extends BasicMiddleware<TData> {
   /**
-   * 中间件具体操作
+   * 执行 `executor()` 时触发
    */
   handler?: AwaitableFn<[ctx: RequestContext<TData, any[]>, next: PromiseFn]>
 }
 
 export interface RequestMiddlewareFunction<TData = any> extends BasicMiddleware<TData> {
   /**
-   * 中间件具体操作
+   * 执行 `executor()` 时触发
    */
   (context: RequestContext<TData, any[]>, next: PromiseFn): void
 }

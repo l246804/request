@@ -3,23 +3,21 @@ import {
   createSwitch,
   ensureError,
   isFunction,
-  isString,
-  keysOf,
-  pauseableTimer,
+  pauseablePromise,
   toValue,
   unique,
 } from '@rhao/request-utils'
-import type { Recordable } from 'types/utils'
 import type { RequestBasicOptions, RequestOptions } from './options'
 import { createCounter } from './counter'
 import type { RequestResult } from './result'
 import type { RequestFetcher } from './fetcher'
-import type { RequestBasicContext, RequestContext } from './context'
-import { createLoadingController } from './loading-controller'
+import { type RequestBasicContext, type RequestContext, createMutateState } from './context'
 import { compose } from './compose'
 import type { RequestState } from './state'
 import { createHooks } from './hooks'
 import { normalizeMiddleware } from './middleware'
+import { RequestLoading } from './loading'
+import { RequestError } from './error'
 
 export interface BasicRequest {
   /**
@@ -33,7 +31,7 @@ export interface BasicRequest {
   options: Required<RequestBasicOptions>
 
   /**
-   * `request`
+   * `request()`
    */
   <TData, TParams extends unknown[] = unknown[]>(
     fetcher: RequestFetcher<TData, TParams>,
@@ -72,13 +70,13 @@ export function createRequest(options?: RequestBasicOptions) {
     }
 
     // create result
-    const result: RequestResult<any, any[]> = {
+    const result = {
       getKey: () => key,
       getState: () => assign({}, state),
       cancel,
       run,
       refresh,
-    } as any
+    } as RequestResult<any, any[]>
 
     // create basic context
     const basicContext: RequestBasicContext<any, any[]> = {
@@ -90,18 +88,7 @@ export function createRequest(options?: RequestBasicOptions) {
       getOptions: () => assign({}, options),
       getState: () => assign({}, state),
       getResult: () => assign({}, result),
-      mutateState: (keyOrState, value?) => {
-        let mutatedValue = keyOrState
-
-        if (isString(keyOrState)) {
-          if (!keysOf(state).includes(keyOrState))
-            return console.warn(`mutateState(): ${keyOrState} is not exist.`)
-          mutatedValue = { [keyOrState]: value }
-        }
-
-        assign(state, mutatedValue)
-        hooks.callHookSync('stateChange', mutatedValue, basicContext)
-      },
+      mutateState: createMutateState(state, () => basicContext),
       mutateResult: (res) => {
         assign(result, res)
       },
@@ -110,43 +97,22 @@ export function createRequest(options?: RequestBasicOptions) {
     // latest context
     let latestContext: RequestContext<any, any[]> | null = null
 
-    // create loading-controller
-    const { show: showLoading, close: closeLoading } = createLoadingController(
-      () => state.loading,
-      (loading) => {
-        if (state.loading !== loading) {
-          basicContext.mutateState({ loading })
-          hooks.callHookSync('loadingChange', loading, basicContext)
-        }
-      },
-    )
-
     // merge middleware
     const configMiddleware = normalizeMiddleware(
-      request.options.middleware.slice(0).concat(opts?.middleware || []),
+      [RequestLoading(), RequestError()].concat(request.options.middleware, opts?.middleware || []),
     )
 
-    // merge hooks
-    const configHooks = unique(request.options.hooks.slice(0).concat(opts?.hooks || []))
-
     // register hooks
-    hooks.hook('error', (error) => {
-      const state: Recordable = { error }
-      if (toValue(options.initDataWhenError)) state.data = options.initData?.()
-      basicContext.mutateState(state)
-    })
+    const configHooks = unique(request.options.hooks.slice(0).concat(opts?.hooks || []))
     configHooks.forEach((configHook) => hooks.addHooks(configHook))
-
-    // create loading timer
-    const loadingTimer = pauseableTimer(() => showLoading(), options.loadingDelay, {
-      timerType: 'setTimeout',
-      immediate: false,
-    })
 
     // create executor
     async function executor(...params) {
       // if "ready" is false, do nothing
       if (!toValue(options.ready, params)) return
+
+      // create pauseable promise
+      const { promise, resolve } = pauseablePromise()
 
       // create switch of cancel
       const { read: isCanceled, toggle } = createSwitch()
@@ -155,6 +121,7 @@ export function createRequest(options?: RequestBasicOptions) {
         toggle(true)
         // eslint-disable-next-line @typescript-eslint/no-use-before-define
         !silent && hooks.callHook('cancel', context.getState(), context)
+        resolve(undefined)
       }
 
       // create context
@@ -166,7 +133,6 @@ export function createRequest(options?: RequestBasicOptions) {
       }
       latestContext = context
 
-      // if "isCanceled()" is "true", returns
       const middleware = configMiddleware
         .filter((mw) => isFunction(mw.handler))
         .map((mw) => {
@@ -178,13 +144,10 @@ export function createRequest(options?: RequestBasicOptions) {
 
       // create "applyMiddleware"
       const applyMiddleware = compose(middleware)
-
-      // applyMiddleware's next
       async function next() {
+        const data = await Promise.race([promise, context.fetcher(...state.params)])
         if (isCanceled()) return
-        const data = await context.fetcher(...state.params)
         context.mutateState({ data })
-        return data
       }
 
       // handle error
@@ -195,19 +158,11 @@ export function createRequest(options?: RequestBasicOptions) {
 
       // dispose source
       const dispose = async () => {
-        hooks.callHook('dispose', context)
-        if (context.isLatestExecution()) {
-          loadingTimer.pause()
-          closeLoading()
-          latestContext = null
-        }
+        hooks.callHookSync('dispose', context)
+        if (context.isLatestExecution()) latestContext = null
         context = null as any
       }
-
       try {
-        if (!loadingTimer.isActive() && !state.loading)
-          options.loadingDelay > 0 ? loadingTimer.resume() : loadingTimer.flush()
-
         context.mutateState({ params, error: undefined })
 
         await hooks.callHook('before', state.params, context)
@@ -233,11 +188,7 @@ export function createRequest(options?: RequestBasicOptions) {
     }
 
     function cancel() {
-      if (latestContext) {
-        latestContext.cancel()
-        loadingTimer.pause()
-        closeLoading(true)
-      }
+      if (latestContext) latestContext.cancel()
     }
 
     function run(...args) {

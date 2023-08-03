@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { AxiosResponse } from 'axios'
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import type {
   BasicRequest,
   RequestFetcher,
@@ -26,40 +26,42 @@ const useRequest = createRequest({
   middleware: [RequestDebounce(), RequestThrottle(), RequestPolling({ errorRetryCount: 3 })],
 }) as UseRequest
 
-function mockApi(type: 'success' | 'error') {
-  return new Promise<AxiosResponse<number>>((resolve, reject) => {
+function mockApi(v: number) {
+  return new Promise<number>((resolve) => {
     setTimeout(() => {
-      if (type === 'success') resolve({ data: 123 } as AxiosResponse<number>)
-      else reject(new Error('run failed!'))
+      console.log('---------------mock', v)
+      resolve(v)
     }, 3000)
   })
 }
+
+const count = ref(0)
 
 const { getState, run, cancel } = useRequest(mockApi, {
   // polling: {
   //   interval: 5000,
   //   whenHidden: false,
   // },
-  // loadingDelay: 1000,
+  loadingDelay: 1000,
   hooks: {
     loadingChange: (loading) => {
       console.log('loadingChange', loading)
     },
-    before: () => {
-      console.log('before', Date.now())
+    before: (params) => {
+      console.log('before', ...params)
     },
-    success: () => {
-      console.log('success', Date.now())
+    success: (data) => {
+      console.log('success', data)
     },
     error: () => {
-      console.log('error')
+      // console.log('error')
     },
     after: () => {
       // console.log('after')
-      console.log('after', Date.now())
+      // console.log('after', Date.now())
     },
-    cancel: () => {
-      console.log('cancel', Date.now())
+    cancel: (state) => {
+      console.log('cancel', ...state.params)
     },
   },
   debounce: {
@@ -77,13 +79,13 @@ const loading = computed(() => getState().loading)
         <div>
           <ElButton
             type="success"
-            @click="run('success')"
+            @click="run(count++)"
           >
             模拟成功请求
           </ElButton>
           <ElButton
             type="danger"
-            @click="run('error')"
+            @click="run(count--)"
           >
             模拟失败请求
           </ElButton>

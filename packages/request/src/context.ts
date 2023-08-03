@@ -1,6 +1,7 @@
 /* eslint-disable unused-imports/no-unused-vars */
 /* eslint-disable @typescript-eslint/indent */
 import type { Fn, Getter, PromiseFn } from 'types/utils'
+import { assign, isString, keysOf } from '@rhao/request-utils'
 import type { RequestHookable } from './hooks'
 import type { RequestBasicOptions, RequestOptions } from './options'
 import type { RequestResult } from './result'
@@ -8,7 +9,11 @@ import type { RequestFetcher } from './fetcher'
 import type { RequestState } from './state'
 import type { BasicRequest } from '.'
 
-interface MutateState<S extends RequestState<any, any[]>> {
+interface MutateState<
+  TData,
+  TParams extends unknown[] = unknown[],
+  S extends RequestState<any, any[]> = RequestState<TData, TParams>,
+> {
   (state: Partial<S>): void
   <K extends keyof S>(key: K, value: S[K]): void
 }
@@ -75,7 +80,7 @@ export interface RequestBasicContext<TData, TParams extends unknown[] = unknown[
   /**
    * 修改 `request()` 的状态
    */
-  mutateState: MutateState<RequestState<TData, TParams>>
+  mutateState: MutateState<TData, TParams>
 
   /**
    * 修改 `request()` 结果
@@ -101,4 +106,22 @@ export interface RequestContext<TData, TParams extends unknown[] = unknown[]>
    * @default false
    */
   cancel: Fn<[silent?: boolean]>
+}
+
+export function createMutateState(
+  state: RequestState<any, any[]>,
+  context: Getter<RequestBasicContext<any, any[]>>,
+): MutateState<any, any[]> {
+  return (keyOrState, value?) => {
+    let mutatedValue = keyOrState
+
+    if (isString(keyOrState)) {
+      if (!keysOf(state).includes(keyOrState))
+        return console.warn(`mutateState(): ${keyOrState} is not exist.`)
+      mutatedValue = { [keyOrState]: value }
+    }
+
+    assign(state, mutatedValue)
+    context().hooks.callHookSync('stateChange', mutatedValue, context())
+  }
 }
