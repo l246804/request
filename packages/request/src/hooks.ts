@@ -47,8 +47,15 @@ export interface RequestHooks<TData = any, TParams extends unknown[] = unknown[]
 
   /**
    * 执行 `fetcher()` 后触发，同 `Promise.finally`
+   *
+   * ***注意：取消执行时不再触发***
    */
   after: AwaitableFn<[state: RequestState<TData, TParams>, context: RequestContext<TData, TParams>]>
+
+  /**
+   * 执行 `fetcher()` 后必定触发，用于释放资源
+   */
+  dispose: AwaitableFn<[context: RequestContext<TData, TParams>]>
 
   /**
    * 执行 `fetcher()` 取消时触发

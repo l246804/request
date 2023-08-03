@@ -1,7 +1,7 @@
 export function createCounter() {
   let value = 0
 
-  function getCurrent() {
+  function current() {
     return value
   }
 
@@ -9,5 +9,5 @@ export function createCounter() {
     return ++value
   }
 
-  return { getCurrent, next }
+  return { current, next }
 }

@@ -87,6 +87,10 @@ export interface RequestContext<TData, TParams extends unknown[] = unknown[]>
   extends RequestCustomContext<TData, TParams>,
     Omit<RequestBasicContext<TData, TParams>, 'mutateResult'> {
   /**
+   * 是否是最后一次执行
+   */
+  isLatestExecution: Getter<boolean>
+  /**
    * 是否已取消执行
    */
   isCanceled: Getter<boolean>

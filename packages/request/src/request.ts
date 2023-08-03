@@ -107,16 +107,13 @@ export function createRequest(options?: RequestBasicOptions) {
       },
     }
 
-    // last-time created context
-    let currentContext: RequestContext<any, any[]> | null = null
-    const isCurrentContext = (ctx: RequestContext<any, any[]>) =>
-      !!currentContext && ctx === currentContext
+    // latest context
+    let latestContext: RequestContext<any, any[]> | null = null
 
     // create loading-controller
     const { show: showLoading, close: closeLoading } = createLoadingController(
       () => state.loading,
       (loading) => {
-        if (!loading) currentContext = null
         if (state.loading !== loading) {
           basicContext.mutateState({ loading })
           hooks.callHookSync('loadingChange', loading, basicContext)
@@ -161,11 +158,13 @@ export function createRequest(options?: RequestBasicOptions) {
       }
 
       // create context
-      let context = (currentContext = {
+      let context: RequestContext<any, any[]> = {
         ...basicContext,
+        isLatestExecution: () => !!latestContext && context === latestContext,
         isCanceled,
         cancel,
-      })
+      }
+      latestContext = context
 
       // if "isCanceled()" is "true", returns
       const middleware = configMiddleware
@@ -194,12 +193,13 @@ export function createRequest(options?: RequestBasicOptions) {
         await hooks.callHook('error', error, context)
       }
 
-      // create cleanup
-      const cleanup = () => {
-        // "isCurrentContext(context)" must be "true"
-        if (isCurrentContext(context)) {
+      // dispose source
+      const dispose = async () => {
+        hooks.callHook('dispose', context)
+        if (context.isLatestExecution()) {
           loadingTimer.pause()
           closeLoading()
+          latestContext = null
         }
         context = null as any
       }
@@ -220,7 +220,7 @@ export function createRequest(options?: RequestBasicOptions) {
       } catch (err: unknown) {
         await errorHandler(err)
       } finally {
-        isCanceled() && cleanup()
+        isCanceled() && dispose()
       }
 
       try {
@@ -228,16 +228,15 @@ export function createRequest(options?: RequestBasicOptions) {
       } catch (err: unknown) {
         await errorHandler(err)
       } finally {
-        cleanup()
+        dispose()
       }
     }
 
     function cancel() {
-      if (currentContext) {
-        currentContext.cancel()
+      if (latestContext) {
+        latestContext.cancel()
         loadingTimer.pause()
         closeLoading(true)
-        currentContext = null
       }
     }
 

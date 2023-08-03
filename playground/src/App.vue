@@ -36,11 +36,15 @@ function mockApi(type: 'success' | 'error') {
 }
 
 const { getState, run, cancel } = useRequest(mockApi, {
-  polling: {
-    interval: 5000,
-    whenHidden: false,
-  },
+  // polling: {
+  //   interval: 5000,
+  //   whenHidden: false,
+  // },
+  // loadingDelay: 1000,
   hooks: {
+    loadingChange: (loading) => {
+      console.log('loadingChange', loading)
+    },
     before: () => {
       console.log('before', Date.now())
     },
