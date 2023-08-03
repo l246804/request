@@ -14,7 +14,7 @@ export interface RequestPollingOptions {
    * 轮询间隔，单位为毫秒。如果值大于 0，则启动轮询模式
    * @default 0
    */
-  interval?: MaybeGetter<number>
+  interval?: number
   /**
    * 在页面隐藏时，是否继续轮询。如果设置为 false，在页面隐藏时会暂时停止轮询，页面重新显示时继续上次轮询
    * @default true
@@ -43,7 +43,7 @@ export function RequestPolling(initialOptions?: Omit<RequestPollingOptions, 'int
       ) as RequestPollingOptions
 
       // 禁用轮询
-      if (!toValue(options.interval)) return
+      if (!options.interval) return
 
       const refresh = ctx.getResult().refresh
 
@@ -116,7 +116,7 @@ export function RequestPolling(initialOptions?: Omit<RequestPollingOptions, 'int
       ctx.hooks.hook('error', () => {
         const retryCount = toValue(options.errorRetryCount!)
         if (retryCount === -1) return cleanAndResume()
-        if (count < Math.abs(retryCount)) {
+        if (count < retryCount) {
           count++
           handleResume()
         } else {

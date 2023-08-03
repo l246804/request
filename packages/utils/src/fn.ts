@@ -43,3 +43,11 @@ export function createSwitch<T = boolean, F extends Fn<any[]> = Fn<any[]>>(
     revert,
   }
 }
+
+export function sleep(ms = 0) {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve(undefined)
+    }, ms)
+  })
+}

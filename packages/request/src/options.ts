@@ -1,7 +1,7 @@
 /* eslint-disable unused-imports/no-unused-vars */
 /* eslint-disable @typescript-eslint/indent */
 import type { NestedHooks } from 'hookable'
-import type { Getter, MaybeArray, MaybeFn, MaybeGetter } from 'types/utils'
+import type { AwaitableFn, Getter, MaybeArray, MaybeFn, MaybeGetter } from 'types/utils'
 import type { RequestHooks } from './hooks'
 import type { RequestMiddleware } from './middleware'
 
@@ -54,6 +54,32 @@ export interface RequestBasicOptions {
    * `hooks` 配置
    */
   hooks?: NestedHooks<RequestHooks>[]
+
+  /**
+   * 数据解析器，执行 `fetcher()` 后直接进行数据解析
+   * @description 需要返回正确类型的数据或直接抛出错误消息，可用于适配已有固定格式的 `fetcher`
+   * @example
+   * ```ts
+   * // eg1:
+   * const { getState } = request(() => axios.get('/api/example'), {
+   *   dataParser: (response) => response.data
+   * })
+   * getState().data // => response.data
+   *
+   * // eg2:
+   * // 返回格式：{ data: any; error: boolean; message?: string }
+   * const fetcher = () => axios.get('/api/example').then((response) => response.data) }
+   * const { getState } = request(fetcher, {
+   *   dataParser: (data) => {
+   *     if (data.error) throw new Error(data.message)
+   *     return data.data
+   *   }
+   * })
+   * getState().data // => response.data.data
+   * getState().error // => Error: response.data.message
+   * ```
+   */
+  dataParser?: AwaitableFn<[data: unknown], unknown>
 }
 
 export interface RequestOptions<TData, TParams extends unknown[] = unknown[]>

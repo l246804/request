@@ -95,6 +95,7 @@ export interface RequestContext<TData, TParams extends unknown[] = unknown[]>
    * 是否是最后一次执行
    */
   isLatestExecution: Getter<boolean>
+
   /**
    * 是否已取消执行
    */

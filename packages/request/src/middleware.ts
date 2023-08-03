@@ -19,14 +19,14 @@ export interface RequestMiddlewareObject<TData = any> extends BasicMiddleware<TD
   /**
    * 执行 `executor()` 时触发
    */
-  handler?: AwaitableFn<[ctx: RequestContext<TData, any[]>, next: PromiseFn]>
+  handler?: AwaitableFn<[ctx: RequestContext<TData, any[]>, next: PromiseFn<[], void>]>
 }
 
 export interface RequestMiddlewareFunction<TData = any> extends BasicMiddleware<TData> {
   /**
    * 执行 `executor()` 时触发
    */
-  (context: RequestContext<TData, any[]>, next: PromiseFn): void
+  (context: RequestContext<TData, any[]>, next: PromiseFn<[], void>): void
 }
 
 export type RequestMiddleware<TData = any> =

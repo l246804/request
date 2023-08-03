@@ -47,6 +47,7 @@ export function createRequest(options?: RequestBasicOptions) {
   request.options = assign(
     {
       keyGenerator: () => `__request__${request.counter.next()}`,
+      dataParser: (data) => data,
       initDataWhenError: false,
       manual: false,
       loadingDelay: 0,
@@ -147,7 +148,7 @@ export function createRequest(options?: RequestBasicOptions) {
       async function next() {
         const data = await Promise.race([promise, context.fetcher(...state.params)])
         if (isCanceled()) return
-        context.mutateState({ data })
+        context.mutateState({ data: await options.dataParser(data) })
       }
 
       // handle error

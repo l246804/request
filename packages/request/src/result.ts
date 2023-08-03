@@ -39,7 +39,7 @@ export interface RequestResult<TData, TParams extends unknown[] = unknown[]>
   run: PromiseFn<TParams, TData>
 
   /**
-   * 根据最后一次成功执行的 `params` 重新执行请求
+   * 根据最后一次执行的 `params` 重新执行请求
    */
   refresh: PromiseFn<[], TData>
 }
