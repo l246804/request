@@ -1,3 +1,3 @@
 export * from './debounce'
 export * from './throttle'
-export * from './polling'
+export * from './refresh'

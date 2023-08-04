@@ -4,6 +4,7 @@ import {
   ensureArray,
   ensureError,
   isFunction,
+  omit,
   pauseablePromise,
   toValue,
   unique,
@@ -55,9 +56,9 @@ export function createRequest(options?: RequestBasicOptions) {
   request.options = normalizeBasicOptions(request as BasicRequest, options)
 
   function request(fetcher: RequestFetcher<any, any[]>, opts?: RequestOptions<any, any[]>) {
-    const options = normalizeOptions(request as BasicRequest, opts)
+    let options = normalizeOptions(request as BasicRequest, opts)
     const key = options.key || options.keyGenerator() || `__request__${request.counter.next()}`
-    const hooks = createHooks()
+    let hooks = createHooks()
 
     // 创建 `state`
     const state = createState(options)
@@ -75,7 +76,7 @@ export function createRequest(options?: RequestBasicOptions) {
     const { hasPending, hooks: pendingHooks } = createPendingHelper()
 
     // 创建基础的上下文
-    const basicContext: RequestBasicContext<any, any[]> = {
+    let basicContext: RequestBasicContext<any, any[]> = {
       request: request as any,
       hooks,
       fetcher,
@@ -88,6 +89,17 @@ export function createRequest(options?: RequestBasicOptions) {
       mutateState: createMutateState(state, () => basicContext),
       mutateResult: (res) => {
         assign(result, res)
+      },
+      dispose: () => {
+        cancel()
+        hooks.callHookSync('dispose', basicContext)
+        hooks.removeAllHooks()
+
+        options.middleware.length = 0
+        options.hooks.length = 0
+        options = {} as any
+        hooks = null as any
+        basicContext = {} as any
       },
     }
 
@@ -128,7 +140,7 @@ export function createRequest(options?: RequestBasicOptions) {
 
       // 创建执行器的上下文
       let context: RequestContext<any, any[]> = {
-        ...basicContext,
+        ...omit(basicContext, ['mutateResult', 'dispose']),
         mutateData: (data) => {
           state.data = data
         },
@@ -167,10 +179,9 @@ export function createRequest(options?: RequestBasicOptions) {
       }
 
       // 释放资源
-      const dispose = async () => {
+      const end = async () => {
         await disposeTempData()
-
-        hooks.callHookSync('dispose', context)
+        hooks.callHookSync('end', context)
 
         if (context.isLatestExecution()) latestContext = null
         context = null as any
@@ -190,7 +201,7 @@ export function createRequest(options?: RequestBasicOptions) {
       } catch (err: unknown) {
         await errorHandler(err)
       } finally {
-        isCanceled() && dispose()
+        isCanceled() && end()
       }
 
       try {
@@ -198,7 +209,7 @@ export function createRequest(options?: RequestBasicOptions) {
       } catch (err: unknown) {
         await errorHandler(err)
       } finally {
-        dispose()
+        end()
       }
     }
 

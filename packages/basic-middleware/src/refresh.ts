@@ -11,15 +11,30 @@ import type { Fn, Getter, MaybeGetter } from 'types/utils'
 
 export interface RequestPollingOptions {
   /**
-   * 轮询间隔，单位为毫秒。如果值大于 0，则启动轮询模式
+   * 窗口聚焦时自动刷新请求
+   * @default true
+   */
+  whenFocus?: boolean
+  /**
+   * 在页面隐藏时，是否继续轮询。如果设置为 false，在页面隐藏时会暂时停止轮询，页面重新显示时继续上次轮询
+   * @default false
+   */
+  whenHidden?: boolean
+  /**
+   * 浏览器恢复网络连接时自动刷新请求（通过 `navigator.onLine`）
+   * @default true
+   */
+  whenReconnect?: boolean
+  /**
+   * 浏览器离线时轮询（由 `navigator.onLine` 确定）
+   * @default false
+   */
+  whenOffline?: boolean
+  /**
+   * 自动刷新间隔，单位为毫秒。如果值大于 0，则启动轮询模式
    * @default 0
    */
   interval?: number
-  /**
-   * 在页面隐藏时，是否继续轮询。如果设置为 false，在页面隐藏时会暂时停止轮询，页面重新显示时继续上次轮询
-   * @default true
-   */
-  whenHidden?: MaybeGetter<boolean>
   /**
    * 轮询错误重试次数。如果设置为 -1，则无限次
    * @default -1
@@ -27,7 +42,43 @@ export interface RequestPollingOptions {
   errorRetryCount?: MaybeGetter<number>
 }
 
+RequestPolling._initialed = false
+RequestPolling.refreshFns = new Set<Fn>()
+RequestPolling.visibilityHandlers = new Set<Fn>()
+
+RequestPolling.callRefresh = () => {
+  RequestPolling.refreshFns.forEach((fn) => fn())
+}
+
+RequestPolling.dispose = () => {}
+
 export function RequestPolling(initialOptions?: Omit<RequestPollingOptions, 'interval'>) {
+  // 初始化
+  if (!RequestPolling._initialed) {
+    RequestPolling._initialed = true
+
+    const callRefresh = RequestPolling.callRefresh
+
+    window.addEventListener('focus', callRefresh)
+    window.addEventListener('online', callRefresh)
+
+    const unListen = listenVisibilityChange((hidden) => {
+      RequestPolling.visibilityHandlers.forEach((fn) => fn(hidden))
+    })
+
+    RequestPolling.dispose = () => {
+      RequestPolling.refreshFns.clear()
+      RequestPolling.visibilityHandlers.clear()
+
+      window.removeEventListener('focus', callRefresh)
+      window.removeEventListener('online', callRefresh)
+
+      unListen()
+
+      RequestPolling.dispose = () => {}
+    }
+  }
+
   const middleware: RequestMiddleware = {
     priority: -999,
     setup: (ctx) => {
@@ -36,16 +87,32 @@ export function RequestPolling(initialOptions?: Omit<RequestPollingOptions, 'int
 
       // 合并配置项
       const options = assign(
-        { whenHidden: true, errorRetryCount: -1 } as RequestPollingOptions,
+        {
+          whenFocus: true,
+          whenHidden: false,
+          whenReconnect: true,
+          whenOffline: false,
+          errorRetryCount: -1,
+        } as RequestPollingOptions,
         initialOptions,
         { interval: 0 },
         ctx.getOptions().polling,
       ) as RequestPollingOptions
 
+      const refresh = ctx.getResult().refresh
+
+      // 注册刷新事件
+      if (options.whenFocus || options.whenReconnect) {
+        ctx.hooks.hookOnce('before', () => {
+          RequestPolling.refreshFns.add(refresh)
+        })
+      }
+      ctx.hooks.hookOnce('dispose', () => {
+        RequestPolling.refreshFns.delete(refresh)
+      })
+
       // 禁用轮询
       if (!options.interval) return
-
-      const refresh = ctx.getResult().refresh
 
       // 创建计时器
       const timer = pauseableTimer(refresh, options.interval, {
@@ -62,35 +129,24 @@ export function RequestPolling(initialOptions?: Omit<RequestPollingOptions, 'int
         timer.pause()
       }
 
-      // 监听页面显示和隐藏
+      // 注册页面显示/隐藏事件
       const { hidden: hiddenKey } = getVisibilityKeys()
-      let removeListen: Fn | null = null
-      const listen = () => {
-        // 已经存在监听时则返回
-        if (removeListen) return
-
-        const stop = listenVisibilityChange((hidden) => {
-          if (toValue(options.whenHidden!)) return
-          if (hidden) {
-            pause()
-          } else {
-            // 页面显示时立即轮询
-            polling = true
-            refresh()
-          }
-        })
-
-        // 设置移除监听函数
-        removeListen = () => {
-          stop()
-          removeListen = null
+      const visibilityHandler = (hidden: boolean) => {
+        if (toValue(options.whenHidden!)) return
+        if (hidden) {
+          pause()
+        } else {
+          // 页面显示时立即轮询
+          polling = true
+          refresh()
         }
       }
-      ctx.hooks.hook('before', listen)
+      const addListen = () => RequestPolling.visibilityHandlers.add(visibilityHandler)
+      const removeListen = () => RequestPolling.visibilityHandlers.delete(visibilityHandler)
 
-      // 取消时释放资源
+      ctx.hooks.hook('before', addListen)
       ctx.hooks.hook('cancel', () => {
-        removeListen?.()
+        removeListen()
         pause()
       })
 
@@ -121,7 +177,7 @@ export function RequestPolling(initialOptions?: Omit<RequestPollingOptions, 'int
           handleResume()
         } else {
           // 达到指定次数时清除页面监听
-          removeListen?.()
+          removeListen()
         }
       })
     },

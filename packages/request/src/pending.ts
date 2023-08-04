@@ -4,7 +4,7 @@ export function createPendingHelper() {
 
   const hooks = {
     before: () => ++count,
-    dispose: () => --count,
+    end: () => --count,
   }
 
   return {

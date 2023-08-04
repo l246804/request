@@ -91,15 +91,22 @@ export interface RequestBasicContext<TData, TParams extends unknown[] = unknown[
    * 是否存在未完成的执行，用于判断多次并发是否全部完成
    */
   hasPending: Getter<boolean>
+
+  /**
+   * 主动释放资源，当不再使用某个 `request()` 时可调用该函数触发 `hook:dispose`
+   *
+   * ***谨慎调用***
+   */
+  dispose: Fn<[]>
 }
 
 export interface RequestContext<TData, TParams extends unknown[] = unknown[]>
   extends RequestCustomContext<TData, TParams>,
-    Omit<RequestBasicContext<TData, TParams>, 'mutateResult'> {
+    Omit<RequestBasicContext<TData, TParams>, 'mutateResult' | 'dispose'> {
   /**
    * 修改 `state.data`
    *
-   * ***注意：不会直接触发 `stateChange`，在 `dispose()` 时会通过 `dataCompare` 对比前后数据，不一致时触发 `stateChange`，避免频繁更新***
+   * ***注意：不会直接触发 `stateChange`，在 `hook:end` 时会通过 `dataCompare` 对比前后数据，不一致时触发 `stateChange`，避免频繁更新***
    */
   mutateData: AwaitableFn<[data: TData]>
 

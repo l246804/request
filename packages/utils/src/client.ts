@@ -27,3 +27,7 @@ export function listenVisibilityChange(callback: Fn<[hidden: boolean, event: Eve
   document.addEventListener(event, handler)
   return () => document.removeEventListener(event, handler)
 }
+
+export function isOnline() {
+  return navigator.onLine
+}

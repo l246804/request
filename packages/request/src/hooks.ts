@@ -53,9 +53,14 @@ export interface RequestHooks<TData = any, TParams extends unknown[] = unknown[]
   after: AwaitableFn<[state: RequestState<TData, TParams>, context: RequestContext<TData, TParams>]>
 
   /**
-   * 执行 `executor()` 后必定触发，用于释放资源
+   * 执行 `executor()` 结束时触发，区别于 `after`，每执行一次均触发该事件，用于释放资源
    */
-  dispose: Fn<[context: RequestContext<TData, TParams>]>
+  end: Fn<[context: RequestContext<TData, TParams>]>
+
+  /**
+   * 主动调用 `dispose()` 时触发，用于释放资源
+   */
+  dispose: Fn<[context: RequestBasicContext<TData, TParams>]>
 
   /**
    * 执行 `executor()` 取消时触发
