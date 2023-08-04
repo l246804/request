@@ -42,6 +42,10 @@ const { getState, run, cancel } = useRequest(mockApi, {
   //   interval: 5000,
   //   whenHidden: false,
   // },
+  dataParser: (data) => {
+    if (data > 4) throw new Error('The number must be lt "4"!')
+    return data
+  },
   loadingDelay: 1000,
   hooks: {
     loadingChange: (loading) => {
@@ -53,8 +57,8 @@ const { getState, run, cancel } = useRequest(mockApi, {
     success: (data) => {
       console.log('success', data)
     },
-    error: () => {
-      // console.log('error')
+    error: (e) => {
+      console.log('error', e.message)
     },
     after: () => {
       // console.log('after')

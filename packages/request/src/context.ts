@@ -1,6 +1,6 @@
 /* eslint-disable unused-imports/no-unused-vars */
 /* eslint-disable @typescript-eslint/indent */
-import type { Fn, Getter, PromiseFn } from 'types/utils'
+import type { AwaitableFn, Fn, Getter, PromiseFn } from 'types/utils'
 import { assign, isString, keysOf } from '@rhao/request-utils'
 import type { RequestHookable } from './hooks'
 import type { RequestBasicOptions, RequestOptions } from './options'
@@ -78,7 +78,7 @@ export interface RequestBasicContext<TData, TParams extends unknown[] = unknown[
   getResult: Getter<RequestResult<TData, TParams>>
 
   /**
-   * 修改 `request()` 的状态
+   * 修改 `request()` 的状态，执行流时推荐使用 `mutateData` 修改 `data` 属性，避免频繁更新
    */
   mutateState: MutateState<TData, TParams>
 
@@ -86,11 +86,23 @@ export interface RequestBasicContext<TData, TParams extends unknown[] = unknown[
    * 修改 `request()` 结果
    */
   mutateResult: MutateResult<TData, TParams>
+
+  /**
+   * 是否存在未完成的执行，用于判断多次并发是否全部完成
+   */
+  hasPending: Getter<boolean>
 }
 
 export interface RequestContext<TData, TParams extends unknown[] = unknown[]>
   extends RequestCustomContext<TData, TParams>,
     Omit<RequestBasicContext<TData, TParams>, 'mutateResult'> {
+  /**
+   * 修改 `state.data`
+   *
+   * ***注意：不会直接触发 `stateChange`，在 `dispose()` 时会通过 `dataCompare` 对比前后数据，不一致时触发 `stateChange`，避免频繁更新***
+   */
+  mutateData: AwaitableFn<[data: TData]>
+
   /**
    * 是否是最后一次执行
    */

@@ -1,4 +1,5 @@
 import type { Nullish } from 'types/utils'
+import type { RequestOptions } from '.'
 
 /**
  * request state
@@ -20,4 +21,13 @@ export interface RequestState<TData, TParams extends unknown[] = unknown[]> {
    * 是否正在执行，多次执行仅会在初次和全部执行结束后触发更新
    */
   loading: boolean
+}
+
+export function createState(options: RequestOptions<any, any[]>) {
+  return {
+    params: [],
+    data: options.initData?.(),
+    error: undefined,
+    loading: false,
+  } as RequestState<any, any[]>
 }

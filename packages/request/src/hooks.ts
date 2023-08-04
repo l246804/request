@@ -65,12 +65,12 @@ export interface RequestHooks<TData = any, TParams extends unknown[] = unknown[]
   >
 
   /**
-   * 请求状态变更时触发，多次并发调用仅在初次和所有请求结束后触发
+   * 请求状态变更时触发，多次并发调用仅在初次和最近执行结束后触发
    */
   loadingChange: Fn<[loading: boolean, context: RequestBasicContext<TData, TParams>]>
 
   /**
-   * 状态变更时触发，参数为本次变更的状态
+   * `state` 变更时触发，参数为本次变更的 `state`
    */
   stateChange: Fn<
     [state: Partial<RequestState<TData, TParams>>, context: RequestBasicContext<TData, TParams>]

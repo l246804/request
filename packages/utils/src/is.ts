@@ -19,7 +19,10 @@ export const isString = (value): value is string => typeOf(value) === 'String'
 export const isNumber = (value): value is number => typeOf(value) === 'Number'
 
 export function isError(value): value is Error {
-  return typeOf(value) === 'Error' || value instanceof Error
+  return (
+    !isUndef(value) &&
+    (typeOf(value) === 'Error' || value instanceof Error || ('name' in value && 'message' in value))
+  )
 }
 
 export function isClient() {

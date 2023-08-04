@@ -2,8 +2,10 @@
 /* eslint-disable @typescript-eslint/indent */
 import type { NestedHooks } from 'hookable'
 import type { AwaitableFn, Getter, MaybeArray, MaybeFn, MaybeGetter } from 'types/utils'
+import { assign } from '@rhao/request-utils'
 import type { RequestHooks } from './hooks'
 import type { RequestMiddleware } from './middleware'
+import type { BasicRequest } from '.'
 
 /**
  * "xxx.d.ts" or "xxx.ts"
@@ -35,13 +37,34 @@ export interface RequestBasicOptions {
 
   /**
    * `loading` 延迟时间，单位：`ms`，如果值大于 0，则启动延迟，若请求在延迟前结束则不会更新 `loading` 状态
-   * @default 0
+   * @default 500
    */
   loadingDelay?: number
 
   /**
-   * 执行失败时是否初始化数据
+   * 执行时是否保留 `data`，默认不保留
    * @default false
+   */
+  keepPreviousData?: MaybeGetter<boolean>
+
+  /**
+   * 单例模式，如果设为 `true`，则存在未完成的执行时不会再执行
+   * @default false
+   */
+  single?: MaybeFn<boolean, [newParams: unknown[], oldParams: unknown[]]>
+
+  /**
+   * 数据对比，在执行流时对比数据是否一致，不一致时同步数据且触发 `stateChange`
+   * @default
+   * ```ts
+   * previousData === currentData
+   * ```
+   */
+  dataCompare?: AwaitableFn<[previousData: unknown, currentData: unknown]>
+
+  /**
+   * 执行失败时是否初始化数据
+   * @default true
    */
   initDataWhenError?: MaybeGetter<boolean>
 
@@ -79,7 +102,7 @@ export interface RequestBasicOptions {
    * getState().error // => Error: response.data.message
    * ```
    */
-  dataParser?: AwaitableFn<[data: unknown], unknown>
+  dataParser?: AwaitableFn<[data: any], unknown>
 }
 
 export interface RequestOptions<TData, TParams extends unknown[] = unknown[]>
@@ -118,4 +141,26 @@ export interface RequestOptions<TData, TParams extends unknown[] = unknown[]>
    * `hooks` 配置
    */
   hooks?: MaybeArray<NestedHooks<RequestHooks<TData, TParams>>>
+}
+
+export function normalizeBasicOptions(request: BasicRequest, options?: RequestBasicOptions) {
+  return assign(
+    {
+      keyGenerator: () => `__request__${request.counter.next()}`,
+      dataParser: (data) => data,
+      dataCompare: (d1, d2) => d1 === d2,
+      keepPreviousData: false,
+      single: false,
+      initDataWhenError: true,
+      manual: false,
+      loadingDelay: 500,
+      hooks: [],
+      middleware: [],
+    } as RequestBasicOptions,
+    options,
+  ) as Required<RequestBasicOptions>
+}
+
+export function normalizeOptions(request: BasicRequest, options?: RequestOptions<any, any[]>) {
+  return assign({ ready: true } as RequestOptions<any, any[]>, request.options, options)
 }
