@@ -1,6 +1,6 @@
-/* eslint-disable unused-imports/no-unused-vars */
 /* eslint-disable @typescript-eslint/indent */
-import type { AwaitableFn, Fn, Getter, PromiseFn } from 'types/utils'
+/* eslint-disable unused-imports/no-unused-vars */
+import type { AwaitableFn, Fn, Getter, PromiseFn, Recordable } from 'types/utils'
 import { assign, isString, keysOf } from '@rhao/request-utils'
 import type { RequestHookable } from './hooks'
 import type { RequestBasicOptions, RequestOptions } from './options'
@@ -8,6 +8,10 @@ import type { RequestResult } from './result'
 import type { RequestFetcher } from './fetcher'
 import type { RequestState } from './state'
 import type { BasicRequest } from '.'
+
+interface MutateOptions<TData, TParams extends unknown[]> {
+  (options: Partial<RequestOptions<TData, TParams> & Recordable<any>>): void
+}
 
 interface MutateState<
   TData,
@@ -28,6 +32,20 @@ interface MutateResult<TData, TParams extends unknown[]> {
  * @example
  * ```ts
  * declare module '@rhao/request' {
+ *   interface RequestCustomBasicContext<TData, TParams extends unknown[] = unknown[]> {
+ *     custom: {} // 自定义基础上下文
+ *   }
+ * }
+ * ```
+ */
+export interface RequestCustomBasicContext<TData, TParams extends unknown[] = unknown[]> {}
+
+/**
+ * "xxx.d.ts" or "xxx.ts"
+ *
+ * @example
+ * ```ts
+ * declare module '@rhao/request' {
  *   interface RequestCustomContext<TData, TParams extends unknown[] = unknown[]> {
  *     custom: {} // 自定义上下文
  *   }
@@ -36,7 +54,8 @@ interface MutateResult<TData, TParams extends unknown[]> {
  */
 export interface RequestCustomContext<TData, TParams extends unknown[] = unknown[]> {}
 
-export interface RequestBasicContext<TData, TParams extends unknown[] = unknown[]> {
+export interface RequestBasicContext<TData, TParams extends unknown[] = unknown[]>
+  extends RequestCustomBasicContext<TData, TParams> {
   /**
    * `request()`
    */
@@ -78,6 +97,11 @@ export interface RequestBasicContext<TData, TParams extends unknown[] = unknown[
   getResult: Getter<RequestResult<TData, TParams>>
 
   /**
+   * 修改 `request()` 配置项，仅支持浅合并
+   */
+  mutateOptions: MutateOptions<TData, TParams>
+
+  /**
    * 修改 `request()` 的状态，执行流时推荐使用 `mutateData` 修改 `data` 属性，避免频繁更新
    */
   mutateState: MutateState<TData, TParams>
@@ -101,8 +125,8 @@ export interface RequestBasicContext<TData, TParams extends unknown[] = unknown[
 }
 
 export interface RequestContext<TData, TParams extends unknown[] = unknown[]>
-  extends RequestCustomContext<TData, TParams>,
-    Omit<RequestBasicContext<TData, TParams>, 'mutateResult' | 'dispose'> {
+  extends Omit<RequestBasicContext<TData, TParams>, 'mutateResult' | 'dispose'>,
+    RequestCustomContext<TData, TParams> {
   /**
    * 修改 `state.data`
    *

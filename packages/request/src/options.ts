@@ -54,6 +54,13 @@ export interface RequestBasicOptions {
   single?: MaybeFn<boolean, [newParams: unknown[], oldParams: unknown[]]>
 
   /**
+   * 强制单例模式，如果设为 `true`，在执行前将取消之前的所有执行，不论其是否成功
+   *
+   * @default false
+   */
+  singleWithForce?: MaybeGetter<boolean>
+
+  /**
    * 数据对比，在执行流时对比数据是否一致，不一致时同步数据且触发 `stateChange`
    * @default
    * ```ts
@@ -151,6 +158,7 @@ export function normalizeBasicOptions(request: BasicRequest, options?: RequestBa
       dataCompare: (d1, d2) => d1 === d2,
       keepPreviousData: false,
       single: false,
+      singleWithForce: false,
       initDataWhenError: true,
       manual: false,
       loadingDelay: 500,

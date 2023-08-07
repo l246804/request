@@ -1,14 +1,14 @@
 /* eslint-disable unused-imports/no-unused-vars */
 import type { RequestMiddleware } from '@rhao/request'
 import { assign, ensureError, sleep, toValue } from '@rhao/request-utils'
-import type { Fn, MaybeFn } from 'types/utils'
+import type { Fn, MaybeFn, MaybeGetter } from 'types/utils'
 
 export interface RequestRetryOptions {
   /**
    * 错误重试次数，如果设置为 `-1`，则无限次重试
    * @default 0
    */
-  count?: number
+  count?: MaybeGetter<number>
   /**
    * - 重试时间间隔,单位：ms
    * - 默认采用简易的指数退避算法
@@ -27,7 +27,7 @@ export function RequestRetry(initialOptions?: RequestRetryOptions) {
   const middleware: RequestMiddleware = {
     priority: 999,
     handler: (ctx, next) => {
-      const { hooks, fetcher, getOptions } = ctx
+      const { hooks, fetcher, getOptions, isCanceled } = ctx
       const options = assign(
         {
           count: 0,
@@ -37,18 +37,22 @@ export function RequestRetry(initialOptions?: RequestRetryOptions) {
         getOptions().retry,
       )
 
-      const countValue = options.count!
+      const countValue = toValue(options.count!)
       if (countValue !== -1 && countValue < 1) return
 
       const callFetcher = async (...args) => {
-        const result = { data: undefined as any, error: undefined }
+        const result = { data: undefined as any, error: undefined as Error | undefined }
+        if (isCanceled()) return result
+
         try {
           const data = await fetcher(...args)
-          getOptions().dataParser(data)
+          await getOptions().dataParser(data)
           result.data = data
-        } catch (error) {
+        } catch (err: unknown) {
+          const error = ensureError(err)
           result.error = error
         }
+
         return result
       }
 
@@ -60,18 +64,24 @@ export function RequestRetry(initialOptions?: RequestRetryOptions) {
 
         // 重试
         // eslint-disable-next-line no-unmodified-loop-condition
-        while ((countValue === -1 || count++ < countValue) && result.error) {
+        while ((countValue === -1 || count++ < countValue) && result.error && !isCanceled()) {
+          hooks.callHook('retry:progress', count)
+          hooks.callHook('error', result.error, ctx)
+
           await sleep(toValue(options.interval, count))
-          hooks.callHookParallel('retry:before', { count })
           result = await callFetcher(...args)
-          hooks.callHookParallel('retry:after', { ...result, count })
         }
 
-        if (result.error) return Promise.reject(ensureError(result.error))
+        if (result.error) {
+          hooks.callHook('retry:fail')
+          return Promise.reject(result.error)
+        }
+
+        hooks.callHook('retry:success')
         return result.data
       }
 
-      next()
+      return next()
     },
   }
 
@@ -84,13 +94,14 @@ declare module '@rhao/request' {
   }
 
   interface RequestCustomHooks<TData, TParams extends unknown[] = unknown[]> {
+    'retry:progress': Fn<[count: number]>
     /**
      * 重试前触发
      */
-    'retry:before': Fn<[result: { count: number }]>
+    'retry:success': Fn<[]>
     /**
      * 重试后触发
      */
-    'retry:after': Fn<[result: { data: any; error?: Error; count: number }]>
+    'retry:fail': Fn<[]>
   }
 }

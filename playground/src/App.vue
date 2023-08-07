@@ -10,7 +10,8 @@ import type {
 import { createRequest } from '@rhao/request/index'
 import {
   RequestDebounce,
-  RequestPolling,
+  RequestRefresh,
+  RequestRetry,
   RequestThrottle,
 } from '@rhao/request-basic-middleware/index'
 
@@ -23,7 +24,12 @@ interface UseRequest extends BasicRequest {
 
 const useRequest = createRequest({
   manual: true,
-  middleware: [RequestDebounce(), RequestThrottle(), RequestPolling({ errorRetryCount: 3 })],
+  middleware: [
+    RequestDebounce(),
+    RequestThrottle(),
+    RequestRetry(),
+    RequestRefresh({ errorRetryCount: 3 }),
+  ],
 }) as UseRequest
 
 function mockApi(v: number) {
@@ -46,8 +52,19 @@ const { getState, run, cancel } = useRequest(mockApi, {
     if (data > 4) throw new Error('The number must be lt "4"!')
     return data
   },
+  refresh: {
+    interval: 2000,
+    whenFocus: true,
+    errorRetryCount: 2,
+  },
+  retry: {
+    interval: 2000,
+  },
   loadingDelay: 1000,
   hooks: {
+    'retry:progress': (count) => {
+      console.log(`----------第 ${count} 次重试----------`)
+    },
     loadingChange: (loading) => {
       console.log('loadingChange', loading)
     },

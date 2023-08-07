@@ -1,14 +1,27 @@
-export function createPendingHelper() {
-  let count = 0
-  const hasPending = () => count === 0
+import type { RequestContext, RequestHooks } from '.'
 
-  const hooks = {
-    before: () => ++count,
-    end: () => --count,
+export function createPendingHelper() {
+  const pendingContexts: RequestContext<any, any[]>[] = []
+  const hasPending = () => pendingContexts.length === 0
+
+  const hooks: Partial<RequestHooks> = {
+    before: (_, ctx) => {
+      if (!pendingContexts.includes(ctx)) pendingContexts.push(ctx)
+    },
+    end: (ctx) => {
+      const index = pendingContexts.indexOf(ctx)
+      index > -1 && pendingContexts.splice(index, 1)
+    },
+  }
+
+  const clearPendingContexts = () => {
+    pendingContexts.length = 0
   }
 
   return {
+    pendingContexts,
     hasPending,
     hooks,
+    clearPendingContexts,
   }
 }

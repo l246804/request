@@ -1,9 +1,21 @@
 /* eslint-disable @typescript-eslint/indent */
 import type { Recordable } from 'types/utils'
+import { isObject } from '.'
 
 export const freeze = Object.freeze
 
 export const assign = Object.assign
+
+export function assignSymbols<T extends object>(o: T, ...sources): T {
+  if (isObject(o)) {
+    for (const source of sources) {
+      // eslint-disable-next-line @typescript-eslint/no-use-before-define
+      const symbols = getOwnSymbols(source || {})
+      for (const syb of symbols) o[syb] = source[syb]
+    }
+  }
+  return o
+}
 
 export const toEntries = Object.entries
 

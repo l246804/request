@@ -1,5 +1,6 @@
 import {
   assign,
+  assignSymbols,
   createSwitch,
   ensureArray,
   ensureError,
@@ -25,6 +26,7 @@ import { createHooks } from './hooks'
 import { normalizeMiddleware } from './middleware'
 import { RequestLoading } from './loading'
 import { RequestError } from './error'
+import { RequestManual } from './manual'
 import { createPendingHelper } from './pending'
 import { createTempData } from './temp-data'
 
@@ -73,11 +75,16 @@ export function createRequest(options?: RequestBasicOptions) {
     } as RequestResult<any, any[]>
 
     // 创建 `pending` 辅助函数
-    const { hasPending, hooks: pendingHooks } = createPendingHelper()
+    const {
+      pendingContexts,
+      hasPending,
+      hooks: pendingHooks,
+      clearPendingContexts,
+    } = createPendingHelper()
 
     // 创建基础的上下文
-    let basicContext: RequestBasicContext<any, any[]> = {
-      request: request as any,
+    let basicContext = {
+      request,
       hooks,
       fetcher,
       executor,
@@ -86,11 +93,15 @@ export function createRequest(options?: RequestBasicOptions) {
       getOptions: () => assign({}, options),
       getState: () => assign({}, state),
       getResult: () => assign({}, result),
+      mutateOptions: (opts) => {
+        assign(options, opts)
+      },
       mutateState: createMutateState(state, () => basicContext),
       mutateResult: (res) => {
         assign(result, res)
       },
       dispose: () => {
+        clearPendingContexts()
         cancel()
         hooks.callHookSync('dispose', basicContext)
         hooks.removeAllHooks()
@@ -101,14 +112,17 @@ export function createRequest(options?: RequestBasicOptions) {
         hooks = null as any
         basicContext = {} as any
       },
-    }
+    } as RequestBasicContext<any, any[]>
 
     // 保存最近一次上下文对象，用于手动调用 `cancel`
     let latestContext: RequestContext<any, any[]> | null = null
 
     // 合并中间件
     const configMiddleware = normalizeMiddleware(
-      [RequestLoading(), RequestError()].concat(request.options.middleware, opts?.middleware || []),
+      [RequestManual(), RequestLoading(), RequestError()].concat(
+        request.options.middleware,
+        opts?.middleware || [],
+      ),
     )
 
     // 合并且注册 `hooks`
@@ -121,8 +135,9 @@ export function createRequest(options?: RequestBasicOptions) {
 
     // 包裹 `fetcher()` 的执行器
     async function executor(...params) {
-      // 验证不通过则什么都不做
       if (!toValue(options.ready, params)) return
+
+      if (toValue(options.singleWithForce)) pendingContexts.forEach((ctx) => ctx?.cancel())
       if (toValue(options.single, params, state.params) && basicContext.hasPending()) return
 
       // 创建可中断的 `promise`，用于取消执行的 `fetcher()`
@@ -139,15 +154,18 @@ export function createRequest(options?: RequestBasicOptions) {
       }
 
       // 创建执行器的上下文
-      let context: RequestContext<any, any[]> = {
-        ...omit(basicContext, ['mutateResult', 'dispose']),
-        mutateData: (data) => {
-          state.data = data
+      let context: RequestContext<any, any[]> = assignSymbols(
+        {
+          ...omit(basicContext, ['mutateResult', 'dispose']),
+          mutateData: (data) => {
+            state.data = data
+          },
+          isLatestExecution: () => !!latestContext && context === latestContext,
+          isCanceled,
+          cancel,
         },
-        isLatestExecution: () => !!latestContext && context === latestContext,
-        isCanceled,
-        cancel,
-      }
+        basicContext,
+      )
       // 设置最近一次上下文
       latestContext = context
 
@@ -227,9 +245,6 @@ export function createRequest(options?: RequestBasicOptions) {
 
     // init middleware
     configMiddleware.forEach((mw) => mw.setup?.(basicContext))
-
-    // automatic execute
-    if (!options.manual) result.run(...(options.defaultParams || []))
 
     return result
   }

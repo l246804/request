@@ -12,7 +12,7 @@ export interface RequestDebounceOptions {
   /**
    * 延迟时最大等待时间
    */
-  maxWait?: number
+  maxWait?: MaybeGetter<number>
   /**
    * 在延迟开始前执行调用
    * @default false
