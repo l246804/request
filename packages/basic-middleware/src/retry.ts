@@ -1,7 +1,7 @@
 /* eslint-disable unused-imports/no-unused-vars */
-import type { RequestMiddleware } from '@rhao/request'
+import type { RequestContext, RequestMiddleware } from '@rhao/request'
 import { assign, ensureError, sleep, toValue } from '@rhao/request-utils'
-import type { Fn, MaybeFn, MaybeGetter } from 'types/utils'
+import type { AwaitableFn, Fn, MaybeFn, MaybeGetter } from 'types/utils'
 
 export interface RequestRetryOptions {
   /**
@@ -9,6 +9,14 @@ export interface RequestRetryOptions {
    * @default 0
    */
   count?: MaybeGetter<number>
+  /**
+   * 是否允许错误重试，在执行 `fetcher()` 后验证，返回 `false` 则回归原执行流，否则开始错误重试
+   * @default
+   * ```ts
+   * () => true
+   * ```
+   */
+  allow?: AwaitableFn<[error: Error, key: string, context: RequestContext<any, any[]>], boolean>
   /**
    * - 重试时间间隔,单位：ms
    * - 默认采用简易的指数退避算法
@@ -31,6 +39,7 @@ export function RequestRetry(initialOptions?: RequestRetryOptions) {
       const options = assign(
         {
           count: 0,
+          allow: () => true,
           interval: (count) => Math.min(30e3, 2e3 ** count),
         } as RequestRetryOptions,
         initialOptions,
@@ -61,6 +70,9 @@ export function RequestRetry(initialOptions?: RequestRetryOptions) {
         // 正常调用
         let result = await callFetcher(...args)
         if (!result.error) return result.data
+
+        const valid = await options.allow!(result.error, ctx.getKey(), ctx)
+        if (!valid) return Promise.reject(result.error)
 
         // 重试
         // eslint-disable-next-line no-unmodified-loop-condition

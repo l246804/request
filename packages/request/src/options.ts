@@ -37,13 +37,13 @@ export interface RequestBasicOptions {
 
   /**
    * `loading` 延迟时间，单位：`ms`，如果值大于 0，则启动延迟，若请求在延迟前结束则不会更新 `loading` 状态
-   * @default 500
+   * @default 300
    */
   loadingDelay?: number
 
   /**
    * 执行时是否保留 `data`，默认不保留
-   * @default false
+   * @default true
    */
   keepPreviousData?: MaybeGetter<boolean>
 
@@ -84,6 +84,13 @@ export interface RequestBasicOptions {
    * `hooks` 配置
    */
   hooks?: NestedHooks<RequestHooks>[]
+
+  /**
+   * 执行 `dispose()` 时是否调用 `cancel()`
+   *
+   * @default true
+   */
+  cancelWhenDispose?: MaybeGetter<boolean>
 
   /**
    * 数据解析器，执行 `fetcher()` 后直接进行数据解析
@@ -156,12 +163,13 @@ export function normalizeBasicOptions(request: BasicRequest, options?: RequestBa
       keyGenerator: () => `__request__${request.counter.next()}`,
       dataParser: (data) => data,
       dataCompare: (d1, d2) => d1 === d2,
-      keepPreviousData: false,
+      cancelWhenDispose: true,
+      keepPreviousData: true,
       single: false,
       singleWithForce: false,
       initDataWhenError: true,
       manual: false,
-      loadingDelay: 500,
+      loadingDelay: 300,
       hooks: [],
       middleware: [],
     } as RequestBasicOptions,

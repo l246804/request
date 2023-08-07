@@ -75,12 +75,7 @@ export function createRequest(options?: RequestBasicOptions) {
     } as RequestResult<any, any[]>
 
     // 创建 `pending` 辅助函数
-    const {
-      pendingContexts,
-      hasPending,
-      hooks: pendingHooks,
-      clearPendingContexts,
-    } = createPendingHelper()
+    const { pendingContexts, hasPending, hooks: pendingHooks } = createPendingHelper()
 
     // 创建基础的上下文
     let basicContext = {
@@ -101,8 +96,8 @@ export function createRequest(options?: RequestBasicOptions) {
         assign(result, res)
       },
       dispose: () => {
-        clearPendingContexts()
-        cancel()
+        toValue(options.cancelWhenDispose) && cancel()
+
         hooks.callHookSync('dispose', basicContext)
         hooks.removeAllHooks()
 
@@ -207,7 +202,7 @@ export function createRequest(options?: RequestBasicOptions) {
 
       try {
         context.mutateState({ params, error: undefined })
-        if (!toValue(options.keepPreviousData)) context.mutateData(options.initData?.())
+        if (!toValue(options.keepPreviousData)) context.mutateState({ data: options.initData?.() })
 
         await hooks.callHook('before', state.params, context)
         if (isCanceled()) return

@@ -12,16 +12,14 @@ export function createPendingHelper() {
       const index = pendingContexts.indexOf(ctx)
       index > -1 && pendingContexts.splice(index, 1)
     },
-  }
-
-  const clearPendingContexts = () => {
-    pendingContexts.length = 0
+    dispose: () => {
+      pendingContexts.length = 0
+    },
   }
 
   return {
     pendingContexts,
     hasPending,
     hooks,
-    clearPendingContexts,
   }
 }

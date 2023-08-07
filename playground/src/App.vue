@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import type { AxiosResponse } from 'axios'
-import { computed, ref } from 'vue'
 import type {
   BasicRequest,
   RequestFetcher,
@@ -14,6 +13,8 @@ import {
   RequestRetry,
   RequestThrottle,
 } from '@rhao/request-basic-middleware/index'
+import { RequestVue } from '@rhao/request-middleware-vue/index'
+import { ref } from 'vue'
 
 interface UseRequest extends BasicRequest {
   <TData, TParams extends unknown[] = unknown[]>(
@@ -29,98 +30,39 @@ const useRequest = createRequest({
     RequestThrottle(),
     RequestRetry(),
     RequestRefresh({ errorRetryCount: 3 }),
+    RequestVue(),
   ],
 }) as UseRequest
 
-function mockApi(v: number) {
-  return new Promise<number>((resolve) => {
+function getUsername(): Promise<string> {
+  return new Promise((resolve) => {
     setTimeout(() => {
-      console.log('---------------mock', v)
-      resolve(v)
-    }, 3000)
+      resolve(`${Date.now()}`)
+    }, 100)
   })
 }
 
-const count = ref(0)
-
-const { getState, run, cancel } = useRequest(mockApi, {
-  // polling: {
-  //   interval: 5000,
-  //   whenHidden: false,
-  // },
-  dataParser: (data) => {
-    if (data > 4) throw new Error('The number must be lt "4"!')
-    return data
+const text = ref('')
+const { data, loading } = useRequest(getUsername, {
+  throttle: {
+    wait: 500,
   },
-  refresh: {
-    interval: 2000,
-    whenFocus: true,
-    errorRetryCount: 2,
-  },
-  retry: {
-    interval: 2000,
-  },
-  loadingDelay: 1000,
-  hooks: {
-    'retry:progress': (count) => {
-      console.log(`----------第 ${count} 次重试----------`)
-    },
-    loadingChange: (loading) => {
-      console.log('loadingChange', loading)
-    },
-    before: (params) => {
-      console.log('before', ...params)
-    },
-    success: (data) => {
-      console.log('success', data)
-    },
-    error: (e) => {
-      console.log('error', e.message)
-    },
-    after: () => {
-      // console.log('after')
-      // console.log('after', Date.now())
-    },
-    cancel: (state) => {
-      console.log('cancel', ...state.params)
-    },
-  },
-  debounce: {
-    // wait: 1000,
-  },
+  refreshDeps: text,
 })
-
-const loading = computed(() => getState().loading)
 </script>
 
 <template>
   <ElContainer style="height: 100vh; overflow: hidden">
     <ElMain>
       <ElCard>
-        <div>
-          <ElButton
-            type="success"
-            @click="run(count++)"
-          >
-            模拟成功请求
-          </ElButton>
-          <ElButton
-            type="danger"
-            @click="run(count--)"
-          >
-            模拟失败请求
-          </ElButton>
-          <ElButton
-            type="primary"
-            @click="cancel"
-          >
-            取消执行
-          </ElButton>
-        </div>
-        <p>
-          {{ loading ? '加载中...' : '' }}
-        </p>
-        <p>state: {{ getState() }}</p>
+        <ElForm :inline="true">
+          <ElFormItem>
+            <ElInput v-model="text" />
+          </ElFormItem>
+        </ElForm>
+
+        <p>{{ loading ? '加载中...' : '' }}</p>
+        <p>读取值：{{ data }}</p>
       </ElCard>
     </ElMain>
   </ElContainer>

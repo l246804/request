@@ -1,3 +1,3 @@
-# @rhao/request-utils
+# @rhao/request-basic-middleware
 
 Basic middleware of request.

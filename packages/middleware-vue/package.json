@@ -1,0 +1,73 @@
+{
+  "name": "@rhao/request-middleware-vue",
+  "type": "module",
+  "version": "0.0.0",
+  "description": "Vue middleware of request.",
+  "author": "RayHao <https://github.com/l246804>",
+  "license": "MIT",
+  "homepage": "https://github.com/l246804/request/tree/dev/packages/middleware-vue",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/l246804/request"
+  },
+  "bugs": {
+    "url": "https://github.com/l246804/request/issues"
+  },
+  "keywords": [
+    "middleware",
+    "request",
+    "vue",
+    "hooks",
+    "state"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "require": "./dist/index.cjs",
+      "import": "./dist/index.mjs"
+    },
+    "./**/*": {
+      "types": "./dist/**/*.d.ts",
+      "require": "./dist/**/*.cjs",
+      "import": "./dist/**/*.mjs"
+    },
+    "./package.json": "./package.json"
+  },
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">=14"
+  },
+  "scripts": {
+    "stub": "unbuild --stub",
+    "build": "unbuild"
+  },
+  "peerDependencies": {
+    "@vue/composition-api": "^1.0.0-rc.1",
+    "vue": "^2.0.0 || >=3.0.0"
+  },
+  "peerDependenciesMeta": {
+    "@vue/composition-api": {
+      "optional": true
+    }
+  },
+  "dependencies": {
+    "@rhao/request": "workspace:*",
+    "@rhao/request-utils": "workspace:*",
+    "@vueuse/core": "^10.3.0",
+    "vue-demi": "latest"
+  },
+  "devDependencies": {
+    "types": "workspace:*",
+    "unbuild": "^1.2.1",
+    "vue": "^3.3.4"
+  }
+}

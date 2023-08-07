@@ -12,7 +12,7 @@ import type { Fn, Getter, MaybeGetter } from 'types/utils'
 export interface RequestRefreshOptions {
   /**
    * 窗口聚焦时自动刷新请求
-   * @default true
+   * @default false
    */
   whenFocus?: MaybeGetter<boolean>
   /**
@@ -22,7 +22,7 @@ export interface RequestRefreshOptions {
   whenHidden?: MaybeGetter<boolean>
   /**
    * 浏览器恢复网络连接时自动刷新请求（通过 `navigator.onLine`）
-   * @default true
+   * @default false
    */
   whenReconnect?: MaybeGetter<boolean>
   /**
@@ -111,9 +111,9 @@ export function RequestRefresh(initialOptions?: Omit<RequestRefreshOptions, 'int
       // 合并配置项
       const options = assign(
         {
-          whenFocus: true,
+          whenFocus: false,
           whenHidden: false,
-          whenReconnect: true,
+          whenReconnect: false,
           whenOffline: false,
           errorRetryCount: -1,
         } as RequestRefreshOptions,

@@ -13,6 +13,7 @@ export default defineConfig({
       '@rhao/request': resolve(__dirname, '../packages/request/src'),
       '@rhao/request-utils': resolve(__dirname, '../packages/utils/src'),
       '@rhao/request-basic-middleware': resolve(__dirname, '../packages/basic-middleware/src'),
+      '@rhao/request-middleware-vue': resolve(__dirname, '../packages/middleware-vue/src'),
     },
   },
   plugins: [vue()],

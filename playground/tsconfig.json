@@ -23,7 +23,8 @@
     "paths": {
       "@rhao/request/*": ["../packages/request/src/*"],
       "@rhao/request-utils/*": ["../packages/utils/src/*"],
-      "@rhao/request-basic-middleware/*": ["../packages/basic-middleware/src/*"]
+      "@rhao/request-basic-middleware/*": ["../packages/basic-middleware/src/*"],
+      "@rhao/request-middleware-vue/*": ["../packages/middleware-vue/src/*"]
     }
   },
   "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.tsx", "src/**/*.vue"],
