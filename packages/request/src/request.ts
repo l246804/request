@@ -192,9 +192,9 @@ export function createRequest(options?: RequestBasicOptions) {
       }
 
       // 释放资源
-      const end = async () => {
+      const finallyHandler = async () => {
         await disposeTempData()
-        hooks.callHookSync('end', context)
+        await hooks.callHookParallel('finally', context)
 
         if (context.isLatestExecution()) latestContext = null
         context = null as any
@@ -214,7 +214,7 @@ export function createRequest(options?: RequestBasicOptions) {
       } catch (err: unknown) {
         await errorHandler(err)
       } finally {
-        isCanceled() && end()
+        isCanceled() && (await finallyHandler())
       }
 
       try {
@@ -222,7 +222,7 @@ export function createRequest(options?: RequestBasicOptions) {
       } catch (err: unknown) {
         await errorHandler(err)
       } finally {
-        end()
+        await finallyHandler()
       }
     }
 

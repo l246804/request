@@ -8,7 +8,7 @@ export function createPendingHelper() {
     before: (_, ctx) => {
       if (!pendingContexts.includes(ctx)) pendingContexts.push(ctx)
     },
-    end: (ctx) => {
+    finally: (ctx) => {
       const index = pendingContexts.indexOf(ctx)
       index > -1 && pendingContexts.splice(index, 1)
     },

@@ -130,7 +130,7 @@ export interface RequestContext<TData, TParams extends unknown[] = unknown[]>
   /**
    * 修改 `state.data`
    *
-   * ***注意：不会直接触发 `stateChange`，在 `hook:end` 时会通过 `dataCompare` 对比前后数据，不一致时触发 `stateChange`，避免频繁更新***
+   * ***注意：不会直接触发 `stateChange`，在 `hook:finally` 时会通过 `dataCompare` 对比前后数据，不一致时触发 `stateChange`，避免频繁更新***
    */
   mutateData: AwaitableFn<[data: TData]>
 

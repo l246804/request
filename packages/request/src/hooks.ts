@@ -46,16 +46,14 @@ export interface RequestHooks<TData = any, TParams extends unknown[] = unknown[]
   error: AwaitableFn<[error: Error, context: RequestContext<TData, TParams>]>
 
   /**
-   * 执行 `fetcher()` 后触发，同 `Promise.finally`
-   *
-   * ***注意：取消执行时不触发***
+   * 执行 `fetcher()` 后成功或失败后触发，取消执行时不触发
    */
   after: AwaitableFn<[state: RequestState<TData, TParams>, context: RequestContext<TData, TParams>]>
 
   /**
-   * 执行 `executor()` 结束时触发，区别于 `after`，每执行一次均触发该事件，用于释放资源
+   * 执行 `executor()` 结束时触发，同 `Promise.finally`，每次执行均会触发该事件，用于释放资源
    */
-  end: Fn<[context: RequestContext<TData, TParams>]>
+  finally: Fn<[context: RequestContext<TData, TParams>]>
 
   /**
    * 主动调用 `dispose()` 时触发，用于释放资源

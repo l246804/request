@@ -16,7 +16,7 @@ export function RequestLoading() {
           getOptions().loadingDelay > 0 ? timer.resume() : timer.flush()
       })
 
-      hooks.hook('end', (ctx) => {
+      hooks.hook('finally', (ctx) => {
         if (ctx.isLatestExecution()) {
           timer.pause()
           close()

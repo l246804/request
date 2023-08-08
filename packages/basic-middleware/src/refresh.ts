@@ -1,5 +1,5 @@
 /* eslint-disable unused-imports/no-unused-vars */
-import type { RequestMiddleware } from '@rhao/request'
+import { MiddlewareHelper, type MiddlewareStoreKey, type RequestMiddleware } from '@rhao/request'
 import {
   assign,
   getVisibilityKeys,
@@ -45,10 +45,7 @@ export interface RequestRefreshOptions {
   errorRetryCount?: MaybeGetter<number>
 }
 
-// 自身的上下文属性
-export const ID = Symbol('context')
-
-export interface GlobalStore {
+interface RefreshStore {
   initialed: boolean
   focusHandlers: Set<Fn>
   reconnectHandlers: Set<Fn>
@@ -56,18 +53,25 @@ export interface GlobalStore {
   dispose: Fn<[]>
 }
 
-// 初始化
-function init(request) {
-  if (!request || request[ID]?.initialed) return
+const storeKey: MiddlewareStoreKey<RefreshStore> = Symbol('refresh')
+const {
+  setCtx: setStoreCtx,
+  init: initStore,
+  get: getStore,
+} = MiddlewareHelper.createStore(storeKey)
 
-  const store: GlobalStore = {
+// 初始化
+function init() {
+  if (getStore()?.initialed) return
+
+  const store = initStore({
     initialed: true,
     focusHandlers: new Set<Fn>(),
     reconnectHandlers: new Set<Fn>(),
     visibilityHandlers: new Set<Fn<[hidden: boolean]>>(),
     dispose: () => {},
-  }
-  request[ID] = store
+  })
+  RequestRefresh.dispose = store.dispose
 
   const focusCallback = () => {
     store.focusHandlers.forEach((fn) => fn())
@@ -96,17 +100,15 @@ function init(request) {
   }
 }
 
-export function getStore(request): GlobalStore | null {
-  const store = request?.[ID]
-  return store ? assign({}, store) : null
-}
+RequestRefresh.dispose = () => {}
 
 export function RequestRefresh(initialOptions?: Omit<RequestRefreshOptions, 'interval'>) {
   const middleware: RequestMiddleware = {
     priority: -999,
     setup: (ctx) => {
-      init(ctx.request)
-      const store = getStore(ctx.request)!
+      setStoreCtx(ctx)
+      init()
+      const store = getStore()!
 
       // 合并配置项
       const options = assign(
