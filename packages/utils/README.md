@@ -1,3 +1,3 @@
-# @rhao/request-utils
+# `@rhao/request-utils`
 
-Utils of request.
+> `@rhao/request` 工具包。

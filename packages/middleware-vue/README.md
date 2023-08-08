@@ -1,6 +1,6 @@
-# @rhao/request-middleware-vue
+# `@rhao/request-middleware-vue`
 
-Vue middleware of request.
+> 适配 `Vue` 的 `@rhao/request` 中间件。
 
 ## 安装
 

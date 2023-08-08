@@ -29,12 +29,7 @@
       "require": "./dist/index.cjs",
       "import": "./dist/index.mjs"
     },
-    "./**/*": {
-      "types": "./dist/**/*.d.ts",
-      "require": "./dist/**/*.cjs",
-      "import": "./dist/**/*.mjs"
-    },
-    "./package.json": "./package.json"
+    "./*": "./*"
   },
   "main": "./dist/index.cjs",
   "module": "./dist/index.mjs",

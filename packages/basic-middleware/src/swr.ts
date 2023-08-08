@@ -5,14 +5,14 @@ import {
   type RequestBasicContext,
   type RequestMiddleware,
 } from '@rhao/request'
-import { pauseablePromise, toValue } from '@rhao/request-utils'
+import { assign, pauseablePromise, toValue } from '@rhao/request-utils'
 import type { Fn, MaybeGetter } from 'types/utils'
 
 export interface RequestSWROptions {
   staleTime?: MaybeGetter<number>
 }
 
-interface SWRStore {
+interface SWRGlobalStore {
   initialed: boolean
   cached: Map<
     string,
@@ -25,30 +25,38 @@ interface SWRStore {
   >
 }
 
-const storeKey: MiddlewareStoreKey<SWRStore> = Symbol('swr')
-const {
-  setCtx: setStoreCtx,
-  init: initStore,
-  get: getStore,
-} = MiddlewareHelper.createStore(storeKey)
+interface SWRStore {
+  options: RequestSWROptions
+}
+
+const globalStoreKey: MiddlewareStoreKey<SWRGlobalStore> = Symbol('swr')
+const { init: initGlobalStore, get: getGlobalStore } =
+  MiddlewareHelper.createGlobalStore(globalStoreKey)
 
 function init() {
-  if (getStore()?.initialed) return getStore()!
-  return initStore({
+  if (getGlobalStore()?.initialed) return
+
+  initGlobalStore({
     initialed: true,
     cached: new Map(),
   })
 }
 
-export function RequestSWR() {
+const storeKey: MiddlewareStoreKey<SWRStore> = Symbol('swr')
+
+export function RequestSWR(options?: RequestSWROptions) {
+  init()
+
   const middleware: RequestMiddleware = {
     priority: 1000,
     setup: (ctx) => {
-      setStoreCtx(ctx)
-
-      const { cached } = init()
-      const { hooks, getKey, mutateState } = ctx
+      const { cached } = getGlobalStore()!
+      const { hooks, getKey, getOptions, mutateState } = ctx
       const key = getKey()
+
+      MiddlewareHelper.initStore(storeKey, ctx, {
+        options: assign({} as RequestSWROptions, options, getOptions().swr),
+      })
 
       if (!cached.has(key)) {
         cached.set(key, {
@@ -76,14 +84,16 @@ export function RequestSWR() {
       })
     },
     handler: async (ctx, next) => {
-      const { cached } = getStore()!
+      const { cached } = getGlobalStore()!
       const currentCached = cached.get(ctx.getKey())!
 
       if (currentCached.promise != null) return currentCached.promise
 
+      const options = MiddlewareHelper.getStore(storeKey, ctx)!.options
+
       const now = Date.now()
       const lastUpdateTime = currentCached.lastUpdateTime || now
-      const staleTime = toValue(ctx.getOptions().swr?.staleTime || 0)
+      const staleTime = toValue(options.staleTime!)
       if (now - lastUpdateTime < staleTime) return ctx.mutateData(currentCached.data)
 
       const { promise, resolve } = pauseablePromise()

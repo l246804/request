@@ -106,6 +106,9 @@ declare module '@rhao/request' {
   }
 
   interface RequestCustomHooks<TData, TParams extends unknown[] = unknown[]> {
+    /**
+     * 重试进行中
+     */
     'retry:progress': Fn<[count: number]>
     /**
      * 重试前触发

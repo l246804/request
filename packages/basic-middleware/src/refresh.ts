@@ -54,17 +54,13 @@ interface RefreshStore {
 }
 
 const storeKey: MiddlewareStoreKey<RefreshStore> = Symbol('refresh')
-const {
-  setCtx: setStoreCtx,
-  init: initStore,
-  get: getStore,
-} = MiddlewareHelper.createStore(storeKey)
+const { init: initGlobalStore, get: getGlobalStore } = MiddlewareHelper.createGlobalStore(storeKey)
 
 // 初始化
 function init() {
-  if (getStore()?.initialed) return
+  if (getGlobalStore()?.initialed) return
 
-  const store = initStore({
+  const store = initGlobalStore({
     initialed: true,
     focusHandlers: new Set<Fn>(),
     reconnectHandlers: new Set<Fn>(),
@@ -103,12 +99,12 @@ function init() {
 RequestRefresh.dispose = () => {}
 
 export function RequestRefresh(initialOptions?: Omit<RequestRefreshOptions, 'interval'>) {
+  init()
+
   const middleware: RequestMiddleware = {
     priority: -999,
     setup: (ctx) => {
-      setStoreCtx(ctx)
-      init()
-      const store = getStore()!
+      const store = getGlobalStore()!
 
       // 合并配置项
       const options = assign(
