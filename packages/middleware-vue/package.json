@@ -43,8 +43,7 @@
   },
   "scripts": {
     "stub": "unbuild --stub",
-    "build": "unbuild",
-    "release": "release-it"
+    "build": "unbuild"
   },
   "peerDependencies": {
     "@vue/composition-api": "^1.0.0-rc.1",

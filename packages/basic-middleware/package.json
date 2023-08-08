@@ -67,8 +67,7 @@
   },
   "scripts": {
     "stub": "unbuild --stub",
-    "build": "unbuild",
-    "release": "release-it"
+    "build": "unbuild"
   },
   "dependencies": {
     "@rhao/request": "workspace:*",
