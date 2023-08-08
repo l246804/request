@@ -39,10 +39,14 @@
   },
   "scripts": {
     "stub": "unbuild --stub",
-    "build": "unbuild"
+    "build": "unbuild",
+    "release": "release-it"
   },
   "devDependencies": {
     "types": "workspace:*",
     "unbuild": "^1.2.1"
+  },
+  "release-it": {
+    "git": false
   }
 }

@@ -48,7 +48,8 @@
   },
   "scripts": {
     "stub": "unbuild --stub",
-    "build": "unbuild"
+    "build": "unbuild",
+    "release": "release-it"
   },
   "dependencies": {
     "@rhao/request-utils": "workspace:*",
@@ -57,5 +58,8 @@
   "devDependencies": {
     "types": "workspace:*",
     "unbuild": "^1.2.1"
+  },
+  "release-it": {
+    "git": false
   }
 }

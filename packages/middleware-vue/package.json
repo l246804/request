@@ -43,7 +43,8 @@
   },
   "scripts": {
     "stub": "unbuild --stub",
-    "build": "unbuild"
+    "build": "unbuild",
+    "release": "release-it"
   },
   "peerDependencies": {
     "@vue/composition-api": "^1.0.0-rc.1",
@@ -64,5 +65,19 @@
     "types": "workspace:*",
     "unbuild": "^1.2.1",
     "vue": "^3.3.4"
+  },
+  "release-it": {
+    "git": false,
+    "plugins": {
+      "@release-it/bumper": {
+        "out": {
+          "file": "package.json",
+          "path": [
+            "dependencies.@rhao/request",
+            "dependencies.@rhao/request-utils"
+          ]
+        }
+      }
+    }
   }
 }

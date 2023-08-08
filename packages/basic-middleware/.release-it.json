@@ -1,17 +1,8 @@
 {
-  "git": {
-    "tagName": "v${version}",
-    "commitMessage": "release: v${version}"
-  },
-  "npm": {
-    "publish": false
-  },
-  "github": {
-    "release": false
-  },
+  "git": false,
   "hooks": {
     "before:init": ["pnpm build"],
-    "after:bump": "echo Successfully released ${name} v${version} to ${repo.repository}."
+    "after:bump": "echo Successfully released ${name} v${version}."
   },
   "plugins": {
     "@release-it/conventional-changelog": {
@@ -51,7 +42,7 @@
     "@release-it/bumper": {
       "out": {
         "file": "package.json",
-        "path": ["dependencies.package-a", "devDependencies.package-b"]
+        "path": ["dependencies.@rhao/request", "dependencies.@rhao/request-utils"]
       }
     }
   }
