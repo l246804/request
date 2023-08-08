@@ -5,6 +5,7 @@
     "@rhao/request-basic-middleware": "0.0.0",
     "@rhao/request-middleware-vue": "0.0.0",
     "@rhao/request": "0.0.0",
+    "types": "0.0.0",
     "@rhao/request-utils": "0.0.0"
   },
   "changesets": []
