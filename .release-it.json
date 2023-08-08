@@ -10,7 +10,7 @@
     "release": false
   },
   "hooks": {
-    "before:init": [],
+    "before:init": ["pnpm build"],
     "after:bump": "echo Successfully released ${name} v${version} to ${repo.repository}."
   },
   // https://github.com/release-it/release-it/blob/main/docs/plugins.md
