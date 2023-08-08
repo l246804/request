@@ -137,6 +137,7 @@ export function createRequest(options?: RequestBasicOptions) {
 
       // 创建可中断的 `promise`，用于取消执行的 `fetcher()`
       const { promise, resolve } = pauseablePromise()
+      const promiseResult = Symbol('promiseResult')
 
       // 创建取消开关
       const { read: isCanceled, toggle } = createSwitch()
@@ -145,7 +146,7 @@ export function createRequest(options?: RequestBasicOptions) {
         toggle(true)
         // eslint-disable-next-line @typescript-eslint/no-use-before-define
         !silent && hooks.callHook('cancel', context.getState(), context)
-        resolve(undefined)
+        resolve(promiseResult)
       }
 
       // 创建执行器的上下文
@@ -181,6 +182,7 @@ export function createRequest(options?: RequestBasicOptions) {
       const applyMiddleware = compose(middleware)
       async function next() {
         const data = await Promise.race([promise, context.fetcher(...state.params)])
+        if (data === promiseResult) hooks.callHookParallel('discarded', context)
         if (isCanceled()) return
         context.mutateData(await options.dataParser(data))
       }

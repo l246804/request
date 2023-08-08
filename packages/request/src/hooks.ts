@@ -61,11 +61,16 @@ export interface RequestHooks<TData = any, TParams extends unknown[] = unknown[]
   dispose: Fn<[context: RequestBasicContext<TData, TParams>]>
 
   /**
-   * 执行 `executor()` 取消时触发
+   * 执行 `cancel()` 时触发
    */
   cancel: AwaitableFn<
     [state: RequestState<TData, TParams>, context: RequestContext<TData, TParams>]
   >
+
+  /**
+   * 执行 `cancel()` 时由于竞态条件而被取消请求时触发
+   */
+  discarded: AwaitableFn<[context: RequestContext<TData, TParams>]>
 
   /**
    * 请求状态变更时触发，多次并发调用仅在初次和最近执行结束后触发
