@@ -79,19 +79,5 @@
   "devDependencies": {
     "types": "workspace:*",
     "unbuild": "^1.2.1"
-  },
-  "release-it": {
-    "git": false,
-    "plugins": {
-      "@release-it/bumper": {
-        "out": {
-          "file": "package.json",
-          "path": [
-            "dependencies.@rhao/request",
-            "dependencies.@rhao/request-utils"
-          ]
-        }
-      }
-    }
   }
 }

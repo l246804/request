@@ -38,6 +38,12 @@
           }
         ]
       }
+    },
+    "@release-it/bumper": {
+      "out": {
+        "file": "package.json",
+        "path": ["dependencies.@rhao/request-utils"]
+      }
     }
   }
 }
