@@ -74,13 +74,16 @@
     "stub": "unbuild --stub",
     "build": "unbuild"
   },
+  "peerDependencies": {
+    "@rhao/request": ">=1.0.0"
+  },
   "dependencies": {
-    "@rhao/request": "workspace:*",
     "@rhao/request-utils": "workspace:*",
     "@types/lodash-es": "^4.17.8",
     "lodash-es": "^4.17.21"
   },
   "devDependencies": {
+    "@rhao/request": "workspace:*",
     "types": "workspace:*",
     "unbuild": "^1.2.1"
   }

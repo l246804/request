@@ -46,6 +46,7 @@
     "build": "unbuild"
   },
   "peerDependencies": {
+    "@rhao/request": ">=1.0.0",
     "@vue/composition-api": "^1.0.0-rc.1",
     "vue": "^2.0.0 || >=3.0.0"
   },
@@ -55,12 +56,12 @@
     }
   },
   "dependencies": {
-    "@rhao/request": "workspace:*",
     "@rhao/request-utils": "workspace:*",
     "@vueuse/core": "^10.3.0",
     "vue-demi": "latest"
   },
   "devDependencies": {
+    "@rhao/request": "workspace:*",
     "types": "workspace:*",
     "unbuild": "^1.2.1",
     "vue": "^3.3.4"
