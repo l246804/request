@@ -140,14 +140,17 @@ export function createRequest(options?: RequestBasicOptions) {
       const promiseResult = Symbol('promiseResult')
 
       // 创建取消开关
-      const { read: isCanceled, toggle } = createSwitch()
+      const { read: isCanceled, toggle: toggleCanceled } = createSwitch()
       const cancel = (silent = false) => {
         if (isCanceled()) return
-        toggle(true)
+        toggleCanceled(true)
         // eslint-disable-next-line @typescript-eslint/no-use-before-define
         !silent && hooks.callHook('cancel', context.getState(), context)
         resolve(promiseResult)
       }
+
+      // 创建失败开关
+      const { read: isFailed, toggle: toggleFailed } = createSwitch()
 
       // 创建执行器的上下文
       let context: RequestContext<any, any[]> = assignSymbols(
@@ -157,6 +160,7 @@ export function createRequest(options?: RequestBasicOptions) {
             state.data = data
           },
           isLatestExecution: () => !!latestContext && context === latestContext,
+          isFailed,
           isCanceled,
           cancel,
         },
@@ -189,6 +193,7 @@ export function createRequest(options?: RequestBasicOptions) {
 
       // 错误处理
       const errorHandler = async (err: unknown) => {
+        toggleFailed(true)
         const error = ensureError(err)
         await hooks.callHook('error', error, context)
       }

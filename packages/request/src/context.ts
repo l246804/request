@@ -140,6 +140,11 @@ export interface RequestContext<TData, TParams extends unknown[] = unknown[]>
   isLatestExecution: Getter<boolean>
 
   /**
+   * 是否执行失败
+   */
+  isFailed: Getter<boolean>
+
+  /**
    * 是否已取消执行
    */
   isCanceled: Getter<boolean>
