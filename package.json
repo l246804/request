@@ -11,7 +11,7 @@
     "cs": "changeset",
     "cs:version": "changeset version",
     "cs:publish": "changeset publish",
-    "release": "run-s build cs cs:version cs:publish"
+    "release": "run-s build cs:version cs:publish"
   },
   "devDependencies": {
     "@antfu/eslint-config": "^0.39.7",
