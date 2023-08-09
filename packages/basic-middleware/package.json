@@ -44,6 +44,11 @@
       "require": "./dist/refresh.cjs",
       "import": "./dist/refresh.mjs"
     },
+    "./refresh-token": {
+      "types": "./dist/refresh-token.d.ts",
+      "require": "./dist/refresh-token.cjs",
+      "import": "./dist/refresh-token.mjs"
+    },
     "./retry": {
       "types": "./dist/retry.d.ts",
       "require": "./dist/retry.cjs",

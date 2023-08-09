@@ -25,7 +25,7 @@ export interface RequestRetryOptions {
    *   + 以以此类推，如果大于 30s，则取 30s
    * @default
    * ```ts
-   * 1000 * 2 ** retryCount
+   * 2 ** retryCount * 1e3
    * ```
    */
   interval?: MaybeFn<number, [count: number]>
@@ -33,21 +33,21 @@ export interface RequestRetryOptions {
 
 export function RequestRetry(initialOptions?: RequestRetryOptions) {
   const middleware: RequestMiddleware = {
-    priority: 999,
+    priority: 900,
     handler: (ctx, next) => {
       const { hooks, fetcher, getOptions, isCanceled } = ctx
       const options = assign(
         {
           count: 0,
           allow: () => true,
-          interval: (count) => Math.min(30e3, 2e3 ** count),
+          interval: (count) => Math.min(30e3, 2 ** count * 1e3),
         } as RequestRetryOptions,
         initialOptions,
         getOptions().retry,
       )
 
       const countValue = toValue(options.count!)
-      if (countValue !== -1 && countValue < 1) return
+      if (countValue !== -1 && countValue < 1) return next()
 
       const callFetcher = async (...args) => {
         const result = { data: undefined as any, error: undefined as Error | undefined }

@@ -5,6 +5,7 @@ import {
   getVisibilityKeys,
   listenVisibilityChange,
   pauseableTimer,
+  pick,
   toValue,
 } from '@rhao/request-utils'
 import type { Fn, Getter, MaybeGetter } from 'types/utils'
@@ -38,14 +39,14 @@ export interface RequestRefreshOptions {
   /**
    * 轮询错误重试次数。如果设置为 -1，则无限次
    *
-   * ***注意：依赖于 `RequestRetry` 中间件，优先级高于 `retry.count`***
+   * ***注意：依赖于 `RequestRetry` 中间件，开启轮询时会默认设置 `retry.count`，优先级低于手动设置***
    *
    * @default -1
    */
   errorRetryCount?: MaybeGetter<number>
 }
 
-interface RefreshStore {
+interface RefreshGlobalStore {
   initialed: boolean
   focusHandlers: Set<Fn>
   reconnectHandlers: Set<Fn>
@@ -53,7 +54,7 @@ interface RefreshStore {
   dispose: Fn<[]>
 }
 
-const storeKey: MiddlewareStoreKey<RefreshStore> = Symbol('refresh')
+const storeKey: MiddlewareStoreKey<RefreshGlobalStore> = Symbol('refresh')
 const { init: initGlobalStore, get: getGlobalStore } = MiddlewareHelper.createGlobalStore(storeKey)
 
 // 初始化
@@ -98,7 +99,7 @@ function init() {
 
 RequestRefresh.dispose = () => {}
 
-export function RequestRefresh(initialOptions?: Omit<RequestRefreshOptions, 'interval'>) {
+export function RequestRefresh(initialOptions?: Pick<RequestRefreshOptions, 'errorRetryCount'>) {
   init()
 
   const middleware: RequestMiddleware = {
@@ -113,10 +114,10 @@ export function RequestRefresh(initialOptions?: Omit<RequestRefreshOptions, 'int
           whenHidden: false,
           whenReconnect: false,
           whenOffline: false,
+          interval: 0,
           errorRetryCount: -1,
         } as RequestRefreshOptions,
-        initialOptions,
-        { interval: 0 },
+        pick(initialOptions || {}, ['errorRetryCount']),
         ctx.getOptions().refresh,
       ) as RequestRefreshOptions
 
@@ -206,13 +207,13 @@ export function RequestRefresh(initialOptions?: Omit<RequestRefreshOptions, 'int
         removeListen()
       })
 
-      // 覆盖 `retry.count`
-      ctx.mutateOptions({
-        retry: {
+      ctx.hooks.hook('before', () => {
+        if (isDisabled()) return
+
+        ctx.mutateOptions({
           // @ts-expect-error
-          ...(ctx.getOptions().retry || {}),
-          count: options.errorRetryCount,
-        },
+          retry: assign({ count: options.errorRetryCount }, ctx.getOptions().retry),
+        })
       })
     },
   }

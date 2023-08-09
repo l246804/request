@@ -10,23 +10,15 @@ pnpm i @rhao/request-basic-middleware
 
 ## 使用
 
-### 全部安装
+### 安装
 
 ```ts
 import { createRequest } from '@rhao/request'
-import { createMiddleware } from '@rhao/request-basic-middleware'
 
-export const useRequest = createRequest({
-  middleware: createMiddleware({
-    // 初始化配置项
-  })
-})
-```
+// 不推荐：将扩展所有中间件自定义配置项
+import { RequestDebounce } from '@rhao/request-basic-middleware'
 
-### 单个安装
-
-```ts
-import { createRequest } from '@rhao/request'
+// 推荐：仅扩展相关中间件自定义配置项
 import { RequestDebounce } from '@rhao/request-basic-middleware/debounce'
 
 export const useRequest = createRequest({
