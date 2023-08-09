@@ -9,6 +9,9 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@rhao/request": "workspace:^",
+    "@rhao/request-basic-middleware": "workspace:^",
+    "@rhao/request-middleware-vue": "workspace:^",
     "axios": "^1.4.0",
     "element-plus": "^2.3.8",
     "lodash-es": "^4.17.21",
