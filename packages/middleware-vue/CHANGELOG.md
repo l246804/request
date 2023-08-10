@@ -1,5 +1,15 @@
 # @rhao/request-middleware-vue
 
+## 1.0.1
+
+### Patch Changes
+
+- aa84584: chore: 更新依赖包
+- Updated dependencies [aa84584]
+- Updated dependencies [aa84584]
+  - @rhao/request@1.0.1
+  - @rhao/request-utils@1.0.1
+
 ## 1.0.0
 
 ### Major Changes

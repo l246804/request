@@ -1,5 +1,11 @@
 # @rhao/request-utils
 
+## 1.0.1
+
+### Patch Changes
+
+- aa84584: chore: 更新依赖包
+
 ## 1.0.0
 
 ### Major Changes

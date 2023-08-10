@@ -1,7 +1,7 @@
 {
   "name": "@rhao/request-basic-middleware",
   "type": "module",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Basic middleware of request.",
   "author": "RayHao <https://github.com/l246804>",
   "license": "MIT",
@@ -75,7 +75,7 @@
     "build": "unbuild"
   },
   "peerDependencies": {
-    "@rhao/request": ">=1.0.0"
+    "@rhao/request": ">=1.0.1"
   },
   "dependencies": {
     "@rhao/request-utils": "workspace:*",
