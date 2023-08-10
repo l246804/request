@@ -4,7 +4,12 @@ import vue from '@vitejs/plugin-vue'
 // https://vitejs.dev/config/
 export default defineConfig({
   optimizeDeps: {
-    include: ['@rhao/request', '@rhao/request-basic-middleware', '@rhao/request-middleware-vue'],
+    include: [
+      '@rhao/request',
+      '@rhao/request-middleware-vue',
+      '@rhao/request-middleware-axios',
+      '@rhao/request-basic-middleware',
+    ],
   },
   build: {
     minify: false,

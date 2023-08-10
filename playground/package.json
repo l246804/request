@@ -1,6 +1,7 @@
 {
   "name": "playground",
   "type": "module",
+  "version": null,
   "private": true,
   "scripts": {
     "dev": "vite --force",
@@ -10,6 +11,7 @@
   "dependencies": {
     "@rhao/request": "workspace:^",
     "@rhao/request-basic-middleware": "workspace:^",
+    "@rhao/request-middleware-axios": "workspace:^",
     "@rhao/request-middleware-vue": "workspace:^",
     "axios": "^1.4.0",
     "element-plus": "^2.3.8",
@@ -24,6 +26,5 @@
     "typescript": "^5.0.2",
     "vite": "^4.4.0",
     "vue-tsc": "^1.8.3"
-  },
-  "version": null
+  }
 }

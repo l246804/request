@@ -1,8 +1,8 @@
 /* eslint-disable unused-imports/no-unused-vars */
 import type { RequestMiddleware } from '@rhao/request'
 import { assign, isUndef, mapValues, pick, toValue } from '@rhao/request-utils'
-import { throttle } from 'lodash-es'
-import type { MaybeGetter } from 'types/utils'
+import { throttle } from 'lodash-unified'
+import type { MaybeGetter } from '@rhao/request-types'
 
 export interface RequestThrottleOptions {
   /**

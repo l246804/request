@@ -55,7 +55,7 @@
     "hookable": "^5.5.3"
   },
   "devDependencies": {
-    "types": "workspace:*",
+    "@rhao/request-types": "workspace:*",
     "unbuild": "^1.2.1"
   }
 }

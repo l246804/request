@@ -1,4 +1,4 @@
-import type { Fn } from 'types/utils'
+import type { Fn } from '@rhao/request-types'
 
 export function getVisibilityKeys() {
   let hidden: string, visibilityChange: string

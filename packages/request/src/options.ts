@@ -1,7 +1,7 @@
 /* eslint-disable unused-imports/no-unused-vars */
 /* eslint-disable @typescript-eslint/indent */
 import type { NestedHooks } from 'hookable'
-import type { AwaitableFn, Getter, MaybeArray, MaybeFn, MaybeGetter } from 'types/utils'
+import type { AwaitableFn, Getter, MaybeArray, MaybeFn, MaybeGetter } from '@rhao/request-types'
 import { assign } from '@rhao/request-utils'
 import type { RequestHooks } from './hooks'
 import type { RequestMiddleware } from './middleware'

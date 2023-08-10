@@ -14,7 +14,9 @@ npm i vue @rhao/request @rhao/request-middleware-vue
 pnpm add vue @rhao/request @rhao/request-middleware-vue
 ```
 
-创建 `useRequest.ts`
+## 使用
+
+创建 `useRequest.ts`。
 ```ts
 // hooks/useRequest.ts
 import { RequestVue } from '@rhao/request-middleware-vue'
@@ -22,11 +24,10 @@ import { RequestVue } from '@rhao/request-middleware-vue'
 export const useRequest = createRequest({ middleware: [RequestVue()] })
 ```
 
-## 使用
-
+单文件组件中使用。
 ```html
 <script setup lang='ts'>
-import { useRequest } from '@/hooks/useRequest'
+import { useRequest } from 'hooks/useRequest'
 
 // data: ref([])
 // loading: ref(false)

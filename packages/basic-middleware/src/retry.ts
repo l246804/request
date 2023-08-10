@@ -1,7 +1,7 @@
 /* eslint-disable unused-imports/no-unused-vars */
 import type { RequestContext, RequestMiddleware } from '@rhao/request'
 import { assign, ensureError, sleep, toValue } from '@rhao/request-utils'
-import type { AwaitableFn, Fn, MaybeFn, MaybeGetter } from 'types/utils'
+import type { AwaitableFn, Fn, MaybeFn, MaybeGetter } from '@rhao/request-types'
 
 export interface RequestRetryOptions {
   /**

@@ -6,7 +6,6 @@ import ShareDemo from './ShareDemo.vue'
   <ElContainer style="height: 100vh; overflow: hidden">
     <ElMain>
       <ShareDemo title="请求A" />
-      <ShareDemo title="请求B" />
     </ElMain>
   </ElContainer>
 </template>

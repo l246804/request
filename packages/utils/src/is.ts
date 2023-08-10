@@ -1,4 +1,4 @@
-import type { Fn, Nullish } from 'types/utils'
+import type { Fn, Nullish } from '@rhao/request-types'
 
 export const typeOf = (value) => Object.prototype.toString.call(value).slice(8, -1)
 

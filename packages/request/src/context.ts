@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/indent */
 /* eslint-disable unused-imports/no-unused-vars */
-import type { AwaitableFn, Fn, Getter, PromiseFn, Recordable } from 'types/utils'
+import type { AwaitableFn, Fn, Getter, PromiseFn, Recordable } from '@rhao/request-types'
 import { assign, isString, keysOf } from '@rhao/request-utils'
 import type { RequestHookable } from './hooks'
 import type { RequestBasicOptions, RequestOptions } from './options'

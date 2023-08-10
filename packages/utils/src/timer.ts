@@ -1,4 +1,4 @@
-import type { Fn, MaybeGetter } from 'types/utils'
+import type { Fn, MaybeGetter } from '@rhao/request-types'
 import { isClient, isNumber, toValue } from '.'
 
 export interface PauseableTimerOptions {

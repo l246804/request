@@ -1,5 +1,5 @@
 /* eslint-disable unused-imports/no-unused-vars */
-import type { Fn, Getter, PromiseFn } from 'types/utils'
+import type { Fn, Getter, PromiseFn } from '@rhao/request-types'
 import type { RequestState } from './state'
 
 /**

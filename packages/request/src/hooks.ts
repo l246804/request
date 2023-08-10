@@ -1,5 +1,5 @@
 /* eslint-disable unused-imports/no-unused-vars */
-import type { AwaitableFn, Fn } from 'types/utils'
+import type { AwaitableFn, Fn } from '@rhao/request-types'
 import type { HookCallback, HookKeys, Hookable } from 'hookable'
 import { createHooks as _createHooks } from 'hookable'
 import type { RequestBasicContext, RequestContext } from './context'

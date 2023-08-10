@@ -1,11 +1,11 @@
 {
-  "name": "@rhao/request-types",
+  "name": "@rhao/request-middleware-axios",
   "type": "module",
   "version": "0.0.0",
-  "description": "Type utils of request.",
+  "description": "Axios middleware of request.",
   "author": "RayHao <https://github.com/l246804>",
   "license": "MIT",
-  "homepage": "https://github.com/l246804/request/tree/dev/packages/types",
+  "homepage": "https://github.com/l246804/request/tree/dev/packages/middleware-axios",
   "repository": {
     "type": "git",
     "url": "https://github.com/l246804/request"
@@ -14,9 +14,9 @@
     "url": "https://github.com/l246804/request/issues"
   },
   "keywords": [
+    "middleware",
     "request",
-    "utils",
-    "types"
+    "axios"
   ],
   "publishConfig": {
     "access": "public"
@@ -43,7 +43,17 @@
     "stub": "unbuild --stub",
     "build": "unbuild"
   },
+  "peerDependencies": {
+    "@rhao/request": ">=1.0.0",
+    "axios": ">=1.0.0"
+  },
+  "dependencies": {
+    "@rhao/request-utils": "workspace:*"
+  },
   "devDependencies": {
+    "@rhao/request": "workspace:*",
+    "@rhao/request-types": "workspace:*",
+    "axios": "^1.4.0",
     "unbuild": "^1.2.1"
   }
 }

@@ -123,15 +123,64 @@ data.value // => Date.now()
 
 ## 开发中间件
 
-`createRequest` 负责创建用于管理整个请求流程的 `hook` 函数，通过注册不同中间件来满足各种场景下的使用。
+`createRequest` 负责创建用于管理整个请求流程的 `hook` 函数，通过注册不同中间件来满足各种场景下的使用，支持函数和对象两种形式。
 
-### 示例
+> 通过 `hooks` 事件开发和 `middleware` 开发的区别：
+>  - hook：before、after 回调顺序执行（先注册先执行），不符合整个请求流，且不支持中断后续回调
+>  - middleware：before、after 成对顺序执行（参考洋葱圈模型），符合整个请求流，支持中间件自主中断后续执行
+
+
+### 函数示例
+
+```ts
+import type { RequestMiddleware } from '@rhao/request'
+
+export function RequestLogger() {
+  // 必须调用 next 执行下一个中间件函数
+  const middleware: RequestMiddleware = async (ctx, next) => {
+    console.log('[RequestLogger] - start:', Date.now())
+    await next()
+    console.log('[RequestLogger] - end:', Date.now())
+  }
+
+  middleware.priority = -1
+
+  // 每调用一次 `useRequest` 就会执行 `setup` 进行安装中间件
+  // 可通过传入的 `context` 对 `options`、`result` 进行改造
+  middleware.setup = (ctx) => {
+    console.log('[RequestLogger] - 开始安装')
+
+    console.log('[RequestLogger] - 当前配置项：', ctx.getOptions())
+
+    ctx.hook('before', (params) => {
+      console.log('[RequestLogger] - 调用参数：', params)
+    })
+
+    ctx.hook('success', () => {
+      console.log('[RequestLogger] - 调用成功')
+    })
+
+    ctx.hook('after', () => {
+      console.log('[RequestLogger] - 调用失败')
+    })
+
+    ctx.hook('cancel', () => {
+      console.log('[RequestLogger] - 调用取消')
+    })
+  }
+
+  return middleware
+}
+```
+
+### 对象示例
 
 ```ts
 import type { RequestMiddleware } from '@rhao/request'
 
 export function RequestLogger() {
   // 支持函数和对象两种形式
+
   const middleware: RequestMiddleware = {
     // 优先级，数值越高越先执行
     priority: -1,
@@ -162,7 +211,9 @@ export function RequestLogger() {
 
     // 实际参与到执行中的处理函数，可不设置
     handler: (ctx, next) => {
-      return next()
+      console.log('[RequestLogger] - start:', Date.now())
+      await next()
+      console.log('[RequestLogger] - end:', Date.now())
     }
   }
 

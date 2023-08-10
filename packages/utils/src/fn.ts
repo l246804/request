@@ -1,4 +1,4 @@
-import type { Fn, MaybeFn } from 'types/utils'
+import type { Fn, MaybeFn } from '@rhao/request-types'
 import { isFunction } from './is'
 import { assign } from './object'
 

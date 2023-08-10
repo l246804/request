@@ -8,7 +8,7 @@ import {
   pick,
   toValue,
 } from '@rhao/request-utils'
-import type { Fn, Getter, MaybeGetter } from 'types/utils'
+import type { Fn, Getter, MaybeGetter } from '@rhao/request-types'
 
 export interface RequestRefreshOptions {
   /**

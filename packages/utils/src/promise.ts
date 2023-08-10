@@ -1,4 +1,4 @@
-import type { Fn } from 'types/utils'
+import type { Fn } from '@rhao/request-types'
 
 export function pauseablePromise<T = any>() {
   let resolve: Fn<[T | PromiseLike<T>]>, reject: Fn<[reason?: any]>

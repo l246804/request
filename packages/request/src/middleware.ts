@@ -1,4 +1,4 @@
-import type { AwaitableFn, PromiseFn } from 'types/utils'
+import type { AwaitableFn, PromiseFn } from '@rhao/request-types'
 import { isFunction, isNumber } from '@rhao/request-utils'
 import type { RequestBasicContext, RequestContext } from './context'
 

@@ -2,7 +2,7 @@
 import { MiddlewareHelper } from '@rhao/request'
 import type { MiddlewareStoreKey, RequestContext, RequestMiddleware } from '@rhao/request'
 import { assign, ensureError, pick, toValue } from '@rhao/request-utils'
-import type { AwaitableFn, PromiseFn } from 'types/utils'
+import type { AwaitableFn, PromiseFn } from '@rhao/request-types'
 
 export interface RequestRefreshTokenOptions {
   /**

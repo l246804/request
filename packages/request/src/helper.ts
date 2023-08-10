@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/ban-types */
 /* eslint-disable unused-imports/no-unused-vars */
-import type { Recordable } from 'types/utils'
+import type { Recordable } from '@rhao/request-types'
 import { assign, isClient } from '@rhao/request-utils'
 import type { RequestBasicContext, RequestContext } from '.'
 

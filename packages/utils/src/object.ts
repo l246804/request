@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/indent */
-import type { Recordable } from 'types/utils'
+import type { Recordable } from '@rhao/request-types'
 import { isObject } from '.'
 
 export const freeze = Object.freeze

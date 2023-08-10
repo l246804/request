@@ -6,7 +6,7 @@ import {
   type RequestMiddleware,
 } from '@rhao/request'
 import { assign, pauseablePromise, toValue } from '@rhao/request-utils'
-import type { Fn, MaybeGetter } from 'types/utils'
+import type { Fn, MaybeGetter } from '@rhao/request-types'
 
 export interface RequestSWROptions {
   /**
@@ -137,8 +137,8 @@ export function RequestSWR(options?: RequestSWROptions) {
       ctx.hooks.hookOnce('finally', () => {
         const data = ctx.getState().data
 
-        // 成功时更新数据
-        if (!ctx.isFailed()) {
+        // 成功且未取消时更新数据
+        if (!ctx.isFailed() && !ctx.isCanceled()) {
           currentCache.lastUpdateTime = Date.now()
           // 若数据一致则不同步
           if (!ctx.getOptions().dataCompare(data, currentCache.data)) {
