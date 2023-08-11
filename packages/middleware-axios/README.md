@@ -38,7 +38,7 @@ import type {
   RequestFetcher,
   RequestOptions,
   RequestResult,
-} from '@rhao/request-middleware-vue'
+} from '@rhao/request'
 import { RequestAxios } from '@rhao/request-middleware-vue'
 import { axios } from 'utils/axios'
 import { AxiosResponse } from 'axios'
