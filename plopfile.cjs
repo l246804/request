@@ -1,3 +1,5 @@
+require('@esbuild-kit/cjs-loader')
+
 const { setupGenerators } = require('@rhao/plop-generators')
 
 module.exports = function (plop) {

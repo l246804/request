@@ -11,16 +11,20 @@
     "cs": "changeset",
     "cs:version": "changeset version",
     "cs:publish": "changeset publish",
-    "release": "run-s build cs:version cs:publish"
+    "release": "run-s build cs:version cs:publish",
+    "cz": "cz"
   },
   "devDependencies": {
     "@antfu/eslint-config": "^0.39.7",
     "@changesets/cli": "^2.26.2",
-    "@rhao/plop-generators": "^0.1.1",
+    "@esbuild-kit/cjs-loader": "^2.4.2",
+    "@rhao/plop-generators": "^0.3.0",
     "@tsconfig/node18": "^18.2.0",
     "@types/node": "^18.16.17",
+    "commitizen": "^4.3.0",
     "eslint": "^8.44.0",
     "eslint-define-config": "^1.21.0",
+    "git-cz": "^4.9.0",
     "npm-run-all": "^4.1.5",
     "plop": "^3.1.2",
     "prettier": "^3.0.0",
