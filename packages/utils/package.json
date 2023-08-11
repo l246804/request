@@ -2,7 +2,6 @@
   "name": "@rhao/request-utils",
   "type": "module",
   "version": "1.0.1",
-  "private": true,
   "description": "Utils of request.",
   "author": "RayHao <https://github.com/l246804>",
   "license": "MIT",
