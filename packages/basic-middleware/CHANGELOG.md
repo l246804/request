@@ -1,5 +1,11 @@
 # @rhao/request-basic-middleware
 
+## 1.0.2
+
+### Patch Changes
+
+- chore: 完善 refresh-token 中间件
+
 ## 1.0.1
 
 ### Patch Changes
