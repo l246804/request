@@ -5,7 +5,7 @@
 ## 安装
 
 ```shell
-pnpm i @rhao/request-basic-middleware
+pnpm add @rhao/request-basic-middleware
 ```
 
 ## 使用

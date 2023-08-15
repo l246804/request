@@ -13,7 +13,7 @@ npm i @rhao/request
 使用 `pnpm` 或者 `yarn`
 
 ```shell
-pnpm i @rhao/request
+pnpm add @rhao/request
 ```
 
 ## 使用
@@ -49,7 +49,7 @@ getState().data // => 2
 #### 安装中间件
 
 ```shell
-pnpm i @rhao/request-basic-middleware
+pnpm add @rhao/request-basic-middleware
 ```
 
 #### 全局使用
@@ -89,7 +89,7 @@ run()
 #### 安装依赖
 
 ```shell
-pnpm i vue @rhao/request-middleware-vue
+pnpm add vue @rhao/request-middleware-vue
 ```
 
 #### 注册中间件
