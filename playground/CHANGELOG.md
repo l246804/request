@@ -4,6 +4,16 @@
 
 ### Patch Changes
 
+- Updated dependencies [85be1ab]
+  - @rhao/request-basic-middleware@2.0.0
+  - @rhao/request-middleware-axios@2.0.0
+  - @rhao/request-middleware-vue@2.0.0
+  - @rhao/request@2.0.0
+
+## null
+
+### Patch Changes
+
 - Updated dependencies
   - @rhao/request-basic-middleware@1.0.2
 

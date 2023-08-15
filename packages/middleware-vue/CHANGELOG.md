@@ -1,5 +1,17 @@
 # @rhao/request-middleware-vue
 
+## 2.0.0
+
+### Major Changes
+
+- 85be1ab: chore: 🤖 添加许可证文件
+
+### Patch Changes
+
+- Updated dependencies [85be1ab]
+  - @rhao/request@2.0.0
+  - @rhao/request-utils@2.0.0
+
 ## 1.0.1
 
 ### Patch Changes

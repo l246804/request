@@ -1,7 +1,7 @@
 {
   "name": "@rhao/request-types",
   "type": "module",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "Type utils of request.",
   "author": "RayHao <https://github.com/l246804>",
   "license": "MIT",

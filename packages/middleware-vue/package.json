@@ -1,7 +1,7 @@
 {
   "name": "@rhao/request-middleware-vue",
   "type": "module",
-  "version": "1.0.1",
+  "version": "2.0.0",
   "description": "Vue middleware of request.",
   "author": "RayHao <https://github.com/l246804>",
   "license": "MIT",
@@ -46,7 +46,7 @@
     "build": "unbuild"
   },
   "peerDependencies": {
-    "@rhao/request": ">=1.0.1",
+    "@rhao/request": ">=2.0.0",
     "@vue/composition-api": "^1.0.0-rc.1",
     "vue": "^2.0.0 || >=3.0.0"
   },
