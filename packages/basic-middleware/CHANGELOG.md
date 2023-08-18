@@ -1,5 +1,17 @@
 # @rhao/request-basic-middleware
 
+## 3.0.0
+
+### Minor Changes
+
+- a08e72d: refactor: 重构数据中心，使用 context 提供的方式
+
+### Patch Changes
+
+- Updated dependencies [c5a18da]
+- Updated dependencies [a1e9f2e]
+  - @rhao/request@2.1.0
+
 ## 2.0.0
 
 ### Major Changes

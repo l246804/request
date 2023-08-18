@@ -1,5 +1,14 @@
 # @rhao/request-middleware-vue
 
+## 3.0.0
+
+### Patch Changes
+
+- 1d7c3b9: chore: 优化释放资源
+- Updated dependencies [c5a18da]
+- Updated dependencies [a1e9f2e]
+  - @rhao/request@2.1.0
+
 ## 2.0.0
 
 ### Major Changes

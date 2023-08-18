@@ -1,5 +1,14 @@
 # @rhao/request-middleware-axios
 
+## 3.0.0
+
+### Patch Changes
+
+- e3bde53: refactor: 重构桥接方式
+- Updated dependencies [c5a18da]
+- Updated dependencies [a1e9f2e]
+  - @rhao/request@2.1.0
+
 ## 2.0.0
 
 ### Major Changes

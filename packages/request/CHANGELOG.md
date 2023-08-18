@@ -1,5 +1,15 @@
 # @rhao/request
 
+## 2.1.0
+
+### Minor Changes
+
+- a1e9f2e: feat: context 支持存取 store
+
+### Patch Changes
+
+- c5a18da: chore: 优化代码
+
 ## 2.0.0
 
 ### Major Changes
