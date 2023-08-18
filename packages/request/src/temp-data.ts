@@ -1,4 +1,4 @@
-import type { RequestContext } from '.'
+import type { RequestContext } from './context'
 
 export function createTempData(ctx: RequestContext<any, any[]>) {
   const { getOptions, getState, mutateState } = ctx

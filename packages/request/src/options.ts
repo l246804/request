@@ -5,7 +5,7 @@ import type { AwaitableFn, Getter, MaybeArray, MaybeFn, MaybeGetter } from '@rha
 import { assign } from '@rhao/request-utils'
 import type { RequestHooks } from './hooks'
 import type { RequestMiddleware } from './middleware'
-import type { BasicRequest } from '.'
+import type { BasicRequest } from './request'
 
 /**
  * "xxx.d.ts" or "xxx.ts"

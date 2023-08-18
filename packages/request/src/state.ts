@@ -1,5 +1,5 @@
 import type { Nullish } from '@rhao/request-types'
-import type { RequestOptions } from '.'
+import type { RequestOptions } from './options'
 
 /**
  * request state

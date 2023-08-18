@@ -1,5 +1,5 @@
 import { toValue } from '@rhao/request-utils'
-import type { RequestMiddleware } from '.'
+import type { RequestMiddleware } from './middleware'
 
 export function RequestError() {
   const middleware: RequestMiddleware = {

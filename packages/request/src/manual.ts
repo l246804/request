@@ -1,4 +1,4 @@
-import type { RequestMiddleware } from '.'
+import type { RequestMiddleware } from './middleware'
 
 export function RequestManual() {
   const middleware: RequestMiddleware = {

@@ -28,6 +28,7 @@ import { RequestError } from './error'
 import { RequestManual } from './manual'
 import { createPendingHelper } from './pending'
 import { createTempData } from './temp-data'
+import { createStore } from './store'
 
 export interface BasicRequest {
   /**
@@ -76,6 +77,9 @@ export function createRequest(options?: RequestBasicOptions) {
     // 创建 `pending` 辅助函数
     const { pendingContexts, hasPending, hooks: pendingHooks } = createPendingHelper()
 
+    // 创建数据中心
+    const store = createStore()
+
     // 创建基础的上下文
     let basicContext = {
       request,
@@ -94,11 +98,14 @@ export function createRequest(options?: RequestBasicOptions) {
       mutateResult: (res) => {
         assign(result, res)
       },
+      setStore: store.set,
+      getStore: store.get,
       dispose: () => {
         toValue(options.cancelWhenDispose) && cancel()
 
         hooks.callHookSync('dispose', basicContext)
         hooks.removeAllHooks()
+        store.clear()
 
         options.middleware.length = 0
         options.hooks.length = 0

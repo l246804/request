@@ -8,6 +8,7 @@ import type { RequestResult } from './result'
 import type { RequestFetcher } from './fetcher'
 import type { RequestState } from './state'
 import type { BasicRequest } from './request'
+import type { InferStore, StoreKey } from './store'
 
 interface MutateOptions<TData, TParams extends unknown[]> {
   (options: Partial<RequestOptions<TData, TParams> & Recordable<any>>): void
@@ -122,6 +123,16 @@ export interface RequestBasicContext<TData, TParams extends unknown[] = unknown[
    * ***谨慎调用***
    */
   dispose: Fn<[]>
+
+  /**
+   * 设置数据中心，仅存在于单次 `request()` 周期内
+   */
+  setStore: <K extends StoreKey<Recordable>>(key: K, value: InferStore<K>) => InferStore<K>
+
+  /**
+   * 获取数据中心，仅获取存在于单次 `request()` 周期内
+   */
+  getStore: <K extends StoreKey<Recordable>>(key: K) => InferStore<K>
 }
 
 export interface RequestContext<TData, TParams extends unknown[] = unknown[]>

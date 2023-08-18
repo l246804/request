@@ -1,4 +1,5 @@
-import type { RequestContext, RequestHooks } from '.'
+import type { RequestContext } from './context'
+import type { RequestHooks } from './hooks'
 
 export function createPendingHelper() {
   const pendingContexts: RequestContext<any, any[]>[] = []
