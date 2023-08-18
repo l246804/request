@@ -1,12 +1,8 @@
 /* eslint-disable unused-imports/no-unused-vars */
-import {
-  MiddlewareHelper,
-  type MiddlewareStoreKey,
-  type RequestBasicContext,
-  type RequestMiddleware,
-} from '@rhao/request'
+import type { RequestBasicContext, RequestMiddleware, StoreKey } from '@rhao/request'
 import { assign, pauseablePromise, toValue } from '@rhao/request-utils'
 import type { Fn, MaybeGetter } from '@rhao/request-types'
+import { once } from 'lodash-unified'
 
 export interface RequestSWROptions {
   /**
@@ -28,27 +24,10 @@ interface ICache {
   contexts: RequestBasicContext<any, any[]>[]
 }
 
-interface SWRGlobalStore {
-  initialed: boolean
-  cached: Map<string, ICache>
-}
-
-interface SWRStore {
-  options: RequestSWROptions
-}
-
-const globalStoreKey: MiddlewareStoreKey<SWRGlobalStore> = Symbol('swr')
-const { init: initGlobalStore, get: getGlobalStore } =
-  MiddlewareHelper.createGlobalStore(globalStoreKey)
-
-function init() {
-  if (getGlobalStore()?.initialed) return
-
-  initGlobalStore({
-    initialed: true,
-    cached: new Map(),
-  })
-}
+let cached: Map<string, ICache>
+const init = once(() => {
+  cached = new Map()
+})
 
 function isStaled(cache: ICache, staleTime: MaybeGetter<number>) {
   const staleTimeValue = toValue(staleTime)
@@ -59,25 +38,28 @@ function isStaled(cache: ICache, staleTime: MaybeGetter<number>) {
   )
 }
 
-const storeKey: MiddlewareStoreKey<SWRStore> = Symbol('swr')
+interface SWRStore {
+  options: RequestSWROptions
+}
 
-export function RequestSWR(options?: RequestSWROptions) {
+const storeKey: StoreKey<SWRStore> = Symbol('swr')
+
+export function RequestSWR(initialOptions?: RequestSWROptions) {
   init()
 
   const middleware: RequestMiddleware = {
     priority: 1000,
     setup: (ctx) => {
-      const { cached } = getGlobalStore()!
       const { hooks, getKey, getState, getOptions, mutateState } = ctx
       const key = getKey()
 
-      MiddlewareHelper.initStore(storeKey, ctx, {
+      ctx.setStore(storeKey, {
         options: assign(
           {
             staleTime: 0,
             executeInStaleTime: false,
           } as RequestSWROptions,
-          options,
+          initialOptions,
           getOptions().swr,
         ),
       })
@@ -104,7 +86,7 @@ export function RequestSWR(options?: RequestSWROptions) {
       })
 
       hooks.hook('before', () => {
-        const { options } = MiddlewareHelper.getStore(storeKey, ctx)!
+        const { options } = ctx.getStore(storeKey)
         // 在保鲜期内且数据不一致时更新数据
         if (
           isStaled(currentCache, options.staleTime!) &&
@@ -120,14 +102,13 @@ export function RequestSWR(options?: RequestSWROptions) {
       })
     },
     handler: async (ctx, next) => {
-      const { cached } = getGlobalStore()!
       const currentCache = cached.get(ctx.getKey())!
 
       // 存在共享的 promise 时直接返回
       if (currentCache.promise != null) return currentCache.promise
 
       // 数据在保鲜期内且 executeInStaleTime 未 `false` 时则直接返回
-      const options = MiddlewareHelper.getStore(storeKey, ctx)!.options
+      const options = ctx.getStore(storeKey)!.options
       if (!toValue(options.executeInStaleTime) && isStaled(currentCache, options.staleTime!))
         return ctx.mutateData(currentCache.data)
 

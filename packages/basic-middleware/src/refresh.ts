@@ -1,5 +1,5 @@
 /* eslint-disable unused-imports/no-unused-vars */
-import { MiddlewareHelper, type MiddlewareStoreKey, type RequestMiddleware } from '@rhao/request'
+import { type RequestMiddleware } from '@rhao/request'
 import {
   assign,
   getVisibilityKeys,
@@ -9,6 +9,7 @@ import {
   toValue,
 } from '@rhao/request-utils'
 import type { Fn, Getter, MaybeGetter } from '@rhao/request-types'
+import { once } from 'lodash-unified'
 
 export interface RequestRefreshOptions {
   /**
@@ -46,58 +47,48 @@ export interface RequestRefreshOptions {
   errorRetryCount?: MaybeGetter<number>
 }
 
-interface RefreshGlobalStore {
-  initialed: boolean
-  focusHandlers: Set<Fn>
-  reconnectHandlers: Set<Fn>
-  visibilityHandlers: Set<Fn<[hidden: boolean]>>
-  dispose: Fn<[]>
-}
+let focusHandlers: Set<Fn>
+let reconnectHandlers: Set<Fn>
+let visibilityHandlers: Set<Fn<[hidden: boolean]>>
+RequestRefresh.dispose = () => {}
 
-const storeKey: MiddlewareStoreKey<RefreshGlobalStore> = Symbol('refresh')
-const { init: initGlobalStore, get: getGlobalStore } = MiddlewareHelper.createGlobalStore(storeKey)
-
-// 初始化
-function init() {
-  if (getGlobalStore()?.initialed) return
-
-  const store = initGlobalStore({
-    initialed: true,
-    focusHandlers: new Set<Fn>(),
-    reconnectHandlers: new Set<Fn>(),
-    visibilityHandlers: new Set<Fn<[hidden: boolean]>>(),
-    dispose: () => {},
-  })
-  RequestRefresh.dispose = store.dispose
+let init = once(_init)
+function _init() {
+  focusHandlers = new Set()
+  reconnectHandlers = new Set()
+  visibilityHandlers = new Set()
 
   const focusCallback = () => {
-    store.focusHandlers.forEach((fn) => fn())
+    focusHandlers.forEach((fn) => fn())
   }
   const onlineCallback = () => {
-    store.reconnectHandlers.forEach((fn) => navigator.onLine && fn())
+    reconnectHandlers.forEach((fn) => navigator.onLine && fn())
   }
 
   window.addEventListener('focus', focusCallback)
   window.addEventListener('online', onlineCallback)
 
   const unListen = listenVisibilityChange((hidden) => {
-    store.visibilityHandlers.forEach((fn) => fn(hidden))
+    visibilityHandlers.forEach((fn) => fn(hidden))
   })
 
-  store.dispose = () => {
-    store.focusHandlers.clear()
-    store.reconnectHandlers.clear()
-    store.visibilityHandlers.clear()
+  RequestRefresh.dispose = () => {
+    focusHandlers.clear()
+    reconnectHandlers.clear()
+    visibilityHandlers.clear()
 
     window.removeEventListener('focus', focusCallback)
     window.removeEventListener('online', onlineCallback)
     unListen()
 
-    store.dispose = () => {}
+    focusHandlers = null as any
+    reconnectHandlers = null as any
+    visibilityHandlers = null as any
+    RequestRefresh.dispose = () => {}
+
+    init = once(_init)
   }
 }
-
-RequestRefresh.dispose = () => {}
 
 export function RequestRefresh(initialOptions?: Pick<RequestRefreshOptions, 'errorRetryCount'>) {
   init()
@@ -105,8 +96,6 @@ export function RequestRefresh(initialOptions?: Pick<RequestRefreshOptions, 'err
   const middleware: RequestMiddleware = {
     priority: -999,
     setup: (ctx) => {
-      const store = getGlobalStore()!
-
       // 合并配置项
       const options = assign(
         {
@@ -152,17 +141,17 @@ export function RequestRefresh(initialOptions?: Pick<RequestRefreshOptions, 'err
 
       // 注册获焦、网络重连事件
       ctx.hooks.hook('before', () => {
-        if (toValue(options.whenFocus)) store.focusHandlers.add(refresh)
-        else store.focusHandlers.delete(refresh)
+        if (toValue(options.whenFocus)) focusHandlers.add(refresh)
+        else focusHandlers.delete(refresh)
 
-        if (toValue(options.whenReconnect)) store.reconnectHandlers.add(refresh)
-        else store.reconnectHandlers.delete(refresh)
+        if (toValue(options.whenReconnect)) reconnectHandlers.add(refresh)
+        else reconnectHandlers.delete(refresh)
       })
 
       // 释放资源
       ctx.hooks.hookOnce('dispose', () => {
-        store.focusHandlers.delete(refresh)
-        store.reconnectHandlers.delete(refresh)
+        focusHandlers.delete(refresh)
+        reconnectHandlers.delete(refresh)
       })
 
       // ====================================轮询====================================
@@ -180,8 +169,8 @@ export function RequestRefresh(initialOptions?: Pick<RequestRefreshOptions, 'err
         }
       }
 
-      const addListen = () => store.visibilityHandlers.add(visibilityHandler)
-      const removeListen = () => store.visibilityHandlers.delete(visibilityHandler)
+      const addListen = () => visibilityHandlers.add(visibilityHandler)
+      const removeListen = () => visibilityHandlers.delete(visibilityHandler)
 
       ctx.hooks.hook('before', () => {
         if (isDisabled()) return
