@@ -7,7 +7,7 @@ import type { RequestBasicOptions, RequestOptions } from './options'
 import type { RequestResult } from './result'
 import type { RequestFetcher } from './fetcher'
 import type { RequestState } from './state'
-import type { BasicRequest } from '.'
+import type { BasicRequest } from './request'
 
 interface MutateOptions<TData, TParams extends unknown[]> {
   (options: Partial<RequestOptions<TData, TParams> & Recordable<any>>): void

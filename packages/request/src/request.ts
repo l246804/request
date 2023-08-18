@@ -4,7 +4,6 @@ import {
   createSwitch,
   ensureArray,
   ensureError,
-  isFunction,
   omit,
   pauseablePromise,
   toValue,
@@ -103,9 +102,9 @@ export function createRequest(options?: RequestBasicOptions) {
 
         options.middleware.length = 0
         options.hooks.length = 0
-        options = {} as any
+        options = null as any
         hooks = null as any
-        basicContext = {} as any
+        basicContext = null as any
       },
     } as RequestBasicContext<any, any[]>
 
@@ -132,7 +131,11 @@ export function createRequest(options?: RequestBasicOptions) {
     async function executor(...params) {
       if (!toValue(options.ready, params)) return
 
-      if (toValue(options.singleWithForce)) pendingContexts.forEach((ctx) => ctx?.cancel())
+      if (toValue(options.singleWithForce)) {
+        pendingContexts.forEach((ctx) => ctx?.cancel())
+        // 由于 `cancel` 执行后还有一系列异步执行，这里强制清空 `pendingContexts`
+        pendingContexts.length = 0
+      }
       if (toValue(options.single, params, state.params) && basicContext.hasPending()) return
 
       // 创建可中断的 `promise`，用于取消执行的 `fetcher()`
@@ -172,15 +175,8 @@ export function createRequest(options?: RequestBasicOptions) {
       // 创建临时数据，避免频繁触发 `state.data` 更新
       const disposeTempData = createTempData(context)
 
-      // 包裹中间件，在取消时直接返回
-      const middleware = configMiddleware
-        .filter((mw) => isFunction(mw.handler))
-        .map((mw) => {
-          return (ctx, next) => {
-            if (isCanceled()) return
-            return mw.handler!(ctx, next)
-          }
-        })
+      // 返回中间件函数
+      const middleware = configMiddleware.map((mw) => mw.handler!)
 
       // 创建中间件调用器
       const applyMiddleware = compose(middleware)

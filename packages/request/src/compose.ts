@@ -20,7 +20,7 @@ export function compose(middleware: RequestMiddlewareFunction<any>[]) {
       let fn = middleware[i]
 
       if (i === middleware.length) fn = next
-      if (!fn) return Promise.resolve()
+      if (!fn || context.isCanceled()) return Promise.resolve()
 
       try {
         return Promise.resolve(fn(context, dispatch.bind(null, i + 1)))

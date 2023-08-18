@@ -38,11 +38,26 @@ export type RequestMiddleware<TData = any> =
  */
 export function normalizeMiddleware(middleware: RequestMiddleware[]) {
   const normalizedMiddleware: RequestMiddlewareObject[] = []
+
   for (const mw of middleware) {
     if (!mw || normalizedMiddleware.includes(mw)) continue
-    if (!isNumber(mw.priority) || Number.isNaN(mw.priority)) mw.priority = 1
-    if (isFunction(mw)) (mw as RequestMiddlewareObject).handler = mw.bind(mw)
-    normalizedMiddleware.push(mw)
+
+    // 创建对象类型中间件
+    const mwo: RequestMiddlewareObject = mw
+
+    // 如果中间件没有设置优先级，则默认为 1
+    if (!isNumber(mwo.priority) || Number.isNaN(+mwo.priority)) mwo.priority = 1
+
+    // 如果中间件是函数类型，则将其挂载至自身的 handler 转成对象类型
+    if (isFunction(mwo)) mwo.handler = mwo.bind(mw)
+
+    // 如果没有设置 handler，则填充空中间件用于执行
+    if (!mwo.handler) mwo.handler = (_, next) => next()
+
+    // 追加至结果数组中
+    normalizedMiddleware.push(mwo)
   }
+
+  // 根据优先级排序
   return normalizedMiddleware.sort((a, b) => b.priority! - a.priority!)
 }
