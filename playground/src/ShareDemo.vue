@@ -21,6 +21,7 @@ const { data, loading, run, cancel } = useRequest(
     ),
   {
     axiosConfig: {
+      timeout: 1000,
       timeoutErrorMessage: '超时了',
     },
     hooks: {
@@ -52,6 +53,8 @@ const { data: data2, run: run2 } = useRequest(
     },
   },
 )
+
+console.log(run, run2)
 </script>
 
 <template>

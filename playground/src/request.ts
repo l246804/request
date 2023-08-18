@@ -7,7 +7,6 @@ import { RequestRefreshToken } from '@rhao/request-basic-middleware/refresh-toke
 import { RequestVue } from '@rhao/request-middleware-vue'
 import { RequestAxios } from '@rhao/request-middleware-axios'
 import type { AxiosError, AxiosResponse } from 'axios'
-import { http } from './http'
 
 interface UseRequest extends BasicRequest {
   <TData, TParams extends unknown[] = unknown[]>(
@@ -25,7 +24,7 @@ interface DataBasicFormat {
 export const useRequest = createRequest({
   manual: true,
   middleware: [
-    RequestAxios({ axios: http, associativeCancel: true }),
+    RequestAxios({ associativeCancel: true }),
     RequestVue(),
     RequestSWR(),
     RequestRetry(),

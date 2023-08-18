@@ -40,7 +40,6 @@ import type {
   RequestResult,
 } from '@rhao/request'
 import { RequestAxios } from '@rhao/request-middleware-vue'
-import { axios } from 'utils/axios'
 import { AxiosResponse } from 'axios'
 
 // 自定义调用类型
@@ -73,7 +72,7 @@ export const useRequest = createRequest({
     // 返回解析后的数据
     return realData.data
   },
-  middleware: [RequestAxios({ axios })]
+  middleware: [RequestAxios({ associativeCancel: true })]
 })
 ```
 
@@ -100,7 +99,6 @@ export const queryList = (params: Params) => axios.get<DataItem[]>('/api/example
 ```ts
 import { useRequest } from 'hooks/useRequest'
 import { queryList } from 'apis/example'
-import { axios as axios1 } from 'utils/axios'
 
 // data => Ref<DataItem[] | null> // 这里会自动对 AxiosResponse 进行拆包
 // params => Ref<[Params]> // 会自动推导出 queryList 的入参
@@ -110,9 +108,6 @@ const { data, loading, error, params } = useRequest(queryList, {
   // 初次自动调用时的参数，设置 `manual` 为 `false` 时有效
   // 类型会自动推导出 Params
   defaultParams: [{ a: 1, b: '123' }],
-
-  // 若 queryList 使用 axios1，则此处可更改执行时桥接的 axios 实例
-  axios: axios1,
 
   // 这里可以传入 axios 的配置项，支持函数格式
   axiosConfig: {

@@ -1,23 +1,16 @@
-import { MiddlewareHelper } from '@rhao/request'
-import type { MiddlewareStoreKey, RequestContext, RequestMiddleware } from '@rhao/request'
 import type {
-  AxiosHeaders,
-  AxiosInstance,
-  AxiosRequestConfig,
-  AxiosStatic,
-  InternalAxiosRequestConfig,
-  RawAxiosRequestHeaders,
-} from 'axios'
-import { assign, pick, toValue } from '@rhao/request-utils'
+  RequestBasicContext,
+  RequestContext,
+  RequestMiddleware,
+  StoreKey,
+} from '@rhao/request'
+import type { AxiosInstance, AxiosRequestConfig, AxiosStatic } from 'axios'
+import { assign, toValue } from '@rhao/request-utils'
 import type { MaybeFn } from '@rhao/request-types'
 import Axios from 'axios'
 import utils from 'axios/unsafe/utils.js'
 
 export interface RequestAxiosOptions {
-  /**
-   * axios 实例
-   */
-  axios: AxiosInstance | AxiosStatic
   /**
    * 是否关联取消，如果设为 `true`，当调用 `cancel` 时也会取消 `axios` 请求
    * @default false
@@ -26,75 +19,64 @@ export interface RequestAxiosOptions {
 }
 
 interface AxiosStore {
-  id: number
   options: RequestAxiosOptions
 }
 
-const storeKey: MiddlewareStoreKey<AxiosStore> = Symbol('axios')
+const storeKey: StoreKey<AxiosStore> = Symbol('axios')
 
-const ID = '__REQUEST_AXIOS_ID__'
-let i = 0
-function genId() {
-  return i++
+// 更改原型函数，调用时连接 context
+let fetchingCtx: RequestBasicContext<any, any[]> | null = null
+const originalRequest = Axios.Axios.prototype.request
+// @ts-expect-error
+Axios.Axios.prototype.request = function wrapRequest(configOrUrl, config) {
+  if (typeof configOrUrl === 'string') {
+    config = config || {}
+    config.url = configOrUrl
+  } else {
+    config = configOrUrl || {}
+  }
+
+  if (fetchingCtx == null) return originalRequest.call(this, config)
+
+  const ctx = fetchingCtx!
+  fetchingCtx = null
+
+  // 合并配置项
+  config = utils.merge(config, toValue(ctx.getOptions().axiosConfig, this, ctx))
+
+  // 关联取消
+  const { associativeCancel } = ctx.getStore(storeKey).options
+  if (associativeCancel) {
+    const source = Axios.CancelToken.source()
+    config.cancelToken = source.token
+
+    const remove = ctx.hooks.hookOnce('cancel', () => source.cancel())
+    ctx.hooks.hookOnce('finally', remove)
+  }
+
+  return originalRequest.call(this, config)
 }
 
-export function RequestAxios(options: RequestAxiosOptions) {
+export function RequestAxios(initialOptions?: RequestAxiosOptions) {
   const middleware: RequestMiddleware = {
     priority: 10000,
     setup: (ctx) => {
-      const { getOptions } = ctx
+      const { fetcher } = ctx
 
-      // 初始化 store
-      MiddlewareHelper.initStore(storeKey, ctx, {
-        id: genId(),
+      ctx.setStore(storeKey, {
         options: assign(
           { associativeCancel: false } as RequestAxiosOptions,
-          options,
-          pick(getOptions(), ['axios']),
+          initialOptions,
+          ctx.getOptions(),
         ),
       })
-    },
-    handler(ctx, next) {
-      const { id, options } = MiddlewareHelper.getStore(storeKey, ctx)!
-      const { axios, associativeCancel } = options
 
-      const requestId = axios.interceptors.request.use(
-        (config) => {
-          const axiosConfig = toValue(ctx.getOptions().axiosConfig, config, axios, ctx)
-          if (axiosConfig) {
-            // 合并配置项
-            config = utils.merge(config, axiosConfig)
-          }
-
-          // 关联取消
-          if (associativeCancel) {
-            const source = Axios.CancelToken.source()
-            config.cancelToken = source.token
-
-            const remove = ctx.hooks.hookOnce('cancel', () => source.cancel())
-            ctx.hooks.hookOnce('finally', remove)
-          }
-
-          axios.interceptors.request.eject(requestId)
-
-          return config
-        },
-        null,
-        {
-          runWhen: (config) => config[ID] === id,
-        },
-      )
-
-      const { fetcher } = ctx
       ctx.fetcher = (...args) => {
-        axios.defaults[ID] = id
-        const promise = fetcher(...args)
-        axios.defaults[ID] = undefined
-
-        return promise
+        fetchingCtx = ctx
+        const result = fetcher(...args)
+        fetchingCtx = null
+        return result
       }
-
-      return next()
     },
   }
 
@@ -104,10 +86,6 @@ export function RequestAxios(options: RequestAxiosOptions) {
 declare module '@rhao/request' {
   interface RequestCustomOptions<TData, TParams extends unknown[] = unknown[]> {
     /**
-     * axios 实例
-     */
-    axios?: AxiosInstance | AxiosStatic
-    /**
      * 是否关联取消，如果设为 `true`，当调用 `cancel` 时也会取消 `axios` 请求
      * @default false
      */
@@ -116,12 +94,8 @@ declare module '@rhao/request' {
      * axios 配置项
      */
     axiosConfig?: MaybeFn<
-      AxiosRequestConfig & { headers: RawAxiosRequestHeaders | AxiosHeaders },
-      [
-        config: InternalAxiosRequestConfig,
-        axios: RequestAxiosOptions['axios'],
-        context: RequestContext<TData, TParams>,
-      ]
+      AxiosRequestConfig<TData>,
+      [axios: AxiosInstance | AxiosStatic, context: RequestContext<TData, TParams>]
     >
   }
 }
