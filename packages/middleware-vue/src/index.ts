@@ -3,7 +3,7 @@ import { type RequestMiddleware, type RequestState, createState } from '@rhao/re
 import { assign } from '@rhao/request-utils'
 import { reactive, toRefs, watch } from 'vue-demi'
 import type { Ref, WatchSource } from 'vue-demi'
-import { tryOnUnmounted } from '@vueuse/core'
+import { tryOnScopeDispose, tryOnUnmounted } from '@vueuse/core'
 
 export function RequestVue() {
   const middleware: RequestMiddleware = {
@@ -27,7 +27,7 @@ export function RequestVue() {
       if (refreshDeps) watch(refreshDeps, getResult().refresh)
 
       // 释放资源
-      tryOnUnmounted(dispose)
+      if (!tryOnScopeDispose(dispose)) tryOnUnmounted(dispose)
     },
   }
 
