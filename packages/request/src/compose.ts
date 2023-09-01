@@ -1,4 +1,4 @@
-import { isArray, isFunction } from '@rhao/request-utils'
+import { isArray, isFunction } from 'lodash-unified'
 import type { RequestMiddlewareFunction } from './middleware'
 import type { RequestContext } from './context'
 
@@ -24,7 +24,8 @@ export function compose(middleware: RequestMiddlewareFunction<any>[]) {
 
       try {
         return Promise.resolve(fn(context, dispatch.bind(null, i + 1)))
-      } catch (err) {
+      }
+      catch (err) {
         return Promise.reject(err)
       }
     }

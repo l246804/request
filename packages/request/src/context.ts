@@ -1,13 +1,11 @@
-/* eslint-disable @typescript-eslint/indent */
-/* eslint-disable unused-imports/no-unused-vars */
-import type { AwaitableFn, Fn, Getter, PromiseFn, Recordable } from '@rhao/request-types'
-import { assign, isString, keysOf } from '@rhao/request-utils'
+import type { AwaitableFn, Fn, Getter, NoopFn, PromiseFn, Recordable } from '@rhao/types-base'
+import { assign, isString, keys } from 'lodash-unified'
 import type { RequestHookable } from './hooks'
 import type { RequestBasicOptions, RequestOptions } from './options'
 import type { RequestResult } from './result'
 import type { RequestFetcher } from './fetcher'
 import type { RequestState } from './state'
-import type { BasicRequest } from './request'
+import type { BasicRequestHook } from './core'
 import type { InferStore, StoreKey } from './store'
 
 interface MutateOptions<TData, TParams extends unknown[]> {
@@ -33,34 +31,17 @@ interface MutateResult<TData, TParams extends unknown[]> {
  * @example
  * ```ts
  * declare module '@rhao/request' {
- *   interface RequestCustomBasicContext<TData, TParams extends unknown[] = unknown[]> {
+ *   interface RequestBasicContext<TData, TParams extends unknown[] = unknown[]> {
  *     custom: {} // 自定义基础上下文
  *   }
  * }
  * ```
  */
-export interface RequestCustomBasicContext<TData, TParams extends unknown[] = unknown[]> {}
-
-/**
- * "xxx.d.ts" or "xxx.ts"
- *
- * @example
- * ```ts
- * declare module '@rhao/request' {
- *   interface RequestCustomContext<TData, TParams extends unknown[] = unknown[]> {
- *     custom: {} // 自定义上下文
- *   }
- * }
- * ```
- */
-export interface RequestCustomContext<TData, TParams extends unknown[] = unknown[]> {}
-
-export interface RequestBasicContext<TData, TParams extends unknown[] = unknown[]>
-  extends RequestCustomBasicContext<TData, TParams> {
+export interface RequestBasicContext<TData, TParams extends unknown[] = unknown[]> {
   /**
    * `request()`
    */
-  request: BasicRequest
+  request: BasicRequestHook
 
   /**
    * `hooks` 管理器
@@ -118,6 +99,16 @@ export interface RequestBasicContext<TData, TParams extends unknown[] = unknown[
   hasPending: Getter<boolean>
 
   /**
+   * 清除未完成的执行记录
+   */
+  clearPending: NoopFn
+
+  /**
+   * 取消未完成的执行并立即清除执行记录
+   */
+  clearPendingWithCancel: NoopFn
+
+  /**
    * 主动释放资源，当不再使用某个 `request()` 时可调用该函数触发 `hook:dispose`
    *
    * ***谨慎调用***
@@ -135,13 +126,24 @@ export interface RequestBasicContext<TData, TParams extends unknown[] = unknown[
   getStore: <K extends StoreKey<Recordable>>(key: K) => InferStore<K>
 }
 
+/**
+ * "xxx.d.ts" or "xxx.ts"
+ *
+ * @example
+ * ```ts
+ * declare module '@rhao/request' {
+ *   interface RequestContext<TData, TParams extends unknown[] = unknown[]> {
+ *     custom: {} // 自定义上下文
+ *   }
+ * }
+ * ```
+ */
 export interface RequestContext<TData, TParams extends unknown[] = unknown[]>
-  extends Omit<RequestBasicContext<TData, TParams>, 'mutateResult' | 'dispose'>,
-    RequestCustomContext<TData, TParams> {
+  extends Omit<RequestBasicContext<TData, TParams>, 'mutateResult' | 'dispose'> {
   /**
    * 修改 `state.data`
    *
-   * ***注意：不会直接触发 `stateChange`，在 `hook:finally` 时会通过 `dataCompare` 对比前后数据，不一致时触发 `stateChange`，避免频繁更新***
+   * ***注意：不会直接触发 `stateChange`，在 `hook:finally` 时会通过 `dataComparer` 对比前后数据，不一致时触发 `hook:stateChange`，避免频繁更新***
    */
   mutateData: AwaitableFn<[data: TData]>
 
@@ -176,7 +178,7 @@ export function createMutateState(
     let mutatedValue = keyOrState
 
     if (isString(keyOrState)) {
-      if (!keysOf(state).includes(keyOrState))
+      if (!keys(state).includes(keyOrState))
         return console.warn(`mutateState(): ${keyOrState} is not exist.`)
       mutatedValue = { [keyOrState]: value }
     }

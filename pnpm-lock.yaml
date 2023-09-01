@@ -18,8 +18,8 @@ importers:
         specifier: ^2.4.2
         version: 2.4.2
       '@rhao/plop-generators':
-        specifier: ^0.3.0
-        version: 0.3.0(inquirer@9.2.8)(plop@3.1.2)
+        specifier: ^0.7.1
+        version: 0.7.1(inquirer@9.2.8)(plop@3.1.2)
       '@tsconfig/node18':
         specifier: ^18.2.0
         version: 18.2.0
@@ -49,16 +49,19 @@ importers:
         version: 3.0.0
       turbo:
         specifier: latest
-        version: 1.10.12
+        version: 1.10.13
       typescript:
         specifier: ^5.1.6
         version: 5.1.6
 
   packages/basic-middleware:
     dependencies:
-      '@rhao/request-utils':
-        specifier: workspace:*
-        version: link:../utils
+      '@rhao/lodash-x':
+        specifier: ^0.4.0
+        version: 0.4.0(typescript@5.1.6)
+      '@rhao/types-base':
+        specifier: ^0.2.0
+        version: 0.2.0(typescript@5.1.6)
       '@types/lodash':
         specifier: ^4.14.197
         version: 4.14.197
@@ -78,25 +81,37 @@ importers:
       '@rhao/request':
         specifier: workspace:*
         version: link:../request
-      '@rhao/request-types':
-        specifier: workspace:*
-        version: link:../types
       unbuild:
         specifier: ^1.2.1
         version: 1.2.1
 
   packages/middleware-axios:
     dependencies:
-      '@rhao/request-utils':
-        specifier: workspace:*
-        version: link:../utils
+      '@rhao/lodash-x':
+        specifier: ^0.4.0
+        version: 0.4.0(typescript@5.1.6)
+      '@rhao/types-base':
+        specifier: ^0.2.0
+        version: 0.2.0(typescript@5.1.6)
+      '@types/lodash':
+        specifier: ^4.14.197
+        version: 4.14.197
+      '@types/lodash-es':
+        specifier: ^4.17.8
+        version: 4.17.8
+      lodash:
+        specifier: ^4.17.21
+        version: 4.17.21
+      lodash-es:
+        specifier: ^4.17.21
+        version: 4.17.21
+      lodash-unified:
+        specifier: ^1.0.3
+        version: 1.0.3(@types/lodash-es@4.17.8)(lodash-es@4.17.21)(lodash@4.17.21)
     devDependencies:
       '@rhao/request':
         specifier: workspace:*
         version: link:../request
-      '@rhao/request-types':
-        specifier: workspace:*
-        version: link:../types
       axios:
         specifier: ^1.4.0
         version: 1.4.0
@@ -106,25 +121,40 @@ importers:
 
   packages/middleware-vue:
     dependencies:
-      '@rhao/request-utils':
-        specifier: workspace:*
-        version: link:../utils
+      '@rhao/lodash-x':
+        specifier: ^0.4.0
+        version: 0.4.0(typescript@5.1.6)
+      '@rhao/types-base':
+        specifier: ^0.2.0
+        version: 0.2.0(typescript@5.1.6)
+      '@types/lodash':
+        specifier: ^4.14.197
+        version: 4.14.197
+      '@types/lodash-es':
+        specifier: ^4.17.8
+        version: 4.17.8
       '@vue/composition-api':
         specifier: ^1.0.0-rc.1
         version: 1.0.0-rc.1(vue@3.3.4)
       '@vueuse/core':
         specifier: ^10.3.0
         version: 10.3.0(@vue/composition-api@1.0.0-rc.1)(vue@3.3.4)
+      lodash:
+        specifier: ^4.17.21
+        version: 4.17.21
+      lodash-es:
+        specifier: ^4.17.21
+        version: 4.17.21
+      lodash-unified:
+        specifier: ^1.0.3
+        version: 1.0.3(@types/lodash-es@4.17.8)(lodash-es@4.17.21)(lodash@4.17.21)
       vue-demi:
         specifier: latest
-        version: 0.14.5(@vue/composition-api@1.0.0-rc.1)(vue@3.3.4)
+        version: 0.14.6(@vue/composition-api@1.0.0-rc.1)(vue@3.3.4)
     devDependencies:
       '@rhao/request':
         specifier: workspace:*
         version: link:../request
-      '@rhao/request-types':
-        specifier: workspace:*
-        version: link:../types
       unbuild:
         specifier: ^1.2.1
         version: 1.2.1
@@ -134,16 +164,31 @@ importers:
 
   packages/request:
     dependencies:
-      '@rhao/request-utils':
-        specifier: workspace:*
-        version: link:../utils
+      '@rhao/lodash-x':
+        specifier: ^0.4.0
+        version: 0.4.0(typescript@5.1.6)
+      '@rhao/types-base':
+        specifier: ^0.2.0
+        version: 0.2.0(typescript@5.1.6)
+      '@types/lodash':
+        specifier: ^4.14.197
+        version: 4.14.197
+      '@types/lodash-es':
+        specifier: ^4.17.8
+        version: 4.17.8
       hookable:
         specifier: ^5.5.3
         version: 5.5.3
+      lodash:
+        specifier: ^4.17.21
+        version: 4.17.21
+      lodash-es:
+        specifier: ^4.17.21
+        version: 4.17.21
+      lodash-unified:
+        specifier: ^1.0.3
+        version: 1.0.3(@types/lodash-es@4.17.8)(lodash-es@4.17.21)(lodash@4.17.21)
     devDependencies:
-      '@rhao/request-types':
-        specifier: workspace:*
-        version: link:../types
       unbuild:
         specifier: ^1.2.1
         version: 1.2.1
@@ -1369,8 +1414,22 @@ packages:
       fastq: 1.15.0
     dev: true
 
-  /@rhao/plop-generators@0.3.0(inquirer@9.2.8)(plop@3.1.2):
-    resolution: {integrity: sha512-aQgwMX/UMBVw++O34zVNtxgsjQJILoz+uZTEJGmKtmYzMAaV8foWbCxo65qnsLA7lAS1cZLk9iVCh3gzLpfI5w==}
+  /@rhao/lodash-x@0.4.0(typescript@5.1.6):
+    resolution: {integrity: sha512-LxYKxMi7JiLsZtkmGQXMONm1Qi4tgHBRSwIH4con5YBac7KX7OwqRG0jojXctgbG7n3gBj+4vXsSNLl1BCF9/g==}
+    engines: {node: '>=14'}
+    dependencies:
+      '@rhao/types-base': 0.2.0(typescript@5.1.6)
+      '@types/lodash': 4.14.197
+      '@types/lodash-es': 4.17.8
+      lodash: 4.17.21
+      lodash-es: 4.17.21
+      lodash-unified: 1.0.3(@types/lodash-es@4.17.8)(lodash-es@4.17.21)(lodash@4.17.21)
+    transitivePeerDependencies:
+      - typescript
+    dev: false
+
+  /@rhao/plop-generators@0.7.1(inquirer@9.2.8)(plop@3.1.2):
+    resolution: {integrity: sha512-UbCRNxfhKMZCSYsGJkxfWpld5vxmEu510lkAuuhgkrLwokSXdg+7bnFxJ9ABkEj0drEarhSdpRaGLilTc/EoXw==}
     engines: {node: '>=16'}
     peerDependencies:
       plop: '>=3'
@@ -1378,12 +1437,22 @@ packages:
       '@antfu/install-pkg': 0.1.1
       consola: 3.2.3
       execa: 7.2.0
+      fs-extra: 11.1.1
       inquirer-file-tree-selection-prompt: 2.0.5(inquirer@9.2.8)
       local-pkg: 0.4.3
       plop: 3.1.2
     transitivePeerDependencies:
       - inquirer
     dev: true
+
+  /@rhao/types-base@0.2.0(typescript@5.1.6):
+    resolution: {integrity: sha512-t0Q3VtJTxANvnVde9ExdB/rfNNH7Ze0o/vPqsPdViaA5VEIjY/q2npilkmAzBN110eDiJf4Ej3pODGfqjUbMgQ==}
+    engines: {node: '>=14'}
+    peerDependencies:
+      typescript: '>=5'
+    dependencies:
+      typescript: 5.1.6
+    dev: false
 
   /@rollup/plugin-alias@5.0.0(rollup@3.27.2):
     resolution: {integrity: sha512-l9hY5chSCjuFRPsnRm16twWBiSApl2uYFLsepQYwtBuAxNMQ/1dJqADld40P0Jkqm65GRTLy/AC6hnpVebtLsA==}
@@ -1885,7 +1954,7 @@ packages:
       '@types/web-bluetooth': 0.0.17
       '@vueuse/metadata': 10.3.0
       '@vueuse/shared': 10.3.0(@vue/composition-api@1.0.0-rc.1)(vue@3.3.4)
-      vue-demi: 0.14.5(@vue/composition-api@1.0.0-rc.1)(vue@3.3.4)
+      vue-demi: 0.14.6(@vue/composition-api@1.0.0-rc.1)(vue@3.3.4)
     transitivePeerDependencies:
       - '@vue/composition-api'
       - vue
@@ -1897,7 +1966,7 @@ packages:
       '@types/web-bluetooth': 0.0.16
       '@vueuse/metadata': 9.13.0
       '@vueuse/shared': 9.13.0(vue@3.3.4)
-      vue-demi: 0.14.5(@vue/composition-api@1.0.0-rc.1)(vue@3.3.4)
+      vue-demi: 0.14.6(@vue/composition-api@1.0.0-rc.1)(vue@3.3.4)
     transitivePeerDependencies:
       - '@vue/composition-api'
       - vue
@@ -1914,7 +1983,7 @@ packages:
   /@vueuse/shared@10.3.0(@vue/composition-api@1.0.0-rc.1)(vue@3.3.4):
     resolution: {integrity: sha512-kGqCTEuFPMK4+fNWy6dUOiYmxGcUbtznMwBZLC1PubidF4VZY05B+Oht7Jh7/6x4VOWGpvu3R37WHi81cKpiqg==}
     dependencies:
-      vue-demi: 0.14.5(@vue/composition-api@1.0.0-rc.1)(vue@3.3.4)
+      vue-demi: 0.14.6(@vue/composition-api@1.0.0-rc.1)(vue@3.3.4)
     transitivePeerDependencies:
       - '@vue/composition-api'
       - vue
@@ -1923,7 +1992,7 @@ packages:
   /@vueuse/shared@9.13.0(vue@3.3.4):
     resolution: {integrity: sha512-UrnhU+Cnufu4S6JLCPZnkWh0WwZGUp72ktOF2DFptMlOs3TOdVv8xJN53zhHGARmVOsz5KqOls09+J1NR6sBKw==}
     dependencies:
-      vue-demi: 0.14.5(@vue/composition-api@1.0.0-rc.1)(vue@3.3.4)
+      vue-demi: 0.14.6(@vue/composition-api@1.0.0-rc.1)(vue@3.3.4)
     transitivePeerDependencies:
       - '@vue/composition-api'
       - vue
@@ -5989,65 +6058,64 @@ packages:
       yargs: 17.7.2
     dev: true
 
-  /turbo-darwin-64@1.10.12:
-    resolution: {integrity: sha512-vmDfGVPl5/aFenAbOj3eOx3ePNcWVUyZwYr7taRl0ZBbmv2TzjRiFotO4vrKCiTVnbqjQqAFQWY2ugbqCI1kOQ==}
+  /turbo-darwin-64@1.10.13:
+    resolution: {integrity: sha512-vmngGfa2dlYvX7UFVncsNDMuT4X2KPyPJ2Jj+xvf5nvQnZR/3IeDEGleGVuMi/hRzdinoxwXqgk9flEmAYp0Xw==}
     cpu: [x64]
     os: [darwin]
     requiresBuild: true
     dev: true
     optional: true
 
-  /turbo-darwin-arm64@1.10.12:
-    resolution: {integrity: sha512-3JliEESLNX2s7g54SOBqqkqJ7UhcOGkS0ywMr5SNuvF6kWVTbuUq7uBU/sVbGq8RwvK1ONlhPvJne5MUqBCTCQ==}
+  /turbo-darwin-arm64@1.10.13:
+    resolution: {integrity: sha512-eMoJC+k7gIS4i2qL6rKmrIQGP6Wr9nN4odzzgHFngLTMimok2cGLK3qbJs5O5F/XAtEeRAmuxeRnzQwTl/iuAw==}
     cpu: [arm64]
     os: [darwin]
     requiresBuild: true
     dev: true
     optional: true
 
-  /turbo-linux-64@1.10.12:
-    resolution: {integrity: sha512-siYhgeX0DidIfHSgCR95b8xPee9enKSOjCzx7EjTLmPqPaCiVebRYvbOIYdQWRqiaKh9yfhUtFmtMOMScUf1gg==}
+  /turbo-linux-64@1.10.13:
+    resolution: {integrity: sha512-0CyYmnKTs6kcx7+JRH3nPEqCnzWduM0hj8GP/aodhaIkLNSAGAa+RiYZz6C7IXN+xUVh5rrWTnU2f1SkIy7Gdg==}
     cpu: [x64]
     os: [linux]
     requiresBuild: true
     dev: true
     optional: true
 
-  /turbo-linux-arm64@1.10.12:
-    resolution: {integrity: sha512-K/ZhvD9l4SslclaMkTiIrnfcACgos79YcAo4kwc8bnMQaKuUeRpM15sxLpZp3xDjDg8EY93vsKyjaOhdFG2UbA==}
+  /turbo-linux-arm64@1.10.13:
+    resolution: {integrity: sha512-0iBKviSGQQlh2OjZgBsGjkPXoxvRIxrrLLbLObwJo3sOjIH0loGmVIimGS5E323soMfi/o+sidjk2wU1kFfD7Q==}
     cpu: [arm64]
     os: [linux]
     requiresBuild: true
     dev: true
     optional: true
 
-  /turbo-windows-64@1.10.12:
-    resolution: {integrity: sha512-7FSgSwvktWDNOqV65l9AbZwcoueAILeE4L7JvjauNASAjjbuzXGCEq5uN8AQU3U5BOFj4TdXrVmO2dX+lLu8Zg==}
+  /turbo-windows-64@1.10.13:
+    resolution: {integrity: sha512-S5XySRfW2AmnTeY1IT+Jdr6Goq7mxWganVFfrmqU+qqq3Om/nr0GkcUX+KTIo9mPrN0D3p5QViBRzulwB5iuUQ==}
     cpu: [x64]
     os: [win32]
     requiresBuild: true
     dev: true
     optional: true
 
-  /turbo-windows-arm64@1.10.12:
-    resolution: {integrity: sha512-gCNXF52dwom1HLY9ry/cneBPOKTBHhzpqhMylcyvJP0vp9zeMQQkt6yjYv+6QdnmELC92CtKNp2FsNZo+z0pyw==}
+  /turbo-windows-arm64@1.10.13:
+    resolution: {integrity: sha512-nKol6+CyiExJIuoIc3exUQPIBjP9nIq5SkMJgJuxsot2hkgGrafAg/izVDRDrRduQcXj2s8LdtxJHvvnbI8hEQ==}
     cpu: [arm64]
     os: [win32]
     requiresBuild: true
     dev: true
     optional: true
 
-  /turbo@1.10.12:
-    resolution: {integrity: sha512-WM3+jTfQWnB9W208pmP4oeehZcC6JQNlydb/ZHMRrhmQa+htGhWLCzd6Q9rLe0MwZLPpSPFV2/bN5egCLyoKjQ==}
+  /turbo@1.10.13:
+    resolution: {integrity: sha512-vOF5IPytgQPIsgGtT0n2uGZizR2N3kKuPIn4b5p5DdeLoI0BV7uNiydT7eSzdkPRpdXNnO8UwS658VaI4+YSzQ==}
     hasBin: true
-    requiresBuild: true
     optionalDependencies:
-      turbo-darwin-64: 1.10.12
-      turbo-darwin-arm64: 1.10.12
-      turbo-linux-64: 1.10.12
-      turbo-linux-arm64: 1.10.12
-      turbo-windows-64: 1.10.12
-      turbo-windows-arm64: 1.10.12
+      turbo-darwin-64: 1.10.13
+      turbo-darwin-arm64: 1.10.13
+      turbo-linux-64: 1.10.13
+      turbo-linux-arm64: 1.10.13
+      turbo-windows-64: 1.10.13
+      turbo-windows-arm64: 1.10.13
     dev: true
 
   /type-check@0.4.0:
@@ -6094,7 +6162,6 @@ packages:
     resolution: {integrity: sha512-zaWCozRZ6DLEWAWFrVDz1H6FVXzUSfTy5FUMWsQlU8Ym5JP9eO4xkTIROFCQvhQf61z6O/G6ugw3SgAnvvm+HA==}
     engines: {node: '>=14.17'}
     hasBin: true
-    dev: true
 
   /ufo@1.1.2:
     resolution: {integrity: sha512-TrY6DsjTQQgyS3E3dBaOXf0TpPD8u9FVrVYmKVegJuFw51n/YB9XPt+U6ydzFG5ZIN7+DIjPbNmXoBj9esYhgQ==}
@@ -6274,8 +6341,8 @@ packages:
       fsevents: 2.3.2
     dev: true
 
-  /vue-demi@0.14.5(@vue/composition-api@1.0.0-rc.1)(vue@3.3.4):
-    resolution: {integrity: sha512-o9NUVpl/YlsGJ7t+xuqJKx8EBGf1quRhCiT6D/J0pfwmk9zUwYkC7yrF4SZCe6fETvSM3UNL2edcbYrSyc4QHA==}
+  /vue-demi@0.14.6(@vue/composition-api@1.0.0-rc.1)(vue@3.3.4):
+    resolution: {integrity: sha512-8QA7wrYSHKaYgUxDA5ZC24w+eHm3sYCbp0EzcDwKqN3p6HqtTCGR/GVsPyZW92unff4UlcSh++lmqDWN3ZIq4w==}
     engines: {node: '>=12'}
     hasBin: true
     requiresBuild: true

@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/ban-types */
 /* eslint-disable unused-imports/no-unused-vars */
-import type { Recordable } from '@rhao/request-types'
+import type { Recordable } from '@rhao/types-base'
 
 export interface StoreKey<T extends Recordable> extends Symbol {}
 

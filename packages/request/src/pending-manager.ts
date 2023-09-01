@@ -1,11 +1,18 @@
 import type { RequestContext } from './context'
-import type { RequestHooks } from './hooks'
 
-export function createPendingHelper() {
+export function createPendingManager() {
   const pendingContexts: RequestContext<any, any[]>[] = []
-  const hasPending = () => pendingContexts.length === 0
 
-  const hooks: Partial<RequestHooks> = {
+  const hasPending = () => pendingContexts.length === 0
+  const clearPending = () => {
+    pendingContexts.length = 0
+  }
+  const clearPendingWithCancel = () => {
+    pendingContexts.forEach((ctx) => ctx?.cancel())
+    pendingContexts.length = 0
+  }
+
+  const configHooks = {
     before: (_, ctx) => {
       if (!pendingContexts.includes(ctx)) pendingContexts.push(ctx)
     },
@@ -14,13 +21,15 @@ export function createPendingHelper() {
       index > -1 && pendingContexts.splice(index, 1)
     },
     dispose: () => {
-      pendingContexts.length = 0
+      clearPending()
     },
   }
 
   return {
     pendingContexts,
+    configHooks,
     hasPending,
-    hooks,
+    clearPending,
+    clearPendingWithCancel,
   }
 }

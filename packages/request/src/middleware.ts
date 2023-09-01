@@ -1,5 +1,5 @@
-import type { AwaitableFn, PromiseFn } from '@rhao/request-types'
-import { isFunction, isNumber } from '@rhao/request-utils'
+import type { AwaitableFn, PromiseFn } from '@rhao/types-base'
+import { isFunction, isNumber } from 'lodash-unified'
 import type { RequestBasicContext, RequestContext } from './context'
 
 interface BasicMiddleware<TData = any> {
@@ -33,6 +33,8 @@ export type RequestMiddleware<TData = any> =
   | RequestMiddlewareObject<TData>
   | RequestMiddlewareFunction<TData>
 
+const noopMiddleware: RequestMiddlewareFunction = (_, next) => next()
+
 /**
  * 统一化中间件
  */
@@ -52,7 +54,7 @@ export function normalizeMiddleware(middleware: RequestMiddleware[]) {
     if (isFunction(mwo)) mwo.handler = mwo.bind(mw)
 
     // 如果没有设置 handler，则填充空中间件用于执行
-    if (!mwo.handler) mwo.handler = (_, next) => next()
+    if (!mwo.handler) mwo.handler = noopMiddleware
 
     // 追加至结果数组中
     normalizedMiddleware.push(mwo)

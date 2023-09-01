@@ -11,8 +11,8 @@ module.exports = defineConfig({
     'arrow-parens': ['error', 'always'],
     'quote-props': ['error', 'as-needed'],
     'object-shorthand': ['off'],
-    'space-before-blocks': 'error',
-    'operator-linebreak': 'off', // prettier 冲突
+    'space-before-blocks': ['error'],
+    'unused-imports/no-unused-imports': ['error'],
 
     // antfu
     'antfu/if-newline': 'off',
@@ -26,10 +26,8 @@ module.exports = defineConfig({
       { registeredComponentsOnly: false },
     ],
     'vue/max-attributes-per-line': ['error', { singleline: 1 }],
-    'vue/singleline-html-element-content-newline': ['off'], // prettier 冲突
 
     // ts
     '@typescript-eslint/ban-ts-comment': 'off',
-    '@typescript-eslint/brace-style': 'off',
   },
 })

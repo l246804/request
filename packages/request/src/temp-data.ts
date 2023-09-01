@@ -4,9 +4,9 @@ export function createTempData(ctx: RequestContext<any, any[]>) {
   const { getOptions, getState, mutateState } = ctx
   let tempData = getState().data
 
-  const sync = async () => {
+  const sync = () => {
     const data = getState().data
-    const valid = await getOptions().dataCompare(tempData, data)
+    const valid = getOptions().dataComparer(tempData, data)
     if (!valid) mutateState({ data })
   }
 
@@ -14,9 +14,9 @@ export function createTempData(ctx: RequestContext<any, any[]>) {
     if ('data' in state) tempData = state.data
   })
 
-  return async () => {
+  return () => {
     removeHook()
-    await sync()
+    sync()
     tempData = null
   }
 }

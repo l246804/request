@@ -13,7 +13,7 @@
     "declaration": true,
     "baseUrl": ".",
     "paths": {
-      "types/*": ["packages/types/*"]
+      "@rhao/request": ["packages/request/src/index.ts"]
     }
   }
 }

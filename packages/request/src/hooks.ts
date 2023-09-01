@@ -1,18 +1,8 @@
-/* eslint-disable unused-imports/no-unused-vars */
-import type { AwaitableFn, Fn } from '@rhao/request-types'
+import type { AwaitableFn, Fn } from '@rhao/types-base'
 import type { HookCallback, HookKeys, Hookable } from 'hookable'
 import { createHooks as _createHooks } from 'hookable'
 import type { RequestBasicContext, RequestContext } from './context'
 import type { RequestState } from './state'
-
-export type RequestHookable = Hookable<RequestHooks> & {
-  callHookSync<NameT extends HookKeys<RequestHooks> = HookKeys<RequestHooks>>(
-    name: NameT,
-    ...arguments_: Parameters<
-      RequestHooks[NameT] extends HookCallback ? RequestHooks[NameT] : never
-    >
-  ): void
-}
 
 /**
  * "xxx.d.ts" or "xxx.ts"
@@ -20,16 +10,18 @@ export type RequestHookable = Hookable<RequestHooks> & {
  * @example
  * ```ts
  * declare module '@rhao/request' {
- *   interface RequestCustomHooks<TData, TParams extends unknown[] = unknown[]> {
+ *   interface RequestConfigHooks<TData, TParams extends unknown[] = unknown[]> {
  *     custom: (value: number) => void // 自定义 hooks
  *   }
  * }
  * ```
  */
-export interface RequestCustomHooks<TData, TParams extends unknown[] = unknown[]> {}
+export interface RequestConfigHooks<TData = any, TParams extends unknown[] = unknown[]> {
+  /**
+   * 执行 `executor()` 时触发，早于 `before`，此时尚未对 `state` 做任何操作，用于处理前置条件
+   */
+  preface: AwaitableFn<[params: TParams, context: RequestContext<TData, TParams>]>
 
-export interface RequestHooks<TData = any, TParams extends unknown[] = unknown[]>
-  extends RequestCustomHooks<TData, TParams> {
   /**
    * 执行 `fetcher()` 前触发
    */
@@ -53,12 +45,12 @@ export interface RequestHooks<TData = any, TParams extends unknown[] = unknown[]
   /**
    * 执行 `executor()` 结束时触发，同 `Promise.finally`，每次执行均会触发该事件，用于释放资源
    */
-  finally: Fn<[context: RequestContext<TData, TParams>]>
+  finally: AwaitableFn<[context: RequestContext<TData, TParams>]>
 
   /**
    * 主动调用 `dispose()` 时触发，用于释放资源
    */
-  dispose: Fn<[context: RequestBasicContext<TData, TParams>]>
+  dispose: AwaitableFn<[context: RequestBasicContext<TData, TParams>]>
 
   /**
    * 执行 `cancel()` 时触发
@@ -85,6 +77,15 @@ export interface RequestHooks<TData = any, TParams extends unknown[] = unknown[]
   >
 }
 
+export type RequestHookable = Hookable<RequestConfigHooks> & {
+  callHookSync<NameT extends HookKeys<RequestConfigHooks> = HookKeys<RequestConfigHooks>>(
+    name: NameT,
+    ...arguments_: Parameters<
+      RequestConfigHooks[NameT] extends HookCallback ? RequestConfigHooks[NameT] : never
+    >
+  ): void
+}
+
 const defaultTask = { run: (function_: HookCallback) => function_() }
 const _createTask = () => defaultTask
 // @ts-expect-error
@@ -101,8 +102,8 @@ export function syncSerialTaskCaller<
 }
 
 export function createHooks() {
-  const hooks = _createHooks<RequestHooks>() as RequestHookable
-  function callHookSync(this: Hookable<RequestHooks>, name, ...args) {
+  const hooks = _createHooks<RequestConfigHooks>() as RequestHookable
+  function callHookSync(this: Hookable<RequestConfigHooks>, name, ...args) {
     args.unshift(name)
     this.callHookWith(syncSerialTaskCaller, name, ...args)
   }

@@ -21,10 +21,10 @@ pnpm add @rhao/request
 ### 创建 `useRequest`
 
 ```ts
-// src/hooks/useRequest
-import { createRequest } from '@rhao/request'
+// src/hooks/useRequest.ts
+import { createRequestHook } from '@rhao/request'
 
-export const useRequest = createRequest()
+export const useRequest = createRequestHook()
 ```
 
 ### 基础示例
@@ -55,10 +55,10 @@ pnpm add @rhao/request-basic-middleware
 #### 全局使用
 
 ```ts
-import { createRequest } from '@rhao/request'
+import { createRequestHook } from '@rhao/request'
 import { RequestDebounce, RequestThrottle } from '@rhao/request-basic-middleware'
 
-export const useRequest = createRequest({
+export const useRequest = createRequestHook({
   middleware: [RequestDebounce(), RequestThrottle()]
 })
 ```
@@ -99,7 +99,7 @@ pnpm add vue @rhao/request-middleware-vue
 ```ts
 import { RequestVue } from '@rhao/request-middleware-vue'
 
-export const useRequest = createRequest({
+export const useRequest = createRequestHook({
   middleware: [RequestVue()]
 })
 ```
@@ -123,7 +123,7 @@ data.value // => Date.now()
 
 ## 开发中间件
 
-`createRequest` 负责创建用于管理整个请求流程的 `hook` 函数，通过注册不同中间件来满足各种场景下的使用，支持函数和对象两种形式。
+`createRequestHook` 负责创建用于管理整个请求流程的 `hook` 函数，通过注册不同中间件来满足各种场景下的使用，支持函数和对象两种形式。
 
 > 通过 `hooks` 事件开发和 `middleware` 开发的区别：
 >  - hook：before、after 回调顺序执行（先注册先执行），不符合整个请求流，且不支持中断后续回调
@@ -152,19 +152,19 @@ export function RequestLogger() {
 
     console.log('[RequestLogger] - 当前配置项：', ctx.getOptions())
 
-    ctx.hook('before', (params) => {
+    ctx.hooks.hook('before', (params) => {
       console.log('[RequestLogger] - 调用参数：', params)
     })
 
-    ctx.hook('success', () => {
+    ctx.hooks.hook('success', () => {
       console.log('[RequestLogger] - 调用成功')
     })
 
-    ctx.hook('after', () => {
+    ctx.hooks.hook('after', () => {
       console.log('[RequestLogger] - 调用失败')
     })
 
-    ctx.hook('cancel', () => {
+    ctx.hooks.hook('cancel', () => {
       console.log('[RequestLogger] - 调用取消')
     })
   }
@@ -192,19 +192,19 @@ export function RequestLogger() {
 
       console.log('[RequestLogger] - 当前配置项：', ctx.getOptions())
 
-      ctx.hook('before', (params) => {
+      ctx.hooks.hook('before', (params) => {
         console.log('[RequestLogger] - 调用参数：', params)
       })
 
-      ctx.hook('success', () => {
+      ctx.hooks.hook('success', () => {
         console.log('[RequestLogger] - 调用成功')
       })
 
-      ctx.hook('after', () => {
+      ctx.hooks.hook('after', () => {
         console.log('[RequestLogger] - 调用失败')
       })
 
-      ctx.hook('cancel', () => {
+      ctx.hooks.hook('cancel', () => {
         console.log('[RequestLogger] - 调用取消')
       })
     },
@@ -228,24 +228,40 @@ export function RequestLogger() {
 ```ts
 // src/types/request.d.ts
 declare module '@rhao/request' {
-  interface RequestCustomOptions<TData, TParams extends unknown[] = unknown[]> {
+  interface RequestBasicOptions<TData, TParams extends unknown[] = unknown[]> {
+    // 扩展基础配置项
+  }
+
+  interface RequestOptions<TData, TParams extends unknown[] = unknown[]> {
     // 扩展配置项
   }
 
-  interface RequestCustomResult<TData, TParams extends unknown[] = unknown[]> {
+  interface RequestResult<TData, TParams extends unknown[] = unknown[]> {
     // 扩展结果
   }
 
-  interface RequestCustomHooks<TData, TParams extends unknown[] = unknown[]> {
+  interface RequestConfigHooks<TData, TParams extends unknown[] = unknown[]> {
     // 扩展 hooks
   }
 
-  interface RequestCustomBasicContext<TData, TParams extends unknown[] = unknown[]> {
+  interface RequestBasicContext<TData, TParams extends unknown[] = unknown[]> {
     // 扩展基础上下文
   }
 
-  interface RequestCustomContext<TData, TParams extends unknown[] = unknown[]> {
+  interface RequestContext<TData, TParams extends unknown[] = unknown[]> {
     // 扩展执行上下文
   }
 }
 ```
+
+## 迁移至 v1.x
+
+> - `createRequest` -> `createRequestHook`
+> - `useRequest().counter` -> `useRequest().keyManager`
+> - `options`
+>   + `dataCompare` -> `dataComparer`
+>   + `manual` -> `immediate`
+> - `types`
+>   + `BasicRequest` -> `BasicRequestHook`
+>   + `RequestHooks` -> `RequestConfigHooks`
+>   + ~~`RequestCustomXxx`~~

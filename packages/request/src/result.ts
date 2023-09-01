@@ -1,5 +1,4 @@
-/* eslint-disable unused-imports/no-unused-vars */
-import type { Fn, Getter, PromiseFn } from '@rhao/request-types'
+import type { Fn, Getter, PromiseFn } from '@rhao/types-base'
 import type { RequestState } from './state'
 
 /**
@@ -8,16 +7,13 @@ import type { RequestState } from './state'
  * @example
  * ```ts
  * declare module '@rhao/request' {
- *   interface RequestCustomResult<TData, TParams extends unknown[] = unknown[]> {
+ *   interface RequestResult<TData, TParams extends unknown[] = unknown[]> {
  *     custom?: {} // 自定义结果
  *   }
  * }
  * ```
  */
-export interface RequestCustomResult<TData, TParams extends unknown[] = unknown[]> {}
-
-export interface RequestResult<TData, TParams extends unknown[] = unknown[]>
-  extends RequestCustomResult<TData, TParams> {
+export interface RequestResult<TData, TParams extends unknown[] = unknown[]> {
   /**
    * 获取当前 `request()` 唯一标识
    */

@@ -1,11 +1,8 @@
-/* eslint-disable unused-imports/no-unused-vars */
-/* eslint-disable @typescript-eslint/indent */
 import type { NestedHooks } from 'hookable'
-import type { AwaitableFn, Getter, MaybeArray, MaybeFn, MaybeGetter } from '@rhao/request-types'
-import { assign } from '@rhao/request-utils'
-import type { RequestHooks } from './hooks'
+import type { AwaitableFn, Fn, Getter, MaybeArray, MaybeGetter } from '@rhao/types-base'
+import { assign } from 'lodash-unified'
+import type { RequestConfigHooks } from './hooks'
 import type { RequestMiddleware } from './middleware'
-import type { BasicRequest } from './request'
 
 /**
  * "xxx.d.ts" or "xxx.ts"
@@ -13,14 +10,12 @@ import type { BasicRequest } from './request'
  * @example
  * ```ts
  * declare module '@rhao/request' {
- *   interface RequestCustomOptions<TData, TParams extends unknown[] = unknown[]> {
- *     custom?: {} // 自定义配置项
+ *   interface RequestBasicOptions<TData, TParams extends unknown[] = unknown[]> {
+ *     custom?: {} // 自定义基础配置项
  *   }
  * }
  * ```
  */
-export interface RequestCustomOptions<TData, TParams extends unknown[] = unknown[]> {}
-
 export interface RequestBasicOptions {
   /**
    * 唯一标识生成器
@@ -28,52 +23,10 @@ export interface RequestBasicOptions {
   keyGenerator?: Getter<string>
 
   /**
-   * 是否手动执行
-   * - `true`: 手动调用 `run` 执行
-   * - `false`: 创建后自动执行
-   * @default false
-   */
-  manual?: boolean
-
-  /**
-   * `loading` 延迟时间，单位：`ms`，如果值大于 0，则启动延迟，若请求在延迟前结束则不会更新 `loading` 状态
-   * @default 300
-   */
-  loadingDelay?: number
-
-  /**
-   * 执行时是否保留 `data`，默认不保留
+   * 执行时是否保留旧 `data`
    * @default true
    */
   keepPreviousData?: MaybeGetter<boolean>
-
-  /**
-   * 单例模式，如果设为 `true`，则存在未完成的执行时不会再执行
-   * @default false
-   */
-  single?: MaybeFn<boolean, [newParams: unknown[], oldParams: unknown[]]>
-
-  /**
-   * 强制单例模式，如果设为 `true`，在执行前将取消之前的所有执行，不论其是否成功
-   *
-   * @default false
-   */
-  singleWithForce?: MaybeGetter<boolean>
-
-  /**
-   * 数据对比，在执行流时对比数据是否一致，不一致时同步数据且触发 `stateChange`
-   * @default
-   * ```ts
-   * previousData === currentData
-   * ```
-   */
-  dataCompare?: AwaitableFn<[previousData: unknown, currentData: unknown]>
-
-  /**
-   * 执行失败时是否初始化数据
-   * @default true
-   */
-  initDataWhenError?: MaybeGetter<boolean>
 
   /**
    * 中间件
@@ -81,9 +34,9 @@ export interface RequestBasicOptions {
   middleware?: RequestMiddleware<any>[]
 
   /**
-   * `hooks` 配置
+   * 配置 `hooks` 事件
    */
-  hooks?: NestedHooks<RequestHooks>[]
+  hooks?: NestedHooks<RequestConfigHooks>[]
 
   /**
    * 执行 `dispose()` 时是否调用 `cancel()`
@@ -91,6 +44,15 @@ export interface RequestBasicOptions {
    * @default true
    */
   cancelWhenDispose?: MaybeGetter<boolean>
+
+  /**
+   * 数据对比器，在执行流时对比数据是否一致，不一致时同步数据且触发 `stateChange`
+   * @default
+   * ```ts
+   * previousData === currentData
+   * ```
+   */
+  dataComparer?: Fn<[previousData: unknown, currentData: unknown], boolean>
 
   /**
    * 数据解析器，执行 `fetcher()` 后直接进行数据解析
@@ -119,9 +81,20 @@ export interface RequestBasicOptions {
   dataParser?: AwaitableFn<[data: any], unknown>
 }
 
+/**
+ * "xxx.d.ts" or "xxx.ts"
+ *
+ * @example
+ * ```ts
+ * declare module '@rhao/request' {
+ *   interface RequestOptions<TData, TParams extends unknown[] = unknown[]> {
+ *     custom?: {} // 自定义配置项
+ *   }
+ * }
+ * ```
+ */
 export interface RequestOptions<TData, TParams extends unknown[] = unknown[]>
-  extends RequestCustomOptions<TData, TParams>,
-    Omit<RequestBasicOptions, 'hooks'> {
+  extends Omit<RequestBasicOptions, 'hooks'> {
   /**
    * 唯一标识
    */
@@ -141,42 +114,42 @@ export interface RequestOptions<TData, TParams extends unknown[] = unknown[]>
   initData?: Getter<TData>
 
   /**
-   * 默认执行参数，仅在创建时第一次自动执行有效
+   * 数据校准器，调用 `dataParser` 后对获取到的数据进行校准，返回正确完整的类型数据
+   *
+   * @example
+   * ```ts
+   * function fetchList() {
+   *   // 返回数据与格式不符合，需对数据进行校准
+   *   return [{ id: '1', name: null }] as { id: number; name: string }[]
+   * }
+   *
+   * useRequest(fetchList, {
+   *   dataCalibrator: (data) => {
+   *     // 校准数据
+   *     return data.map((item) => ({ id: parseInt(item.id), name: item.name || '-' }))
+   *   }
+   * })
+   * ```
    */
-  defaultParams?: TParams
-
-  /**
-   * 执行是否就绪
-   * @default true
-   */
-  ready?: MaybeFn<boolean, [TParams]>
+  dataCalibrator?: Fn<[data: TData], TData>
 
   /**
    * `hooks` 配置
    */
-  hooks?: MaybeArray<NestedHooks<RequestHooks<TData, TParams>>>
+  hooks?: MaybeArray<NestedHooks<RequestConfigHooks<TData, TParams>>>
 }
 
-export function normalizeBasicOptions(request: BasicRequest, options?: RequestBasicOptions) {
+export function normalizeBasicOptions(options?: RequestBasicOptions) {
   return assign(
     {
-      keyGenerator: () => `__request__${request.counter.next()}`,
+      keyGenerator: () => '',
       dataParser: (data) => data,
-      dataCompare: (d1, d2) => d1 === d2,
+      dataComparer: (d1, d2) => d1 === d2,
       cancelWhenDispose: true,
       keepPreviousData: true,
-      single: false,
-      singleWithForce: false,
-      initDataWhenError: true,
-      manual: false,
-      loadingDelay: 300,
       hooks: [],
       middleware: [],
     } as RequestBasicOptions,
     options,
   ) as Required<RequestBasicOptions>
-}
-
-export function normalizeOptions(request: BasicRequest, options?: RequestOptions<any, any[]>) {
-  return assign({ ready: true } as RequestOptions<any, any[]>, request.options, options)
 }

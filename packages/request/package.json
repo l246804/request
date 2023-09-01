@@ -51,11 +51,16 @@
     "build": "unbuild"
   },
   "dependencies": {
-    "@rhao/request-utils": "workspace:*",
-    "hookable": "^5.5.3"
+    "@rhao/lodash-x": "^0.4.0",
+    "@rhao/types-base": "^0.2.0",
+    "@types/lodash": "^4.14.197",
+    "@types/lodash-es": "^4.17.8",
+    "hookable": "^5.5.3",
+    "lodash": "^4.17.21",
+    "lodash-es": "^4.17.21",
+    "lodash-unified": "^1.0.3"
   },
   "devDependencies": {
-    "@rhao/request-types": "workspace:*",
     "unbuild": "^1.2.1"
   }
 }

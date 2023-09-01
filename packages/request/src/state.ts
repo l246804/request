@@ -1,4 +1,4 @@
-import type { Nullish } from '@rhao/request-types'
+import type { Nullish } from '@rhao/types-base'
 import type { RequestOptions } from './options'
 
 /**
