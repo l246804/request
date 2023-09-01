@@ -1,5 +1,11 @@
 # @rhao/request
 
+## 3.0.0
+
+### Major Changes
+
+- b905c2c: refactor: 重构核心功能
+
 ## 2.1.0
 
 ### Minor Changes

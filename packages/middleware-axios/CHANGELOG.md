@@ -1,5 +1,16 @@
 # @rhao/request-middleware-axios
 
+## 4.0.0
+
+### Major Changes
+
+- 53db0b3: chore: update deps
+
+### Patch Changes
+
+- Updated dependencies [b905c2c]
+  - @rhao/request@3.0.0
+
 ## 3.0.0
 
 ### Patch Changes

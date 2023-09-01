@@ -1,5 +1,11 @@
 # @rhao/request-types
 
+## 2.0.1
+
+### Patch Changes
+
+- 02365c4: docs: 补充废弃说明
+
 ## 2.0.0
 
 ### Major Changes
