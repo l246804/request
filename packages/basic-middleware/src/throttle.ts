@@ -1,8 +1,8 @@
 /* eslint-disable unused-imports/no-unused-vars */
 import type { RequestMiddleware } from '@rhao/request'
-import { assign, isUndef, mapValues, pick, toValue } from '@rhao/request-utils'
-import { throttle } from 'lodash-unified'
-import type { MaybeGetter } from '@rhao/request-types'
+import { toValue } from '@rhao/lodash-x'
+import { assign, isNil, mapValues, pick, throttle } from 'lodash-unified'
+import type { MaybeGetter } from '@rhao/types-base'
 
 export interface RequestThrottleOptions {
   /**
@@ -31,7 +31,7 @@ export function RequestThrottle(initialOptions?: RequestThrottleOptions) {
         ctx.getOptions().throttle,
       )
 
-      if (!isUndef(options.wait)) {
+      if (!isNil(options.wait)) {
         // opts.leading、opts.trailing 不能显示设置为空
         const opts = mapValues(pick(options, ['leading', 'trailing']), (v) => toValue(v))
         const throttledExecutor = throttle(ctx.executor, options.wait, opts)
@@ -45,7 +45,7 @@ export function RequestThrottle(initialOptions?: RequestThrottleOptions) {
 }
 
 declare module '@rhao/request' {
-  interface RequestCustomOptions<TData, TParams extends unknown[] = unknown[]> {
+  interface RequestOptions<TData, TParams extends unknown[] = unknown[]> {
     throttle?: RequestThrottleOptions
   }
 }

@@ -21,7 +21,7 @@ pnpm add vue @rhao/request @rhao/request-middleware-vue
 // hooks/useRequest.ts
 import { RequestVue } from '@rhao/request-middleware-vue'
 
-export const useRequest = createRequest({ middleware: [RequestVue()] })
+export const useRequest = createRequestHook({ middleware: [RequestVue()] })
 ```
 
 单文件组件中使用。

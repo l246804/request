@@ -34,7 +34,7 @@ export const axios = Axios.create({
 ```ts
 // hooks/useRequest.ts
 import type {
-  BasicRequest,
+  BasicRequestHook,
   RequestFetcher,
   RequestOptions,
   RequestResult,
@@ -43,7 +43,7 @@ import { RequestAxios } from '@rhao/request-middleware-vue'
 import { AxiosResponse } from 'axios'
 
 // 自定义调用类型
-interface UseRequest extends BasicRequest {
+interface UseRequest extends BasicRequestHook {
   <TData, TParams extends unknown[] = unknown[]>(
     fetcher: RequestFetcher<TData, TParams>,
     options?: RequestOptions<TData, TParams>,
@@ -57,7 +57,7 @@ interface DataFormat {
   message?: string
 }
 
-export const useRequest = createRequest({
+export const useRequest = createRequestHook({
   // 此处解析数据格式，仅返回响应的后端数据
   dataParser: (data: AxiosResponse) => {
     // 响应状态码错误

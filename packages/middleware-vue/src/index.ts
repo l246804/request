@@ -1,9 +1,9 @@
 /* eslint-disable unused-imports/no-unused-vars */
 import { type RequestMiddleware, type RequestState, createState } from '@rhao/request'
-import { assign } from '@rhao/request-utils'
 import { reactive, toRefs, watch } from 'vue-demi'
 import type { Ref, WatchSource } from 'vue-demi'
 import { tryOnScopeDispose, tryOnUnmounted } from '@vueuse/core'
+import { assign, omit } from 'lodash-unified'
 
 export function RequestVue() {
   const middleware: RequestMiddleware = {
@@ -13,7 +13,7 @@ export function RequestVue() {
       const state = reactive(createState(getOptions()))
 
       hooks.hook('stateChange', (_state) => {
-        assign(state, _state)
+        assign(state, omit(_state, ['loading']))
       })
       hooks.hook('loadingChange', (loading) => {
         state.loading = loading
@@ -35,11 +35,11 @@ export function RequestVue() {
 }
 
 declare module '@rhao/request' {
-  interface RequestCustomOptions<TData, TParams extends unknown[] = unknown[]> {
+  interface RequestOptions<TData, TParams extends unknown[] = unknown[]> {
     refreshDeps?: WatchSource | WatchSource[]
   }
 
-  interface RequestCustomResult<TData, TParams extends unknown[] = unknown[]> {
+  interface RequestResult<TData, TParams extends unknown[] = unknown[]> {
     data: Ref<RequestState<TData, TParams>['data']>
     params: Ref<RequestState<TData, TParams>['params']>
     loading: Ref<RequestState<TData, TParams>['loading']>

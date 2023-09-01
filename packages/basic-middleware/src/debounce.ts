@@ -1,8 +1,10 @@
 /* eslint-disable unused-imports/no-unused-vars */
 import type { RequestMiddleware } from '@rhao/request'
-import { assign, isUndef, mapValues, pick, toValue } from '@rhao/request-utils'
-import { debounce } from 'lodash-unified'
-import type { MaybeGetter } from '@rhao/request-types'
+import type { DebounceSettings } from 'lodash-unified'
+import { assign, debounce, isNil, mapValues, pick } from 'lodash-unified'
+import { toValue } from '@rhao/lodash-x'
+
+import type { MaybeGetter } from '@rhao/types-base'
 
 export interface RequestDebounceOptions {
   /**
@@ -35,9 +37,10 @@ export function RequestDebounce(initialOptions?: RequestDebounceOptions) {
         ctx.getOptions().debounce,
       )
 
-      if (!isUndef(options.wait)) {
+      if (!isNil(options.wait)) {
         // opts.maxWait 不能显示设置为空
-        const opts = mapValues(pick(options, ['maxWait', 'leading', 'trailing']), (v) => toValue(v))
+        const opts = mapValues(pick(options, ['maxWait', 'leading', 'trailing']), (v) =>
+          toValue(v)) as DebounceSettings
         const debouncedExecutor = debounce(ctx.executor, options.wait, opts)
 
         ctx.hooks.hook('cancel', () => debouncedExecutor.cancel())
@@ -49,7 +52,7 @@ export function RequestDebounce(initialOptions?: RequestDebounceOptions) {
 }
 
 declare module '@rhao/request' {
-  interface RequestCustomOptions<TData, TParams extends unknown[] = unknown[]> {
+  interface RequestOptions<TData, TParams extends unknown[] = unknown[]> {
     debounce?: RequestDebounceOptions
   }
 }

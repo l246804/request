@@ -5,8 +5,8 @@ import type {
   StoreKey,
 } from '@rhao/request'
 import type { AxiosInstance, AxiosRequestConfig, AxiosStatic } from 'axios'
-import { assign, toValue } from '@rhao/request-utils'
-import type { MaybeFn } from '@rhao/request-types'
+import { toValue } from '@rhao/lodash-x'
+import type { MaybeFn } from '@rhao/types-base'
 import Axios from 'axios'
 import utils from 'axios/unsafe/utils.js'
 
@@ -64,7 +64,7 @@ export function RequestAxios(initialOptions?: RequestAxiosOptions) {
       const { fetcher } = ctx
 
       ctx.setStore(storeKey, {
-        options: assign(
+        options: Object.assign(
           { associativeCancel: false } as RequestAxiosOptions,
           initialOptions,
           ctx.getOptions(),
@@ -84,7 +84,7 @@ export function RequestAxios(initialOptions?: RequestAxiosOptions) {
 }
 
 declare module '@rhao/request' {
-  interface RequestCustomOptions<TData, TParams extends unknown[] = unknown[]> {
+  interface RequestOptions<TData, TParams extends unknown[] = unknown[]> {
     /**
      * 是否关联取消，如果设为 `true`，当调用 `cancel` 时也会取消 `axios` 请求
      * @default false

@@ -1,15 +1,8 @@
 /* eslint-disable unused-imports/no-unused-vars */
 import { type RequestMiddleware } from '@rhao/request'
-import {
-  assign,
-  getVisibilityKeys,
-  listenVisibilityChange,
-  pauseableTimer,
-  pick,
-  toValue,
-} from '@rhao/request-utils'
-import type { Fn, Getter, MaybeGetter } from '@rhao/request-types'
-import { once } from 'lodash-unified'
+import { pauseableTimer, toValue } from '@rhao/lodash-x'
+import type { Fn, Getter, MaybeGetter } from '@rhao/types-base'
+import { assign, once, pick } from 'lodash-unified'
 
 export interface RequestRefreshOptions {
   /**
@@ -64,13 +57,13 @@ function _init() {
   const onlineCallback = () => {
     reconnectHandlers.forEach((fn) => navigator.onLine && fn())
   }
+  const visibilitychangeCallback = () => {
+    visibilityHandlers.forEach((fn) => fn(document.hidden))
+  }
 
   window.addEventListener('focus', focusCallback)
   window.addEventListener('online', onlineCallback)
-
-  const unListen = listenVisibilityChange((hidden) => {
-    visibilityHandlers.forEach((fn) => fn(hidden))
-  })
+  document.addEventListener('visibilitychange', visibilitychangeCallback)
 
   RequestRefresh.dispose = () => {
     focusHandlers.clear()
@@ -79,7 +72,7 @@ function _init() {
 
     window.removeEventListener('focus', focusCallback)
     window.removeEventListener('online', onlineCallback)
-    unListen()
+    document.removeEventListener('visibilitychange', visibilitychangeCallback)
 
     focusHandlers = null as any
     reconnectHandlers = null as any
@@ -106,7 +99,7 @@ export function RequestRefresh(initialOptions?: Pick<RequestRefreshOptions, 'err
           interval: 0,
           errorRetryCount: -1,
         } as RequestRefreshOptions,
-        pick(initialOptions || {}, ['errorRetryCount']),
+        pick(initialOptions, ['errorRetryCount']),
         ctx.getOptions().refresh,
       ) as RequestRefreshOptions
 
@@ -158,12 +151,12 @@ export function RequestRefresh(initialOptions?: Pick<RequestRefreshOptions, 'err
       const isDisabled = () => !(toValue(options.interval!) > 0)
 
       // 注册页面显示/隐藏事件
-      const { hidden: hiddenKey } = getVisibilityKeys()
       const visibilityHandler = (hidden: boolean) => {
         if (toValue(options.whenHidden!)) return
         if (hidden) {
           pauseTimer()
-        } else {
+        }
+        else {
           // 页面显示时立即轮询
           immediateResume()
         }
@@ -188,7 +181,7 @@ export function RequestRefresh(initialOptions?: Pick<RequestRefreshOptions, 'err
       })
       ctx.hooks.hook('success', () => {
         if (isDisabled()) return
-        if (!toValue(options.whenHidden) && document[hiddenKey]) return
+        if (!toValue(options.whenHidden) && document.hidden) return
         resumeTimer()
       })
       ctx.hooks.hookOnce('dispose', () => {
@@ -211,11 +204,11 @@ export function RequestRefresh(initialOptions?: Pick<RequestRefreshOptions, 'err
 }
 
 declare module '@rhao/request' {
-  interface RequestCustomOptions<TData, TParams extends unknown[] = unknown[]> {
+  interface RequestOptions<TData, TParams extends unknown[] = unknown[]> {
     refresh?: RequestRefreshOptions
   }
 
-  interface RequestCustomBasicContext<TData, TParams extends unknown[] = unknown[]> {
+  interface RequestBasicContext<TData, TParams extends unknown[] = unknown[]> {
     isPolling: Getter<boolean>
   }
 }

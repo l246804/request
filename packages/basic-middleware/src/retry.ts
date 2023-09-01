@@ -1,7 +1,8 @@
 /* eslint-disable unused-imports/no-unused-vars */
 import type { RequestContext, RequestMiddleware } from '@rhao/request'
-import { assign, ensureError, sleep, toValue } from '@rhao/request-utils'
-import type { AwaitableFn, Fn, MaybeFn, MaybeGetter } from '@rhao/request-types'
+import { castError, sleep, toValue } from '@rhao/lodash-x'
+import type { AwaitableFn, Fn, MaybeFn, MaybeGetter } from '@rhao/types-base'
+import { assign } from 'lodash-unified'
 
 export interface RequestRetryOptions {
   /**
@@ -57,8 +58,9 @@ export function RequestRetry(initialOptions?: RequestRetryOptions) {
           const data = await fetcher(...args)
           await getOptions().dataParser(data)
           result.data = data
-        } catch (err: unknown) {
-          const error = ensureError(err)
+        }
+        catch (err: unknown) {
+          const error = castError(err)
           result.error = error
         }
 
@@ -101,11 +103,11 @@ export function RequestRetry(initialOptions?: RequestRetryOptions) {
 }
 
 declare module '@rhao/request' {
-  interface RequestCustomOptions<TData, TParams extends unknown[] = unknown[]> {
+  interface RequestOptions<TData, TParams extends unknown[] = unknown[]> {
     retry?: RequestRetryOptions
   }
 
-  interface RequestCustomHooks<TData, TParams extends unknown[] = unknown[]> {
+  interface RequestConfigHooks<TData, TParams extends unknown[] = unknown[]> {
     /**
      * 重试进行中
      */

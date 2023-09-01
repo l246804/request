@@ -1,8 +1,8 @@
 /* eslint-disable unused-imports/no-unused-vars */
 import type { RequestBasicContext, RequestMiddleware, StoreKey } from '@rhao/request'
-import { assign, pauseablePromise, toValue } from '@rhao/request-utils'
-import type { Fn, MaybeGetter } from '@rhao/request-types'
-import { once } from 'lodash-unified'
+import { controllablePromise, toValue } from '@rhao/lodash-x'
+import type { Fn, MaybeGetter } from '@rhao/types-base'
+import { assign, once } from 'lodash-unified'
 
 export interface RequestSWROptions {
   /**
@@ -32,9 +32,9 @@ const init = once(() => {
 function isStaled(cache: ICache, staleTime: MaybeGetter<number>) {
   const staleTimeValue = toValue(staleTime)
   return (
-    staleTimeValue > 0 &&
-    cache.lastUpdateTime != null &&
-    Date.now() - cache.lastUpdateTime < staleTimeValue
+    staleTimeValue > 0
+    && cache.lastUpdateTime != null
+    && Date.now() - cache.lastUpdateTime < staleTimeValue
   )
 }
 
@@ -89,8 +89,8 @@ export function RequestSWR(initialOptions?: RequestSWROptions) {
         const { options } = ctx.getStore(storeKey)
         // 在保鲜期内且数据不一致时更新数据
         if (
-          isStaled(currentCache, options.staleTime!) &&
-          !getOptions().dataCompare(currentCache.data, getState().data)
+          isStaled(currentCache, options.staleTime!)
+          && !getOptions().dataComparer(currentCache.data, getState().data)
         )
           mutateState({ data: currentCache.data })
       })
@@ -112,7 +112,7 @@ export function RequestSWR(initialOptions?: RequestSWROptions) {
       if (!toValue(options.executeInStaleTime) && isStaled(currentCache, options.staleTime!))
         return ctx.mutateData(currentCache.data)
 
-      const { promise, resolve } = pauseablePromise()
+      const { promise, resolve } = controllablePromise()
       currentCache.promise = promise
 
       ctx.hooks.hookOnce('finally', () => {
@@ -122,7 +122,7 @@ export function RequestSWR(initialOptions?: RequestSWROptions) {
         if (!ctx.isFailed() && !ctx.isCanceled()) {
           currentCache.lastUpdateTime = Date.now()
           // 若数据一致则不同步
-          if (!ctx.getOptions().dataCompare(data, currentCache.data)) {
+          if (!ctx.getOptions().dataComparer(data, currentCache.data)) {
             currentCache.data = data
             ctx.hooks.callHookParallel('swr:syncData', data)
           }
@@ -140,11 +140,11 @@ export function RequestSWR(initialOptions?: RequestSWROptions) {
 }
 
 declare module '@rhao/request' {
-  interface RequestCustomOptions<TData, TParams extends unknown[] = unknown[]> {
+  interface RequestOptions<TData, TParams extends unknown[] = unknown[]> {
     swr?: RequestSWROptions
   }
 
-  interface RequestCustomHooks<TData, TParams extends unknown[] = unknown[]> {
+  interface RequestConfigHooks<TData, TParams extends unknown[] = unknown[]> {
     'swr:syncData': Fn<[TData]>
   }
 }

@@ -1,5 +1,10 @@
-import type { BasicRequest, RequestFetcher, RequestOptions, RequestResult } from '@rhao/request'
-import { createRequest } from '@rhao/request'
+import type {
+  BasicRequestHook,
+  RequestFetcher,
+  RequestOptions,
+  RequestResult,
+} from '@rhao/request'
+import { createRequestHook } from '@rhao/request'
 import { RequestSWR } from '@rhao/request-basic-middleware/swr'
 import { RequestRetry } from '@rhao/request-basic-middleware/retry'
 import { RequestRefresh } from '@rhao/request-basic-middleware/refresh'
@@ -8,7 +13,7 @@ import { RequestVue } from '@rhao/request-middleware-vue'
 import { RequestAxios } from '@rhao/request-middleware-axios'
 import type { AxiosError, AxiosResponse } from 'axios'
 
-interface UseRequest extends BasicRequest {
+interface UseRequest extends BasicRequestHook {
   <TData, TParams extends unknown[] = unknown[]>(
     fetcher: RequestFetcher<TData, TParams>,
     options?: RequestOptions<TData, TParams>,
@@ -21,8 +26,8 @@ interface DataBasicFormat {
   msg: string
 }
 
-export const useRequest = createRequest({
-  manual: true,
+export const useRequest = createRequestHook({
+  immediate: false,
   middleware: [
     RequestAxios({ associativeCancel: true }),
     RequestVue(),

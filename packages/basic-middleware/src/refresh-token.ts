@@ -1,8 +1,8 @@
 /* eslint-disable unused-imports/no-unused-vars */
-import type { BasicRequest, RequestContext, RequestMiddleware } from '@rhao/request'
-import { assign, ensureError, pick, toValue } from '@rhao/request-utils'
-import type { AwaitableFn, PromiseFn } from '@rhao/request-types'
-import { once } from 'lodash-unified'
+import type { BasicRequestHook, RequestContext, RequestMiddleware } from '@rhao/request'
+import { castError, toValue } from '@rhao/lodash-x'
+import type { AwaitableFn, PromiseFn } from '@rhao/types-base'
+import { assign, once, pick } from 'lodash-unified'
 
 export interface RequestRefreshTokenOptions {
   /**
@@ -23,7 +23,7 @@ export interface RequestRefreshTokenOptions {
   handler: PromiseFn<[context: RequestContext<any, any[]>], void>
 }
 
-let refreshPromiseMap: WeakMap<BasicRequest, Promise<any> | null>
+let refreshPromiseMap: WeakMap<BasicRequestHook, Promise<any> | null>
 const init = once(() => {
   refreshPromiseMap = new WeakMap()
 })
@@ -37,7 +37,7 @@ export function RequestRefreshToken(initialOptions: RequestRefreshTokenOptions) 
       const options = assign(
         { allow: () => true } as Partial<RequestRefreshTokenOptions>,
         initialOptions,
-        pick(ctx.getOptions().refreshToken || {}, ['allow']),
+        pick(ctx.getOptions().refreshToken, ['allow']),
       )
       const { request, fetcher, getKey, getOptions } = ctx
 
@@ -54,9 +54,10 @@ export function RequestRefreshToken(initialOptions: RequestRefreshTokenOptions) 
           // 正常调用 fetcher，之后再通过 dataParser 解析数据，验证请求是否失败
           const data = await fetcher(...args)
           await getOptions().dataParser(data)
-        } catch (err: unknown) {
+        }
+        catch (err: unknown) {
           // 请求失败后验证根据当前的错误验证是否是 token 过期导致的
-          const error = ensureError(err)
+          const error = castError(err)
           const isExpired = await options.expired(error)
           if (!isExpired) return Promise.reject(error)
 
@@ -86,7 +87,7 @@ export function RequestRefreshToken(initialOptions: RequestRefreshTokenOptions) 
 }
 
 declare module '@rhao/request' {
-  interface RequestCustomOptions<TData, TParams extends unknown[] = unknown[]> {
+  interface RequestOptions<TData, TParams extends unknown[] = unknown[]> {
     refreshToken?: Pick<RequestRefreshTokenOptions, 'allow'>
   }
 }
