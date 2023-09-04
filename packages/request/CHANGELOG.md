@@ -1,5 +1,11 @@
 # @rhao/request
 
+## 3.0.1
+
+### Patch Changes
+
+- f33e2fa: chore: 更新 package.json 的导出配置
+
 ## 3.0.0
 
 ### Major Changes

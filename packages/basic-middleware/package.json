@@ -75,7 +75,7 @@
     "build": "unbuild"
   },
   "peerDependencies": {
-    "@rhao/request": ">=3.0.0"
+    "@rhao/request": ">=3.0.1"
   },
   "dependencies": {
     "@rhao/lodash-x": "^0.4.0",
