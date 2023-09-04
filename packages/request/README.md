@@ -254,7 +254,7 @@ declare module '@rhao/request' {
 }
 ```
 
-## 迁移至 v1.x
+## 迁移至 v3.x
 
 > - `createRequest` -> `createRequestHook`
 > - `useRequest().counter` -> `useRequest().keyManager`

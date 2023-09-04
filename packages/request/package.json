@@ -34,6 +34,11 @@
       "require": "./dist/index.cjs",
       "import": "./dist/index.mjs"
     },
+    "./builtin-middleware/*": {
+      "types": "./dist/builtin-middleware/*.d.ts",
+      "require": "./dist/builtin-middleware/*.cjs",
+      "import": "./dist/builtin-middleware/*.mjs"
+    },
     "./*": "./*"
   },
   "main": "./dist/index.cjs",

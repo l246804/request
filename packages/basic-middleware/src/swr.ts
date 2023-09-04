@@ -107,7 +107,7 @@ export function RequestSWR(initialOptions?: RequestSWROptions) {
       // 存在共享的 promise 时直接返回
       if (currentCache.promise != null) return currentCache.promise
 
-      // 数据在保鲜期内且 executeInStaleTime 未 `false` 时则直接返回
+      // 数据在保鲜期内且 executeInStaleTime 为 `false` 时则直接返回
       const options = ctx.getStore(storeKey)!.options
       if (!toValue(options.executeInStaleTime) && isStaled(currentCache, options.staleTime!))
         return ctx.mutateData(currentCache.data)
