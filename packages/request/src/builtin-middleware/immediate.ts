@@ -20,7 +20,7 @@ declare module '@rhao/request' {
      * 是否立即执行
      * - `true`: 创建后自动执行
      * - `false`: 手动调用 `run` 执行
-     * @default false
+     * @default true
      */
     immediate?: boolean
   }
