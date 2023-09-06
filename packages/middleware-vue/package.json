@@ -46,7 +46,7 @@
     "build": "unbuild"
   },
   "peerDependencies": {
-    "@rhao/request": ">=3.0.1",
+    "@rhao/request": ">=3.0.2",
     "@vue/composition-api": "^1.0.0-rc.1",
     "vue": "^2.0.0 || >=3.0.0"
   },

@@ -1,5 +1,11 @@
 # @rhao/request
 
+## 3.0.2
+
+### Patch Changes
+
+- 1f837d5: chore: 更改 immediate 错误注释
+
 ## 3.0.1
 
 ### Patch Changes

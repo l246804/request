@@ -44,7 +44,7 @@
     "build": "unbuild"
   },
   "peerDependencies": {
-    "@rhao/request": ">=3.0.1",
+    "@rhao/request": ">=3.0.2",
     "axios": ">=1.0.0"
   },
   "dependencies": {
