@@ -19,7 +19,7 @@ import { createRequestHook } from '@rhao/request'
 import { RequestDebounce } from '@rhao/request-basic-middleware'
 
 // 推荐：仅扩展相关中间件自定义配置项
-import { RequestDebounce } from '@rhao/request-basic-middleware/debounce'
+import { RequestDebounce } from '@rhao/request-basic-middleware/middleware/debounce'
 
 export const useRequest = createRequestHook({
   middleware: [RequestDebounce()]

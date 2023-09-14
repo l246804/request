@@ -28,37 +28,12 @@
       "require": "./dist/index.cjs",
       "import": "./dist/index.mjs"
     },
-    "./*": "./*",
-    "./debounce": {
-      "types": "./dist/debounce.d.ts",
-      "require": "./dist/debounce.cjs",
-      "import": "./dist/debounce.mjs"
+    "./middleware/*": {
+      "types": "./dist/*.d.ts",
+      "require": "./dist/*.cjs",
+      "import": "./dist/*.mjs"
     },
-    "./throttle": {
-      "types": "./dist/throttle.d.ts",
-      "require": "./dist/throttle.cjs",
-      "import": "./dist/throttle.mjs"
-    },
-    "./refresh": {
-      "types": "./dist/refresh.d.ts",
-      "require": "./dist/refresh.cjs",
-      "import": "./dist/refresh.mjs"
-    },
-    "./refresh-token": {
-      "types": "./dist/refresh-token.d.ts",
-      "require": "./dist/refresh-token.cjs",
-      "import": "./dist/refresh-token.mjs"
-    },
-    "./retry": {
-      "types": "./dist/retry.d.ts",
-      "require": "./dist/retry.cjs",
-      "import": "./dist/retry.mjs"
-    },
-    "./swr": {
-      "types": "./dist/swr.d.ts",
-      "require": "./dist/swr.cjs",
-      "import": "./dist/swr.mjs"
-    }
+    "./*": "./*"
   },
   "main": "./dist/index.cjs",
   "module": "./dist/index.mjs",
