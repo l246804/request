@@ -1,8 +1,10 @@
 import { pauseableTimer } from '@rhao/lodash-x'
+import type { Fn } from '@rhao/types-base'
 import type { RequestMiddleware } from '../middleware'
 
 export function RequestLoading() {
   const middleware: RequestMiddleware = {
+    name: 'Builtin:RequestLoading',
     priority: 1000,
     setup: (ctx) => {
       const { hooks, getState, getOptions, mutateState } = ctx
@@ -52,5 +54,12 @@ declare module '@rhao/request' {
      * @default 300
      */
     loadingDelay?: number
+  }
+
+  export interface RequestConfigHooks<TData, TParams extends unknown[] = unknown[]> {
+    /**
+     * 请求状态变更时触发，多次并发调用仅在初次和最近执行结束后触发
+     */
+    loadingChange: Fn<[loading: boolean, context: RequestBasicContext<TData, TParams>]>
   }
 }

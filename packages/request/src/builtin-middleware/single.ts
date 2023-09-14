@@ -4,6 +4,7 @@ import type { RequestMiddleware } from '../middleware'
 
 export function RequestSingle() {
   const middleware: RequestMiddleware = {
+    name: 'Builtin:RequestSingle',
     priority: 1000,
     setup(ctx) {
       const { hooks, getOptions, getState, hasPending, clearPendingWithCancel } = ctx

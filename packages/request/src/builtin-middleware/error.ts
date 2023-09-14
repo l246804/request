@@ -4,6 +4,7 @@ import type { RequestMiddleware } from '../middleware'
 
 export function RequestError() {
   const middleware: RequestMiddleware = {
+    name: 'Builtin:RequestError',
     priority: 1000,
     setup: (ctx) => {
       const { hooks, getOptions, mutateState } = ctx

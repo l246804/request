@@ -5,6 +5,7 @@ import { RequestError } from './builtin-middleware/error'
 import { RequestImmediate } from './builtin-middleware/immediate'
 import { RequestLoading } from './builtin-middleware/loading'
 import { RequestSingle } from './builtin-middleware/single'
+import { RequestComposables } from './builtin-middleware/composables'
 
 export type { BasicRequestHook } from './core'
 
@@ -13,6 +14,7 @@ export * from './builtin-middleware/error'
 export * from './builtin-middleware/immediate'
 export * from './builtin-middleware/loading'
 export * from './builtin-middleware/single'
+export * from './builtin-middleware/composables'
 
 /**
  * 创建 `request()` 函数，基于中间件和 `hooks` 满足不同场景下的需求。
@@ -26,6 +28,7 @@ export function createRequestHook(options?: RequestBasicOptions) {
     RequestImmediate(),
     RequestLoading(),
     RequestError(),
+    RequestComposables(),
   )
   return baseCreateRequestHook(options)
 }

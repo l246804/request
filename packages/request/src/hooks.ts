@@ -65,11 +65,6 @@ export interface RequestConfigHooks<TData = any, TParams extends unknown[] = unk
   discarded: AwaitableFn<[context: RequestContext<TData, TParams>]>
 
   /**
-   * 请求状态变更时触发，多次并发调用仅在初次和最近执行结束后触发
-   */
-  loadingChange: Fn<[loading: boolean, context: RequestBasicContext<TData, TParams>]>
-
-  /**
    * `state` 变更时触发，参数为本次变更的 `state`
    */
   stateChange: Fn<

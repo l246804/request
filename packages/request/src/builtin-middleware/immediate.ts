@@ -3,6 +3,7 @@ import type { RequestMiddleware } from '../middleware'
 
 export function RequestImmediate() {
   const middleware: RequestMiddleware = {
+    name: 'Builtin:RequestImmediate',
     priority: 1000,
     setup: (ctx) => {
       const { getOptions, getResult } = ctx

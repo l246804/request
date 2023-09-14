@@ -4,6 +4,7 @@ import type { RequestMiddleware } from '../middleware'
 
 export function RequestReady() {
   const middleware: RequestMiddleware = {
+    name: 'Builtin:RequestReady',
     priority: 100000,
     setup(ctx) {
       const { hooks, getOptions } = ctx
