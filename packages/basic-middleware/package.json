@@ -29,9 +29,9 @@
       "import": "./dist/index.mjs"
     },
     "./middleware/*": {
-      "types": "./dist/*.d.ts",
-      "require": "./dist/*.cjs",
-      "import": "./dist/*.mjs"
+      "types": "./dist/middleware/*.d.ts",
+      "require": "./dist/middleware/*.cjs",
+      "import": "./dist/middleware/*.mjs"
     },
     "./*": "./*"
   },
