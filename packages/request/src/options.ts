@@ -134,6 +134,51 @@ export interface RequestOptions<TData, TParams extends unknown[] = unknown[]>
   dataCalibrator?: Fn<[data: TData], TData>
 
   /**
+   * 忽略执行的中间件列表，需对应中间件包含 `name`，支持字符串和正则表达式匹配
+   *
+   * @example
+   * ```ts
+   * const useRequest = createRequestHook({
+   *   middleware: [
+   *     {
+   *       name: 'RequestTest',
+   *       setup: (ctx) => {
+   *         console.log('test setup')
+   *         ctx.mutateResult({ isTest: () => true })
+   *       },
+   *       handler: (_, next) => {
+   *         console.log('test handler')
+   *         return next()
+   *       },
+   *     }
+   *   ]
+   * })
+   *
+   * // 正常执行
+   * const { run, isTest } = useRequest(() => Promise.resolve(true), { immediate: false })
+   * isTest()
+   * // => true
+   *
+   * run().finally(() => console.log(1))
+   * // => 1. test setup
+   * // => 2. test handler
+   * // => 3. 1
+   *
+   * // 忽略 RequestTest 中间件
+   * const result = useRequest(() => Promise.resolve(true), {
+   *   immediate: false,
+   *   // 跳过 RequestTest 执行
+   *   ignoreMiddleware: ['RequestTest'],
+   * })
+   * result.isTest // 忽略中间件后该方法将不被安装，输出 undefined
+   *
+   * result.run().finally(() => console.log(1))
+   * // => 1
+   * ```
+   */
+  ignoreMiddleware?: (RegExp | string)[]
+
+  /**
    * `hooks` 配置
    */
   hooks?: MaybeArray<NestedHooks<RequestConfigHooks<TData, TParams>>>

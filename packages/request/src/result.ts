@@ -1,5 +1,6 @@
 import type { Fn, Getter, PromiseFn } from '@rhao/types-base'
 import type { RequestState } from './state'
+import type { RequestBasicContext } from './context'
 
 /**
  * "xxx.d.ts" or "xxx.ts"
@@ -23,6 +24,11 @@ export interface RequestResult<TData, TParams extends unknown[] = unknown[]> {
    * 获取当前 `request()` 状态
    */
   getState: Getter<RequestState<TData, TParams>>
+
+  /**
+   * 获取当前 `request()` 上下文
+   */
+  getContext: Getter<RequestBasicContext<TData, TParams>>
 
   /**
    * 取消正在执行的请求

@@ -4,6 +4,11 @@ import type { RequestBasicContext, RequestContext } from './context'
 
 interface BasicMiddleware<TData = any> {
   /**
+   * 插件名称，可标识唯一中间件
+   */
+  name?: string
+
+  /**
    * 优先级，数值越大越先执行，相同数值时根据先后顺序执行
    * @default 1
    */

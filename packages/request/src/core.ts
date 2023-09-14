@@ -1,4 +1,4 @@
-import { assign, castArray, omit, uniq } from 'lodash-unified'
+import { assign, castArray, isString, omit, uniq } from 'lodash-unified'
 import { castError, controllablePromise, createSwitch, toValue } from '@rhao/lodash-x'
 import { type RequestBasicOptions, type RequestOptions, normalizeBasicOptions } from './options'
 import type { RequestResult } from './result'
@@ -62,6 +62,8 @@ export function createRequestHook(options?: RequestBasicOptions) {
     const result = {
       getKey: () => key,
       getState: () => assign({}, state),
+      // eslint-disable-next-line @typescript-eslint/no-use-before-define
+      getContext: () => assign({}, basicContext),
       cancel,
       run,
       refresh,
@@ -116,11 +118,18 @@ export function createRequestHook(options?: RequestBasicOptions) {
     // 保存最近一次上下文对象，用于手动调用 `cancel`
     let latestContext: RequestContext<any, any[]> | null = null
 
-    // 合并中间件
+    // 合并中间件并忽略指定的中间件
+    const ignoreRE = options.ignoreMiddleware?.filter(Boolean)?.length
+      ? new RegExp(
+        options.ignoreMiddleware
+          .map((pattern) => (isString(pattern) ? `^${pattern}$` : pattern.source))
+          .join('|'),
+      )
+      : null
     const configMiddleware = normalizeMiddleware([
       ...normalizedOptions.middleware,
       ...(opts?.middleware || []),
-    ])
+    ]).filter((mw) => !mw.name || !ignoreRE?.test(mw.name))
 
     // 合并且注册 `hooks`
     const configHooks = uniq([

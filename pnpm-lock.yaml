@@ -57,8 +57,8 @@ importers:
   packages/basic-middleware:
     dependencies:
       '@rhao/lodash-x':
-        specifier: ^0.4.0
-        version: 0.4.0(typescript@5.1.6)
+        specifier: ^0.5.1
+        version: 0.5.1(typescript@5.1.6)
       '@rhao/types-base':
         specifier: ^0.2.0
         version: 0.2.0(typescript@5.1.6)
@@ -88,8 +88,8 @@ importers:
   packages/middleware-axios:
     dependencies:
       '@rhao/lodash-x':
-        specifier: ^0.4.0
-        version: 0.4.0(typescript@5.1.6)
+        specifier: ^0.5.1
+        version: 0.5.1(typescript@5.1.6)
       '@rhao/types-base':
         specifier: ^0.2.0
         version: 0.2.0(typescript@5.1.6)
@@ -122,8 +122,8 @@ importers:
   packages/middleware-vue:
     dependencies:
       '@rhao/lodash-x':
-        specifier: ^0.4.0
-        version: 0.4.0(typescript@5.1.6)
+        specifier: ^0.5.1
+        version: 0.5.1(typescript@5.1.6)
       '@rhao/types-base':
         specifier: ^0.2.0
         version: 0.2.0(typescript@5.1.6)
@@ -138,7 +138,7 @@ importers:
         version: 1.0.0-rc.1(vue@3.3.4)
       '@vueuse/core':
         specifier: ^10.3.0
-        version: 10.3.0(@vue/composition-api@1.0.0-rc.1)(vue@3.3.4)
+        version: 10.3.0(vue@3.3.4)
       lodash:
         specifier: ^4.17.21
         version: 4.17.21
@@ -150,7 +150,7 @@ importers:
         version: 1.0.3(@types/lodash-es@4.17.8)(lodash-es@4.17.21)(lodash@4.17.21)
       vue-demi:
         specifier: latest
-        version: 0.14.6(@vue/composition-api@1.0.0-rc.1)(vue@3.3.4)
+        version: 0.14.6(vue@3.3.4)
     devDependencies:
       '@rhao/request':
         specifier: workspace:*
@@ -165,8 +165,8 @@ importers:
   packages/request:
     dependencies:
       '@rhao/lodash-x':
-        specifier: ^0.4.0
-        version: 0.4.0(typescript@5.1.6)
+        specifier: ^0.5.1
+        version: 0.5.1(typescript@5.1.6)
       '@rhao/types-base':
         specifier: ^0.2.0
         version: 0.2.0(typescript@5.1.6)
@@ -210,6 +210,9 @@ importers:
 
   playground:
     dependencies:
+      '@rhao/lodash-x':
+        specifier: ^0.5.1
+        version: 0.5.1(typescript@5.1.6)
       '@rhao/request':
         specifier: workspace:^
         version: link:../packages/request
@@ -1414,8 +1417,8 @@ packages:
       fastq: 1.15.0
     dev: true
 
-  /@rhao/lodash-x@0.4.0(typescript@5.1.6):
-    resolution: {integrity: sha512-LxYKxMi7JiLsZtkmGQXMONm1Qi4tgHBRSwIH4con5YBac7KX7OwqRG0jojXctgbG7n3gBj+4vXsSNLl1BCF9/g==}
+  /@rhao/lodash-x@0.5.1(typescript@5.1.6):
+    resolution: {integrity: sha512-ZV8/zxizSscpk4W8mi4FBM2mM/JcWyE0gELAx2mCFeWbcK5Tfaqtwrw4tTmn+2rhi3+kU0DkQ5PQONbZ1/77CQ==}
     engines: {node: '>=14'}
     dependencies:
       '@rhao/types-base': 0.2.0(typescript@5.1.6)
@@ -1948,15 +1951,14 @@ packages:
       - typescript
     dev: true
 
-  /@vueuse/core@10.3.0(@vue/composition-api@1.0.0-rc.1)(vue@3.3.4):
+  /@vueuse/core@10.3.0(vue@3.3.4):
     resolution: {integrity: sha512-BEM5yxcFKb5btFjTSAFjTu5jmwoW66fyV9uJIP4wUXXU8aR5Hl44gndaaXp7dC5HSObmgbnR2RN+Un1p68Mf5Q==}
     dependencies:
       '@types/web-bluetooth': 0.0.17
       '@vueuse/metadata': 10.3.0
-      '@vueuse/shared': 10.3.0(@vue/composition-api@1.0.0-rc.1)(vue@3.3.4)
-      vue-demi: 0.14.6(@vue/composition-api@1.0.0-rc.1)(vue@3.3.4)
+      '@vueuse/shared': 10.3.0(vue@3.3.4)
+      vue-demi: 0.14.6(vue@3.3.4)
     transitivePeerDependencies:
-      - '@vue/composition-api'
       - vue
     dev: false
 
@@ -1966,7 +1968,7 @@ packages:
       '@types/web-bluetooth': 0.0.16
       '@vueuse/metadata': 9.13.0
       '@vueuse/shared': 9.13.0(vue@3.3.4)
-      vue-demi: 0.14.6(@vue/composition-api@1.0.0-rc.1)(vue@3.3.4)
+      vue-demi: 0.14.6(vue@3.3.4)
     transitivePeerDependencies:
       - '@vue/composition-api'
       - vue
@@ -1980,19 +1982,18 @@ packages:
     resolution: {integrity: sha512-gdU7TKNAUVlXXLbaF+ZCfte8BjRJQWPCa2J55+7/h+yDtzw3vOoGQDRXzI6pyKyo6bXFT5/QoPE4hAknExjRLQ==}
     dev: false
 
-  /@vueuse/shared@10.3.0(@vue/composition-api@1.0.0-rc.1)(vue@3.3.4):
+  /@vueuse/shared@10.3.0(vue@3.3.4):
     resolution: {integrity: sha512-kGqCTEuFPMK4+fNWy6dUOiYmxGcUbtznMwBZLC1PubidF4VZY05B+Oht7Jh7/6x4VOWGpvu3R37WHi81cKpiqg==}
     dependencies:
-      vue-demi: 0.14.6(@vue/composition-api@1.0.0-rc.1)(vue@3.3.4)
+      vue-demi: 0.14.6(vue@3.3.4)
     transitivePeerDependencies:
-      - '@vue/composition-api'
       - vue
     dev: false
 
   /@vueuse/shared@9.13.0(vue@3.3.4):
     resolution: {integrity: sha512-UrnhU+Cnufu4S6JLCPZnkWh0WwZGUp72ktOF2DFptMlOs3TOdVv8xJN53zhHGARmVOsz5KqOls09+J1NR6sBKw==}
     dependencies:
-      vue-demi: 0.14.6(@vue/composition-api@1.0.0-rc.1)(vue@3.3.4)
+      vue-demi: 0.14.6(vue@3.3.4)
     transitivePeerDependencies:
       - '@vue/composition-api'
       - vue
@@ -6341,7 +6342,7 @@ packages:
       fsevents: 2.3.2
     dev: true
 
-  /vue-demi@0.14.6(@vue/composition-api@1.0.0-rc.1)(vue@3.3.4):
+  /vue-demi@0.14.6(vue@3.3.4):
     resolution: {integrity: sha512-8QA7wrYSHKaYgUxDA5ZC24w+eHm3sYCbp0EzcDwKqN3p6HqtTCGR/GVsPyZW92unff4UlcSh++lmqDWN3ZIq4w==}
     engines: {node: '>=12'}
     hasBin: true
@@ -6353,7 +6354,6 @@ packages:
       '@vue/composition-api':
         optional: true
     dependencies:
-      '@vue/composition-api': 1.0.0-rc.1(vue@3.3.4)
       vue: 3.3.4
     dev: false
 
