@@ -1,9 +1,20 @@
+import type { BuildEntry } from 'unbuild'
 import { defineBuildConfig } from 'unbuild'
 
+function createEntry(format: 'esm' | 'cjs') {
+  return {
+    input: 'src',
+    builder: 'mkdist',
+    format,
+    ext: format === 'esm' ? 'mjs' : 'cjs',
+  } as BuildEntry
+}
+
 export default defineBuildConfig({
-  entries: ['src/index'],
-  declaration: true,
+  entries: [createEntry('esm'), createEntry('cjs')],
   clean: true,
+  declaration: true,
+  failOnWarn: false,
   rollup: {
     emitCJS: true,
     dts: {
@@ -12,5 +23,4 @@ export default defineBuildConfig({
       },
     },
   },
-  failOnWarn: false,
 })
