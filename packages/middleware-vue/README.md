@@ -33,7 +33,7 @@ import { useRequest } from 'hooks/useRequest'
 // loading: ref(false)
 // error: ref(undefined)
 // params: ref([])
-const { data, loading, error, params } = useRequest(() => Promise.resolve(1))
+const { data, loading, error, params } = useRequest(() => Promise.resolve([]))
 </script>
 
 <template>

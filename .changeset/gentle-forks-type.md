@@ -2,4 +2,4 @@
 '@rhao/request-basic-middleware': patch
 ---
 
-chore: 修改 package.json exports 方式
+refactor: 修改 package.json exports 方式
