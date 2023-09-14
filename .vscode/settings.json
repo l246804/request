@@ -146,6 +146,7 @@
     "hookable",
     "infile",
     "mkdist",
-    "plopfile"
+    "plopfile",
+    "swrs"
   ]
 }

@@ -1,9 +1,4 @@
-import type {
-  BasicRequestHook,
-  RequestFetcher,
-  RequestOptions,
-  RequestResult,
-} from '@rhao/request'
+import type { BasicRequestHook, RequestFetcher, RequestOptions, RequestResult } from '@rhao/request'
 import { createRequestHook } from '@rhao/request'
 import { RequestSWR } from '@rhao/request-basic-middleware/swr'
 import { RequestRetry } from '@rhao/request-basic-middleware/retry'
@@ -31,7 +26,7 @@ export const useRequest = createRequestHook({
   middleware: [
     RequestAxios({ associativeCancel: true }),
     RequestVue(),
-    RequestSWR(),
+    RequestSWR({ persistent: true }),
     RequestRetry(),
     RequestRefresh(),
     RequestRefreshToken({

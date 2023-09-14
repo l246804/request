@@ -9,59 +9,45 @@ defineProps<{
 
 const ip = ref('')
 
-const { data, loading, run, cancel } = useRequest(
-  () =>
-    http.get<{ start: string; end: string; addr: string[]; disp: string }>(
-      'https://api.oioweb.cn/api/ip/ipaddress',
-      {
-        params: {
-          ip: ip.value,
+function useIpRequest() {
+  return useRequest(
+    () =>
+      http.get<{ start: string; end: string; addr: string[]; disp: string }>(
+        'https://api.oioweb.cn/api/ip/ipaddress',
+        {
+          params: {
+            ip: ip.value,
+          },
         },
-      },
-    ),
-  {
-    axiosConfig: {
-      timeout: 1000,
-      timeoutErrorMessage: '超时了',
+      ),
+    {
+      key: 'test-shared',
+      swr: { staleTime: 10e3 },
+      ignoreMiddleware: ['vue'],
     },
-    hooks: {
-      error: (e) => {
-        console.log(e)
-      },
-    },
-  },
-)
+  )
+}
 
-const { data: data2, run: run2 } = useRequest(
-  () =>
-    http.get<{ start: string; end: string; addr: string[]; disp: string }>(
-      'https://api.oioweb.cn/api/ip/ipaddress',
-      {
-        params: {
-          ip: ip.value,
-        },
-      },
-    ),
-  {
-    axiosConfig: {
-      timeout: 3000,
-    },
-    hooks: {
-      error: (e) => {
-        console.log(e)
-      },
-    },
-  },
-)
+const { data, loading, run, cancel, onSuccess } = useIpRequest()
+const { data: data2, run: run2 } = useIpRequest()
+onSuccess((data) => {
+  console.log(data)
+})
 
 console.log(run, run2)
 </script>
 
 <template>
   <ElCard :header="title">
-    <ElButton @click="run">run1</ElButton>
-    <ElButton @click="run2">run2</ElButton>
-    <ElButton @click="cancel">cancel</ElButton>
+    <ElButton @click="run">
+      run1
+    </ElButton>
+    <ElButton @click="run2">
+      run2
+    </ElButton>
+    <ElButton @click="cancel">
+      cancel
+    </ElButton>
     <ElInput v-model="ip" />
     <ElForm :inline="true">
       <ElFormItem label="loading">
