@@ -34,6 +34,7 @@ export interface RequestRetryOptions {
 
 export function RequestRetry(initialOptions?: RequestRetryOptions) {
   const middleware: RequestMiddleware = {
+    name: 'Basic:RequestRetry',
     priority: 900,
     handler: (ctx, next) => {
       const { hooks, fetcher, getOptions, isCanceled } = ctx
@@ -104,6 +105,9 @@ export function RequestRetry(initialOptions?: RequestRetryOptions) {
 
 declare module '@rhao/request' {
   interface RequestOptions<TData, TParams extends unknown[] = unknown[]> {
+    /**
+     * 重试配置
+     */
     retry?: RequestRetryOptions
   }
 

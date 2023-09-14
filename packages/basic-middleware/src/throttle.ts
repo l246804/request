@@ -23,6 +23,7 @@ export interface RequestThrottleOptions {
 
 export function RequestThrottle(initialOptions?: RequestThrottleOptions) {
   const middleware: RequestMiddleware = {
+    name: 'Basic:RequestThrottle',
     priority: -1000,
     setup: (ctx) => {
       const options = assign(
@@ -46,6 +47,9 @@ export function RequestThrottle(initialOptions?: RequestThrottleOptions) {
 
 declare module '@rhao/request' {
   interface RequestOptions<TData, TParams extends unknown[] = unknown[]> {
+    /**
+     * 节流配置
+     */
     throttle?: RequestThrottleOptions
   }
 }

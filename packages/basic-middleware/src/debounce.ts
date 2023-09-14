@@ -29,6 +29,7 @@ export interface RequestDebounceOptions {
 
 export function RequestDebounce(initialOptions?: RequestDebounceOptions) {
   const middleware: RequestMiddleware = {
+    name: 'Basic:RequestDebounce',
     priority: -1000,
     setup: (ctx) => {
       const options = assign(
@@ -53,6 +54,9 @@ export function RequestDebounce(initialOptions?: RequestDebounceOptions) {
 
 declare module '@rhao/request' {
   interface RequestOptions<TData, TParams extends unknown[] = unknown[]> {
+    /**
+     * 防抖配置
+     */
     debounce?: RequestDebounceOptions
   }
 }

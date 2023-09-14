@@ -32,6 +32,7 @@ export function RequestRefreshToken(initialOptions: RequestRefreshTokenOptions) 
   init()
 
   const middleware: RequestMiddleware = {
+    name: 'Basic:RequestRefreshToken',
     priority: 1000,
     handler: (ctx, next) => {
       const options = assign(
@@ -88,6 +89,9 @@ export function RequestRefreshToken(initialOptions: RequestRefreshTokenOptions) 
 
 declare module '@rhao/request' {
   interface RequestOptions<TData, TParams extends unknown[] = unknown[]> {
+    /**
+     * 刷新 Token 配置
+     */
     refreshToken?: Pick<RequestRefreshTokenOptions, 'allow'>
   }
 }

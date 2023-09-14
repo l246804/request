@@ -87,6 +87,7 @@ export function RequestRefresh(initialOptions?: Pick<RequestRefreshOptions, 'err
   init()
 
   const middleware: RequestMiddleware = {
+    name: 'Basic:RequestRefresh',
     priority: -999,
     setup: (ctx) => {
       // 合并配置项
@@ -205,10 +206,16 @@ export function RequestRefresh(initialOptions?: Pick<RequestRefreshOptions, 'err
 
 declare module '@rhao/request' {
   interface RequestOptions<TData, TParams extends unknown[] = unknown[]> {
+    /**
+     * 刷新配置
+     */
     refresh?: RequestRefreshOptions
   }
 
   interface RequestBasicContext<TData, TParams extends unknown[] = unknown[]> {
+    /**
+     * 是否正在轮询
+     */
     isPolling: Getter<boolean>
   }
 }
