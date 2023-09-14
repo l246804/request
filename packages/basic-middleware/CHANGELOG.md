@@ -1,5 +1,19 @@
 # @rhao/request-basic-middleware
 
+## 4.1.0
+
+### Minor Changes
+
+- 0429ed4: feat: swr 新增支持持久化存储功能
+
+### Patch Changes
+
+- c0a1c7a: refactor: 修改 package.json exports 方式
+- 0f4b51a: chore: 中间件补充 name
+- Updated dependencies [35c4088]
+- Updated dependencies [a67e146]
+  - @rhao/request@3.1.0
+
 ## 4.0.0
 
 ### Major Changes

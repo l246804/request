@@ -1,5 +1,14 @@
 # @rhao/request-middleware-axios
 
+## 4.0.1
+
+### Patch Changes
+
+- e6663a9: chore: 补充中间件 name，优化 README.md 说明
+- Updated dependencies [35c4088]
+- Updated dependencies [a67e146]
+  - @rhao/request@3.1.0
+
 ## 4.0.0
 
 ### Major Changes

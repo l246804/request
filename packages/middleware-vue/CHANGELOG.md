@@ -1,5 +1,14 @@
 # @rhao/request-middleware-vue
 
+## 4.0.1
+
+### Patch Changes
+
+- 5f32311: chore: 补充中间件 name，优化代码逻辑
+- Updated dependencies [35c4088]
+- Updated dependencies [a67e146]
+  - @rhao/request@3.1.0
+
 ## 4.0.0
 
 ### Major Changes

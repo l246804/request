@@ -1,5 +1,12 @@
 # @rhao/request
 
+## 3.1.0
+
+### Minor Changes
+
+- 35c4088: feat: 新增 composables 中间件
+- a67e146: feat: 新增 ignoreMiddleware 配置项，支持过滤带有 name 的中间件
+
 ## 3.0.2
 
 ### Patch Changes
