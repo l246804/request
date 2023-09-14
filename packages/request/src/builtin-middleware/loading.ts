@@ -1,6 +1,7 @@
 import { pauseableTimer } from '@rhao/lodash-x'
 import type { Fn } from '@rhao/types-base'
 import type { RequestMiddleware } from '../middleware'
+import type { RequestBasicContext } from '../context'
 
 export function RequestLoading() {
   const middleware: RequestMiddleware = {
@@ -47,6 +48,9 @@ export function RequestLoading() {
   return middleware
 }
 
+// 类型别名，防止导入类型被忽视
+type Context<TData, TParams extends unknown[] = unknown[]> = RequestBasicContext<TData, TParams>
+
 declare module '@rhao/request' {
   export interface RequestBasicOptions {
     /**
@@ -60,6 +64,6 @@ declare module '@rhao/request' {
     /**
      * 请求状态变更时触发，多次并发调用仅在初次和最近执行结束后触发
      */
-    loadingChange: Fn<[loading: boolean, context: RequestBasicContext<TData, TParams>]>
+    loadingChange: Fn<[loading: boolean, context: Context<TData, TParams>]>
   }
 }
