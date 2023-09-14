@@ -42,12 +42,14 @@ import type {
 import { RequestAxios } from '@rhao/request-middleware-vue'
 import { AxiosResponse } from 'axios'
 
+type FlattenAxiosResponse<T> = T extends AxiosResponse<infer D> ? D : T
+
 // 自定义调用类型
 interface UseRequest extends BasicRequestHook {
   <TData, TParams extends unknown[] = unknown[]>(
     fetcher: RequestFetcher<TData, TParams>,
-    options?: RequestOptions<TData, TParams>,
-  ): RequestResult<TData extends AxiosResponse<infer D> ? D : TData, TParams>
+    options?: RequestOptions<FlattenAxiosResponse<TData>, TParams>,
+  ): RequestResult<FlattenAxiosResponse<TData>, TParams>
 }
 
 // 后端数据格式
@@ -73,7 +75,7 @@ export const useRequest = createRequestHook({
     return realData.data
   },
   middleware: [RequestAxios({ associativeCancel: true })]
-})
+}) as UseRequest
 ```
 
 创建 `api.ts`

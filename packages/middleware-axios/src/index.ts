@@ -32,7 +32,8 @@ Axios.Axios.prototype.request = function wrapRequest(configOrUrl, config) {
   if (typeof configOrUrl === 'string') {
     config = config || {}
     config.url = configOrUrl
-  } else {
+  }
+  else {
     config = configOrUrl || {}
   }
 
@@ -59,6 +60,7 @@ Axios.Axios.prototype.request = function wrapRequest(configOrUrl, config) {
 
 export function RequestAxios(initialOptions?: RequestAxiosOptions) {
   const middleware: RequestMiddleware = {
+    name: 'RequestAxios',
     priority: 10000,
     setup: (ctx) => {
       const { fetcher } = ctx
