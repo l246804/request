@@ -7,5 +7,6 @@
   "access": "public",
   "baseBranch": "dev",
   "updateInternalDependencies": "minor",
-  "ignore": []
+  "ignore": [],
+  "bumpVersionsWithWorkspaceProtocolOnly": true
 }

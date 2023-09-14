@@ -45,7 +45,7 @@
   },
   "peerDependencies": {
     "@rhao/request": ">=3.0.2",
-    "axios": ">=1.0.0"
+    "axios": "^1"
   },
   "dependencies": {
     "@rhao/lodash-x": "^0.5.1",
