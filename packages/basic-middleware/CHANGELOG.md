@@ -1,5 +1,11 @@
 # @rhao/request-basic-middleware
 
+## 4.2.0
+
+### Minor Changes
+
+- ad5862a: feat: swr 支持在 staleTime 不大于 0 时关闭保鲜功能
+
 ## 4.1.1
 
 ### Patch Changes
