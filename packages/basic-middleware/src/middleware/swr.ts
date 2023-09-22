@@ -17,7 +17,10 @@ export interface StorageLike {
 
 export interface RequestSWROptions {
   /**
-   * 保鲜时间，单位：ms
+   * 保鲜时间，单位：ms，仅在初始值大于 0 时开启保鲜
+   *
+   * ***注意：不适用于参数易变更的场景***
+   *
    * @default 0
    */
   staleTime?: MaybeGetter<number>
@@ -69,6 +72,7 @@ function isStaled(cache: ICache, staleTime: MaybeGetter<number>) {
 
 interface SWRStore {
   options: Required<RequestSWROptions>
+  enabled: boolean
 }
 
 const storeKey: StoreKey<SWRStore> = Symbol('swr')
@@ -87,7 +91,7 @@ function sKey(prefix: string, key: string) {
   return prefix + key
 }
 
-export function RequestSWR(initialOptions?: RequestSWROptions) {
+export function RequestSWR(initialOptions?: Omit<RequestSWROptions, 'staleTime'>) {
   const middleware: RequestMiddleware = {
     name: 'Basic:RequestSWR',
     priority: 1000,
@@ -103,10 +107,15 @@ export function RequestSWR(initialOptions?: RequestSWROptions) {
           storage: defaultStorage,
           storageKeyPrefix: '__REQUEST_SWR__',
         } as RequestSWROptions,
-        initialOptions,
+        omit(initialOptions, ['staleTime']),
         omit(getOptions().swr, immutableKeys),
       ) as Required<RequestSWROptions>
-      ctx.setStore(storeKey, { options })
+      const enabled = toValue(options.staleTime) > 0
+
+      ctx.setStore(storeKey, { options, enabled })
+
+      // 未开启时直接返回
+      if (!enabled) return
 
       // 设置当前 request 的 swr 配置
       if (!swrs.has(request)) {
@@ -176,6 +185,10 @@ export function RequestSWR(initialOptions?: RequestSWROptions) {
       })
     },
     handler: async (ctx, next) => {
+      const { options, enabled } = ctx.getStore(storeKey)!
+      // 没有启用时直接返回执行下一个中间件
+      if (!enabled) return next()
+
       const cache = swrs.get(ctx.request)!.cache
       const currentCache = cache.get(ctx.getKey())!
 
@@ -183,7 +196,6 @@ export function RequestSWR(initialOptions?: RequestSWROptions) {
       if (currentCache.promise != null) return currentCache.promise
 
       // 数据在保鲜期内且 executeInStaleTime 为 `false` 时则直接返回
-      const options = ctx.getStore(storeKey)!.options
       if (!toValue(options.executeInStaleTime) && isStaled(currentCache, options.staleTime!))
         return ctx.mutateData(currentCache.data)
 
