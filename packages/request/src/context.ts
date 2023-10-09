@@ -109,6 +109,11 @@ export interface RequestBasicContext<TData, TParams extends unknown[] = unknown[
   clearPendingWithCancel: NoopFn
 
   /**
+   * 是否已释放资源
+   */
+  isDisposed: Getter<boolean>
+
+  /**
    * 主动释放资源，当不再使用某个 `request()` 时可调用该函数触发 `hook:dispose`
    *
    * ***谨慎调用***

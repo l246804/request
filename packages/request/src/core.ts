@@ -51,9 +51,9 @@ export function createRequestHook(options?: RequestBasicOptions) {
   })
 
   function request(fetcher: RequestFetcher<any, any[]>, opts?: RequestOptions<any, any[]>) {
-    let options = assign({}, normalizedOptions, opts)
+    const options = assign({}, normalizedOptions, opts)
     const key = options.key || options.keyGenerator() || keyManager.getNextKey()
-    let hooks = createHooks()
+    const hooks = createHooks()
 
     // 创建 `state`
     const state = createState(options)
@@ -69,7 +69,7 @@ export function createRequestHook(options?: RequestBasicOptions) {
       refresh,
     } as RequestResult<any, any[]>
 
-    // 创建 `pending` 辅助函数
+    // 创建 `pending` 管理器
     const {
       hasPending,
       configHooks: pendingConfigHooks,
@@ -79,6 +79,19 @@ export function createRequestHook(options?: RequestBasicOptions) {
 
     // 创建数据中心
     const store = createStore()
+
+    // 创建资源状态开关
+    const [isDisposed, { open: dispose }] = createSwitch({
+      once: true,
+      onToggle: () => {
+        toValue(options.cancelWhenDispose) && cancel()
+        // eslint-disable-next-line @typescript-eslint/no-use-before-define
+        hooks.callHook('dispose', basicContext).finally(() => {
+          hooks.removeAllHooks()
+          store.clear()
+        })
+      },
+    })
 
     // 创建基础的上下文
     let basicContext = {
@@ -102,17 +115,8 @@ export function createRequestHook(options?: RequestBasicOptions) {
       },
       setStore: store.set,
       getStore: store.get,
-      dispose: () => {
-        toValue(options.cancelWhenDispose) && cancel()
-
-        hooks.callHook('dispose', basicContext).finally(() => {
-          hooks.removeAllHooks()
-          store.clear()
-          options = null as any
-          hooks = null as any
-          basicContext = null as any
-        })
-      },
+      isDisposed,
+      dispose,
     } as RequestBasicContext<any, any[]>
 
     // 保存最近一次上下文对象，用于手动调用 `cancel`
@@ -141,6 +145,8 @@ export function createRequestHook(options?: RequestBasicOptions) {
 
     // 包裹 `fetcher()` 的执行器
     async function executor(...params) {
+      if (isDisposed()) return
+
       // 创建可中断的 `promise`，用于取消执行的 `fetcher()`
       const { promise, resolve } = controllablePromise()
       const promiseResult = Symbol('promiseResult')
