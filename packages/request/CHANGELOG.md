@@ -1,5 +1,11 @@
 # @rhao/request
 
+## 3.2.0
+
+### Minor Changes
+
+- 980bdba: feat: RequestBasicContext 新增 isDisposed()
+
 ## 3.1.0
 
 ### Minor Changes
