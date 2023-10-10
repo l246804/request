@@ -1,5 +1,13 @@
 # @rhao/request-middleware-vue
 
+## 4.0.2
+
+### Patch Changes
+
+- 2b3b930: chore: 响应式依赖监听增加 deep 配置
+- Updated dependencies [c4c69be]
+  - @rhao/request@3.3.0
+
 ## 4.0.1
 
 ### Patch Changes

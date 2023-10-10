@@ -1,5 +1,11 @@
 # @rhao/request
 
+## 3.3.0
+
+### Minor Changes
+
+- c4c69be: feat: request 组合函数支持单次触发
+
 ## 3.2.0
 
 ### Minor Changes
