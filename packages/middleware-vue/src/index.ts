@@ -22,7 +22,7 @@ export function RequestVue() {
 
       // 注册依赖侦听器
       const { refreshDeps } = getOptions()
-      if (refreshDeps) watch(refreshDeps, () => getResult().refresh())
+      if (refreshDeps) watch(refreshDeps, () => getResult().refresh(), { deep: true })
 
       // 释放资源
       if (!tryOnScopeDispose(dispose)) tryOnUnmounted(dispose)
