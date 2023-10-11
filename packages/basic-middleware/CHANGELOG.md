@@ -1,5 +1,11 @@
 # @rhao/request-basic-middleware
 
+## 4.2.1
+
+### Patch Changes
+
+- d8dfa50: fix: 修复 RequestRefreshToken 无法正常进入 handler
+
 ## 4.2.0
 
 ### Minor Changes
