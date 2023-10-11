@@ -42,40 +42,40 @@ export function RequestRefreshToken(initialOptions: RequestRefreshTokenOptions) 
       )
       const { request, fetcher, getKey, getOptions } = ctx
 
-      ctx.fetcher = async (...args) => {
-        // 正常执行
-        if (!refreshPromiseMap.has(request) || !toValue(options.allow, getKey(), ctx))
-          return fetcher(...args)
-
+      // 允许刷新令牌时更改 fetcher
+      if (toValue(options.allow, getKey(), ctx)) {
+        ctx.fetcher = async (...args) => {
         // 如果存在正在刷新 token 的请求则等待其结束后再调用
-        if (refreshPromiseMap.has(request))
-          return Promise.resolve(refreshPromiseMap.get(request)).then(() => fetcher(...args))
+          if (refreshPromiseMap.has(request))
+            return Promise.resolve(refreshPromiseMap.get(request)).then(() => fetcher(...args))
 
-        try {
+          try {
           // 正常调用 fetcher，之后再通过 dataParser 解析数据，验证请求是否失败
-          const data = await fetcher(...args)
-          await getOptions().dataParser(data)
-        }
-        catch (err: unknown) {
+            const data = await fetcher(...args)
+            await getOptions().dataParser(data)
+            return data
+          }
+          catch (err: unknown) {
           // 请求失败后验证根据当前的错误验证是否是 token 过期导致的
-          const error = castError(err)
-          const isExpired = await options.expired(error)
-          if (!isExpired) return Promise.reject(error)
+            const error = castError(err)
+            const isExpired = await options.expired(error)
+            if (!isExpired) return Promise.reject(error)
 
-          // 如果是过期导致的则调用注册时传入的 handler 进行处理
-          if (!refreshPromiseMap.has(request)) refreshPromiseMap.set(request, options.handler(ctx))
+            // 如果是过期导致的则调用注册时传入的 handler 进行处理
+            if (!refreshPromiseMap.has(request)) refreshPromiseMap.set(request, options.handler(ctx))
 
-          return (
-            Promise.resolve(refreshPromiseMap.get(request))
+            return (
+              Promise.resolve(refreshPromiseMap.get(request))
               // 新的请求出错则抛出新请求的错误
-              .then(() => Promise.resolve(fetcher(...args)).catch((e) => Promise.reject(e)))
+                .then(() => Promise.resolve(fetcher(...args)).catch((e) => Promise.reject(e)))
               // 异常时抛出初次执行请求时的错误
-              .catch(() => Promise.reject(error))
-              .finally(() => {
+                .catch(() => Promise.reject(error))
+                .finally(() => {
                 // 结束后清空 promise
-                refreshPromiseMap.delete(request)
-              })
-          )
+                  refreshPromiseMap.delete(request)
+                })
+            )
+          }
         }
       }
 
