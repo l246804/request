@@ -166,22 +166,23 @@ export function RequestRefresh(initialOptions?: Pick<RequestRefreshOptions, 'err
       const addListen = () => visibilityHandlers.add(visibilityHandler)
       const removeListen = () => visibilityHandlers.delete(visibilityHandler)
 
-      ctx.hooks.hook('before', () => {
-        if (isDisabled()) return
+      ctx.hooks.hook('before', (_, ctx) => {
+        ctx.pollingDisabled = isDisabled()
+        if (ctx.pollingDisabled) return
         addListen()
       })
       // @ts-expect-error
-      ctx.hooks.hook('retry:fail', () => {
-        if (isDisabled()) return
+      ctx.hooks.hook('retry:fail', (_, ctx) => {
+        if (ctx.pollingDisabled) return
         removeListen()
       })
-      ctx.hooks.hook('cancel', () => {
-        if (isDisabled()) return
+      ctx.hooks.hook('cancel', (_, ctx) => {
+        if (ctx.pollingDisabled) return
         pauseTimer()
         removeListen()
       })
-      ctx.hooks.hook('success', () => {
-        if (isDisabled()) return
+      ctx.hooks.hook('success', (_, ctx) => {
+        if (ctx.pollingDisabled) return
         if (!toValue(options.whenHidden) && document.hidden) return
         resumeTimer()
       })
@@ -190,12 +191,13 @@ export function RequestRefresh(initialOptions?: Pick<RequestRefreshOptions, 'err
         removeListen()
       })
 
-      ctx.hooks.hook('before', () => {
-        if (isDisabled()) return
-
+      const rawRetry = ctx.getOptions().retry
+      ctx.hooks.hook('before', (_, ctx) => {
         ctx.mutateOptions({
           // @ts-expect-error
-          retry: assign({ count: options.errorRetryCount }, ctx.getOptions().retry),
+          retry: ctx.pollingDisabled
+            ? rawRetry
+            : assign({ count: options.errorRetryCount }, rawRetry),
         })
       })
     },
@@ -217,5 +219,12 @@ declare module '@rhao/request' {
      * 是否正在轮询
      */
     isPolling: Getter<boolean>
+  }
+
+  interface RequestContext<TData, TParams extends unknown[] = unknown[]> {
+    /**
+     * 轮询禁用状态
+     */
+    pollingDisabled: boolean
   }
 }

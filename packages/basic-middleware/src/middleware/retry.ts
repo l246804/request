@@ -80,7 +80,7 @@ export function RequestRetry(initialOptions?: RequestRetryOptions) {
         // 重试
         // eslint-disable-next-line no-unmodified-loop-condition
         while ((countValue === -1 || count++ < countValue) && result.error && !isCanceled()) {
-          hooks.callHook('retry:progress', count)
+          hooks.callHook('retry:progress', count, ctx)
           hooks.callHook('error', result.error, ctx)
 
           await sleep(toValue(options.interval, count))
@@ -88,11 +88,11 @@ export function RequestRetry(initialOptions?: RequestRetryOptions) {
         }
 
         if (result.error) {
-          hooks.callHook('retry:fail')
+          hooks.callHook('retry:fail', result.error, ctx)
           return Promise.reject(result.error)
         }
 
-        hooks.callHook('retry:success')
+        hooks.callHook('retry:success', result.data, ctx)
         return result.data
       }
 
@@ -115,14 +115,14 @@ declare module '@rhao/request' {
     /**
      * 重试进行中
      */
-    'retry:progress': Fn<[count: number]>
+    'retry:progress': Fn<[count: number, context: RequestContext<TData, TParams>]>
     /**
      * 重试前触发
      */
-    'retry:success': Fn<[]>
+    'retry:success': Fn<[data: TData, context: RequestContext<TData, TParams>]>
     /**
      * 重试后触发
      */
-    'retry:fail': Fn<[]>
+    'retry:fail': Fn<[error: Error, context: RequestContext<TData, TParams>]>
   }
 }

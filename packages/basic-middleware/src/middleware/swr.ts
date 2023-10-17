@@ -87,7 +87,7 @@ const defaultStorage = isClient ? localStorage : storageLike
 
 const immutableKeys = ['persistent', 'storage', 'storageKeyPrefix'] as const
 
-function sKey(prefix: string, key: string) {
+function toKey(prefix: string, key: string) {
   return prefix + key
 }
 
@@ -113,6 +113,15 @@ export function RequestSWR(initialOptions?: Omit<RequestSWROptions, 'staleTime'>
       const enabled = toValue(options.staleTime) > 0
 
       ctx.setStore(storeKey, { options, enabled })
+
+      ctx.mutateResult({
+        forceRefresh() {
+          hooks.hookOnce('preface', (_, ctx) => {
+            ctx.swrForceRefreshFlag = true
+          })
+          return ctx.getResult().refresh()
+        },
+      })
 
       // 未开启时直接返回
       if (!enabled) return
@@ -140,7 +149,7 @@ export function RequestSWR(initialOptions?: Omit<RequestSWROptions, 'staleTime'>
       // 持久化时从 storage 中读取缓存信息
       if (options.persistent) {
         const cacheData = safeJSONParse(
-          options.storage.getItem(sKey(options.storageKeyPrefix, key))!,
+          options.storage.getItem(toKey(options.storageKeyPrefix, key))!,
           {
             data: null,
             lastUpdateTime: undefined,
@@ -148,10 +157,8 @@ export function RequestSWR(initialOptions?: Omit<RequestSWROptions, 'staleTime'>
         )
 
         // 如果还在保鲜期内则更新内存里的缓存信息，否则移除 storage 内的缓存信息
-        if (isStaled(cacheData, options.staleTime!))
-          assign(currentCache, cacheData)
-        else
-          options.storage.removeItem(sKey(options.storageKeyPrefix, key))
+        if (isStaled(cacheData, options.staleTime!)) assign(currentCache, cacheData)
+        else options.storage.removeItem(toKey(options.storageKeyPrefix, key))
       }
 
       // 初始化设置缓存数据
@@ -180,7 +187,7 @@ export function RequestSWR(initialOptions?: Omit<RequestSWROptions, 'staleTime'>
         if (currentCache.contexts.length === 0) {
           cache.delete(key)
           // 持久化时删除 storage 中的缓存信息
-          options.persistent && options.storage.removeItem(sKey(options.storageKeyPrefix, key))
+          options.persistent && options.storage.removeItem(toKey(options.storageKeyPrefix, key))
         }
       })
     },
@@ -195,8 +202,12 @@ export function RequestSWR(initialOptions?: Omit<RequestSWROptions, 'staleTime'>
       // 存在共享的 promise 时直接返回
       if (currentCache.promise != null) return currentCache.promise
 
-      // 数据在保鲜期内且 executeInStaleTime 为 `false` 时则直接返回
-      if (!toValue(options.executeInStaleTime) && isStaled(currentCache, options.staleTime!))
+      // 数据在保鲜期内且 forceRefreshFlag、executeInStaleTime 为 `false` 时则直接返回
+      if (
+        !ctx.swrForceRefreshFlag
+        && !toValue(options.executeInStaleTime)
+        && isStaled(currentCache, options.staleTime!)
+      )
         return ctx.mutateData(currentCache.data)
 
       const { promise, resolve } = controllablePromise()
@@ -217,7 +228,7 @@ export function RequestSWR(initialOptions?: Omit<RequestSWROptions, 'staleTime'>
           // 持久化缓存至 storage 中
           if (options.persistent) {
             options.storage.setItem(
-              sKey(options.storageKeyPrefix, ctx.getKey()),
+              toKey(options.storageKeyPrefix, ctx.getKey()),
               JSON.stringify(pick(currentCache, ['lastUpdateTime', 'data'])),
             )
           }
@@ -240,6 +251,20 @@ declare module '@rhao/request' {
      * `SWR` 配置
      */
     swr?: Omit<RequestSWROptions, (typeof immutableKeys)[number]>
+  }
+
+  interface RequestContext<TData, TParams extends unknown[] = unknown[]> {
+    /**
+     * `SWR` 强制刷新缓存标志
+     */
+    swrForceRefreshFlag: boolean
+  }
+
+  interface RequestResult<TData, TParams extends unknown[] = unknown[]> {
+    /**
+     * 强制刷新缓存数据
+     */
+    forceRefresh(): Promise<TData>
   }
 
   interface RequestConfigHooks<TData, TParams extends unknown[] = unknown[]> {
