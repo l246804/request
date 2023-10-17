@@ -104,7 +104,7 @@ export interface RequestOptions<TData, TParams extends unknown[] = unknown[]>
    * 初始化数据
    * @example
    * ```ts
-   * const { getState } = request(() => Promise.resolve(1), { manual: true })
+   * const { getState } = request(() => Promise.resolve(1), { immediate: false })
    * getState().data // => undefined
    *
    * const { getState } = request(() => Promise.resolve(1), { initData: () => [] })

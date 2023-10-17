@@ -80,6 +80,8 @@ export interface RequestBasicContext<TData, TParams extends unknown[] = unknown[
 
   /**
    * 修改 `request()` 配置项，仅支持浅合并
+   *
+   * ***注意：对于请求流来说该函数会产生副作用，需谨慎调用，必要时需手动还原！***
    */
   mutateOptions: MutateOptions<TData, TParams>
 

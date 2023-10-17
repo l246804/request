@@ -31,7 +31,7 @@ export const useRequest = createRequestHook()
 
 ```ts
 const { getState, run, refresh, cancel } = useRequest((num: number) => Promise.resolve(num), {
-  manual: true
+  immediate: false
 })
 
 await run(1)
@@ -69,7 +69,7 @@ export const useRequest = createRequestHook({
 import { RequestDebounce } from '@rhao/request-basic-middleware'
 
 const { getState, run } = useRequest(() => Promise.resolve(Date.now()), {
-  manual: true,
+  immediate: false,
   debounce: {
     wait: 3000
   },
@@ -114,7 +114,7 @@ const {
   params,
   run
 } = useRequest(() => Promise.resolve(Date.now()), {
-  manual: true
+  immediate: false
 })
 
 await run()
