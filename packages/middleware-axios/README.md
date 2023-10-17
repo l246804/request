@@ -105,9 +105,9 @@ import { queryList } from 'apis/example'
 // data => Ref<DataItem[] | null> // 这里会自动对 AxiosResponse 进行拆包
 // params => Ref<[Params]> // 会自动推导出 queryList 的入参
 const { data, loading, error, params } = useRequest(queryList, {
-  manual: false,
+  immediate: true,
 
-  // 初次自动调用时的参数，设置 `manual` 为 `false` 时有效
+  // 初次自动调用时的参数，设置 `immediate` 为 `true` 时有效
   // 类型会自动推导出 Params
   defaultParams: [{ a: 1, b: '123' }],
 
