@@ -1,5 +1,11 @@
 # @rhao/request
 
+## 3.3.1
+
+### Patch Changes
+
+- bdbf9ad: chore: 更改部分错误注释
+
 ## 3.3.0
 
 ### Minor Changes

@@ -1,5 +1,16 @@
 # @rhao/request-basic-middleware
 
+## 4.3.0
+
+### Minor Changes
+
+- 85f5feb: feat: 优化 RequestSWR、RequestRetry
+
+### Patch Changes
+
+- Updated dependencies [bdbf9ad]
+  - @rhao/request@3.3.1
+
 ## 4.2.1
 
 ### Patch Changes

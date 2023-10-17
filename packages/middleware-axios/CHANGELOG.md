@@ -1,5 +1,13 @@
 # @rhao/request-middleware-axios
 
+## 4.0.2
+
+### Patch Changes
+
+- 9d175c4: chore: 更改错误注释
+- Updated dependencies [bdbf9ad]
+  - @rhao/request@3.3.1
+
 ## 4.0.1
 
 ### Patch Changes
