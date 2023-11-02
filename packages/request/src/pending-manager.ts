@@ -3,7 +3,7 @@ import type { RequestContext } from './context'
 export function createPendingManager() {
   const pendingContexts: RequestContext<any, any[]>[] = []
 
-  const hasPending = () => pendingContexts.length === 0
+  const hasPending = () => pendingContexts.length > 0
   const clearPending = () => {
     pendingContexts.length = 0
   }
