@@ -4,6 +4,15 @@
 
 ### Patch Changes
 
+- Updated dependencies [06045a9]
+- Updated dependencies [d90a732]
+- Updated dependencies [14e3933]
+  - @rhao/request@3.3.2
+
+## null
+
+### Patch Changes
+
 - Updated dependencies [85f5feb]
 - Updated dependencies [bdbf9ad]
 - Updated dependencies [9d175c4]

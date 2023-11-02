@@ -1,5 +1,13 @@
 # @rhao/request
 
+## 3.3.2
+
+### Patch Changes
+
+- 06045a9: chore: 优化类型定义
+- d90a732: feat: RequestContext 新增 getRawData 函数，获取原始 fetcher 执行结果
+- 14e3933: fix: 修复 pending-manager 的 hasPending 判断错误
+
 ## 3.3.1
 
 ### Patch Changes
