@@ -1,5 +1,5 @@
 import type { NestedHooks } from 'hookable'
-import type { AwaitableFn, Fn, Getter, MaybeArray, MaybeGetter } from '@rhao/types-base'
+import type { AwaitableFn, Fn, Getter, MaybeArray, MaybeGetter, MaybeNullish } from '@rhao/types-base'
 import { assign } from 'lodash-unified'
 import type { RequestConfigHooks } from './hooks'
 import type { RequestMiddleware } from './middleware'
@@ -52,7 +52,7 @@ export interface RequestBasicOptions {
    * previousData === currentData
    * ```
    */
-  dataComparer?: Fn<[previousData: unknown, currentData: unknown], boolean>
+  dataComparer?: Fn<[previousData: any, currentData: any], boolean>
 
   /**
    * 数据解析器，执行 `fetcher()` 后直接进行数据解析
@@ -111,7 +111,7 @@ export interface RequestOptions<TData, TParams extends unknown[] = unknown[]>
    * getState().data // => []
    * ```
    */
-  initData?: Getter<TData>
+  initData?: Getter<MaybeNullish<TData>>
 
   /**
    * 数据校准器，调用 `dataParser` 后对获取到的数据进行校准，返回正确完整的类型数据
@@ -131,7 +131,7 @@ export interface RequestOptions<TData, TParams extends unknown[] = unknown[]>
    * })
    * ```
    */
-  dataCalibrator?: Fn<[data: TData], TData>
+  dataCalibrator?: Fn<[data: any], TData>
 
   /**
    * 忽略执行的中间件列表，需对应中间件包含 `name`，支持字符串和正则表达式匹配

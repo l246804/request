@@ -20,55 +20,60 @@ export interface RequestConfigHooks<TData = any, TParams extends unknown[] = unk
   /**
    * 执行 `executor()` 时触发，早于 `before`，此时尚未对 `state` 做任何操作，用于处理前置条件
    */
-  preface: AwaitableFn<[params: TParams, context: RequestContext<TData, TParams>]>
+  preface: AwaitableFn<[params: TParams, context: RequestContext<TData, TParams>], any>
 
   /**
    * 执行 `fetcher()` 前触发
    */
-  before: AwaitableFn<[params: TParams, context: RequestContext<TData, TParams>]>
+  before: AwaitableFn<[params: TParams, context: RequestContext<TData, TParams>], any>
 
   /**
    * 执行 `fetcher()` 成功时触发
    */
-  success: AwaitableFn<[data: TData, context: RequestContext<TData, TParams>]>
+  success: AwaitableFn<[data: TData, context: RequestContext<TData, TParams>], any>
 
   /**
    * 执行 `fetcher()` 错误时触发
    */
-  error: AwaitableFn<[error: Error, context: RequestContext<TData, TParams>]>
+  error: AwaitableFn<[error: Error, context: RequestContext<TData, TParams>], any>
 
   /**
    * 执行 `fetcher()` 后成功或失败后触发，取消执行时不触发
    */
-  after: AwaitableFn<[state: RequestState<TData, TParams>, context: RequestContext<TData, TParams>]>
+  after: AwaitableFn<
+    [state: RequestState<TData, TParams>, context: RequestContext<TData, TParams>],
+    any
+  >
 
   /**
    * 执行 `executor()` 结束时触发，同 `Promise.finally`，每次执行均会触发该事件，用于释放资源
    */
-  finally: AwaitableFn<[context: RequestContext<TData, TParams>]>
+  finally: AwaitableFn<[context: RequestContext<TData, TParams>], any>
 
   /**
    * 主动调用 `dispose()` 时触发，用于释放资源
    */
-  dispose: AwaitableFn<[context: RequestBasicContext<TData, TParams>]>
+  dispose: AwaitableFn<[context: RequestBasicContext<TData, TParams>], any>
 
   /**
    * 执行 `cancel()` 时触发
    */
   cancel: AwaitableFn<
-    [state: RequestState<TData, TParams>, context: RequestContext<TData, TParams>]
+    [state: RequestState<TData, TParams>, context: RequestContext<TData, TParams>],
+    any
   >
 
   /**
    * 执行 `cancel()` 时由于竞态条件而被取消请求时触发
    */
-  discarded: AwaitableFn<[context: RequestContext<TData, TParams>]>
+  discarded: AwaitableFn<[context: RequestContext<TData, TParams>], any>
 
   /**
    * `state` 变更时触发，参数为本次变更的 `state`
    */
   stateChange: Fn<
-    [state: Partial<RequestState<TData, TParams>>, context: RequestBasicContext<TData, TParams>]
+    [state: Partial<RequestState<TData, TParams>>, context: RequestBasicContext<TData, TParams>],
+    any
   >
 }
 

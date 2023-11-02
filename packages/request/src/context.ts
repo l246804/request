@@ -56,7 +56,7 @@ export interface RequestBasicContext<TData, TParams extends unknown[] = unknown[
   /**
    * 获取或设置 `executor`
    */
-  executor: PromiseFn<TParams>
+  executor: PromiseFn<TParams, any>
 
   /**
    * 获取唯一标识

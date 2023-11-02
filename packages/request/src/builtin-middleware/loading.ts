@@ -64,6 +64,6 @@ declare module '@rhao/request' {
     /**
      * 请求状态变更时触发，多次并发调用仅在初次和最近执行结束后触发
      */
-    loadingChange: Fn<[loading: boolean, context: Context<TData, TParams>]>
+    loadingChange: Fn<[loading: boolean, context: Context<TData, TParams>], any>
   }
 }
