@@ -12,6 +12,7 @@ import { createTempData } from './temp-data'
 import { createStore } from './store'
 import { createKeyManager } from './key-manager'
 import { createPendingManager } from './pending-manager'
+import { createRawData } from './raw-data'
 
 export interface BasicRequestHook {
   /**
@@ -93,6 +94,9 @@ export function createRequestHook(options?: RequestBasicOptions) {
       },
     })
 
+    // 创建原始数据引用
+    const { set: setRawData, get: getRawData } = createRawData()
+
     // 创建基础的上下文
     let basicContext = {
       request,
@@ -117,6 +121,7 @@ export function createRequestHook(options?: RequestBasicOptions) {
       getStore: store.get,
       isDisposed,
       dispose,
+      getRawData,
     } as RequestBasicContext<any, any[]>
 
     // 保存最近一次上下文对象，用于手动调用 `cancel`
@@ -192,6 +197,8 @@ export function createRequestHook(options?: RequestBasicOptions) {
         if (data === promiseResult) hooks.callHook('discarded', context)
         if (isCanceled()) return
 
+        setRawData(data)
+
         let finalData = await options.dataParser(data)
         if (options.dataCalibrator) finalData = options.dataCalibrator(finalData)
         context.mutateData(finalData)
@@ -229,6 +236,7 @@ export function createRequestHook(options?: RequestBasicOptions) {
         await hooks.callHook('success', state.data, context)
       }
       catch (err: unknown) {
+        setRawData(err)
         await errorHandler(err)
       }
       finally {
@@ -239,6 +247,7 @@ export function createRequestHook(options?: RequestBasicOptions) {
         await hooks.callHook('after', context.getState(), context)
       }
       catch (err: unknown) {
+        setRawData(err)
         await errorHandler(err)
       }
       finally {

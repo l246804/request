@@ -131,6 +131,10 @@ export interface RequestBasicContext<TData, TParams extends unknown[] = unknown[
    * 获取数据中心，仅获取存在于单次 `request()` 周期内
    */
   getStore: <K extends StoreKey<Recordable>>(key: K) => InferStore<K>
+  /**
+   * 获取 `fetcher` 的原始未解析和处理的结果，成功时为原始数据，失败后为原始错误
+   */
+  getRawData: Getter<any>
 }
 
 /**
