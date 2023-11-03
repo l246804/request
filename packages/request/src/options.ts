@@ -131,7 +131,8 @@ export interface RequestOptions<TData, TParams extends unknown[] = unknown[]>
    * })
    * ```
    */
-  dataCalibrator?: Fn<[data: any], TData>
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  dataCalibrator?: Fn<[data: any], TData & {}>
 
   /**
    * 忽略执行的中间件列表，需对应中间件包含 `name`，支持字符串和正则表达式匹配
