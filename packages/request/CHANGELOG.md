@@ -1,5 +1,11 @@
 # @rhao/request
 
+## 3.3.3
+
+### Patch Changes
+
+- 5e635b7: fix: 修复 Options.dataCalibrator 部分场景下类型错误
+
 ## 3.3.2
 
 ### Patch Changes
