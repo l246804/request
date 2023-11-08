@@ -1,6 +1,6 @@
 /* eslint-disable unused-imports/no-unused-vars */
 import { type RequestMiddleware, type RequestState, createState } from '@rhao/request'
-import { reactive, toRefs, watch } from 'vue-demi'
+import { reactive, toRaw, toRefs, watch } from 'vue-demi'
 import type { Ref, WatchSource } from 'vue-demi'
 import { tryOnScopeDispose, tryOnUnmounted } from '@vueuse/core'
 import { assign } from 'lodash-unified'
@@ -13,7 +13,19 @@ export function RequestVue() {
       const { hooks, mutateResult, getOptions, getResult, dispose } = ctx
       const state = reactive(createState(getOptions()))
 
+      let dirty = false
+      watch(
+        () => state,
+        (value) => {
+          dirty = true
+          ctx.mutateState(toRaw(value))
+          dirty = false
+        },
+        { deep: true },
+      )
+
       hooks.hook('stateChange', (_state) => {
+        if (dirty) return
         assign(state, _state)
       })
 
