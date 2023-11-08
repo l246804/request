@@ -4,6 +4,13 @@
 
 ### Patch Changes
 
+- Updated dependencies [871b589]
+  - @rhao/request-middleware-vue@4.0.3
+
+## null
+
+### Patch Changes
+
 - Updated dependencies [5e635b7]
   - @rhao/request@3.3.3
 
