@@ -1,5 +1,11 @@
 # @rhao/request
 
+## 3.3.4
+
+### Patch Changes
+
+- 64ed5f9: chore: 更新依赖包
+
 ## 3.3.3
 
 ### Patch Changes

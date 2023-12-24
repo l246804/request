@@ -1,5 +1,13 @@
 # @rhao/request-basic-middleware
 
+## 4.3.1
+
+### Patch Changes
+
+- 64ed5f9: chore: 更新依赖包
+- Updated dependencies [64ed5f9]
+  - @rhao/request@3.3.4
+
 ## 4.3.0
 
 ### Minor Changes
