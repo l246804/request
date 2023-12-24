@@ -5,7 +5,7 @@ import type {
   RequestMiddleware,
   StoreKey,
 } from '@rhao/request'
-import { controllablePromise, safeJSONParse, toValue } from '@rhao/lodash-x'
+import { parseJSON, promiseWithControl, toValue } from 'nice-fns'
 import type { Fn, MaybeGetter } from '@rhao/types-base'
 import { assign, noop, omit, pick } from 'lodash-unified'
 
@@ -148,12 +148,14 @@ export function RequestSWR(initialOptions?: Omit<RequestSWROptions, 'staleTime'>
 
       // 持久化时从 storage 中读取缓存信息
       if (options.persistent) {
-        const cacheData = safeJSONParse(
+        const cacheData = parseJSON(
           options.storage.getItem(toKey(options.storageKeyPrefix, key))!,
           {
-            data: null,
-            lastUpdateTime: undefined,
-          } as ICache,
+            onNil: {
+              data: null,
+              lastUpdateTime: undefined,
+            } as ICache,
+          },
         )
 
         // 如果还在保鲜期内则更新内存里的缓存信息，否则移除 storage 内的缓存信息
@@ -210,7 +212,7 @@ export function RequestSWR(initialOptions?: Omit<RequestSWROptions, 'staleTime'>
       )
         return ctx.mutateData(currentCache.data)
 
-      const { promise, resolve } = controllablePromise()
+      const { promise, resolve } = promiseWithControl()
       currentCache.promise = promise
 
       ctx.hooks.hookOnce('finally', () => {

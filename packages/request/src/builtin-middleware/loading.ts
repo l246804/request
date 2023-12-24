@@ -1,4 +1,4 @@
-import { pauseableTimer } from '@rhao/lodash-x'
+import { timerWithControl } from 'nice-fns'
 import type { Fn } from '@rhao/types-base'
 import type { RequestMiddleware } from '../middleware'
 import type { RequestBasicContext } from '../context'
@@ -11,19 +11,16 @@ export function RequestLoading() {
       const { hooks, getState, getOptions, mutateState } = ctx
       const { loadingDelay = 300 } = getOptions()
 
-      const timer = pauseableTimer(() => show(), loadingDelay, {
-        timerType: 'setTimeout',
-        immediate: false,
-      })
+      const timer = timerWithControl(() => show(), { ms: loadingDelay })
 
       hooks.hook('before', () => {
         if (!timer.isActive() && !getState().loading)
-          loadingDelay > 0 ? timer.resume() : timer.flush()
+          loadingDelay > 0 ? timer.start() : timer.flush()
       })
 
       hooks.hook('finally', (ctx) => {
         if (ctx.isLatestExecution()) {
-          timer.pause()
+          timer.stop()
           close()
         }
       })

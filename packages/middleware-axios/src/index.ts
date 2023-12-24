@@ -5,7 +5,7 @@ import type {
   StoreKey,
 } from '@rhao/request'
 import type { AxiosInstance, AxiosRequestConfig, AxiosStatic } from 'axios'
-import { toValue } from '@rhao/lodash-x'
+import { toValue } from 'nice-fns'
 import type { MaybeFn } from '@rhao/types-base'
 import Axios from 'axios'
 import utils from 'axios/unsafe/utils.js'

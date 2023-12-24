@@ -2,7 +2,7 @@
 import type { RequestMiddleware } from '@rhao/request'
 import type { DebounceSettings } from 'lodash-unified'
 import { assign, debounce, isNil, mapValues, pick } from 'lodash-unified'
-import { toValue } from '@rhao/lodash-x'
+import { toValue } from 'nice-fns'
 
 import type { MaybeGetter } from '@rhao/types-base'
 

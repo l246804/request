@@ -5,11 +5,9 @@
   "private": true,
   "scripts": {
     "dev": "vite --force",
-    "typecheck": "vue-tsc",
     "preview": "vite preview"
   },
   "dependencies": {
-    "@rhao/lodash-x": "^0.5.1",
     "@rhao/request": "workspace:^",
     "@rhao/request-basic-middleware": "workspace:^",
     "@rhao/request-middleware-axios": "workspace:^",
@@ -17,6 +15,7 @@
     "axios": "^1.4.0",
     "element-plus": "^2.3.8",
     "lodash-es": "^4.17.21",
+    "nice-fns": "^0.4.1",
     "normalize.css": "^8.0.1",
     "vue": "^3.3.4"
   },

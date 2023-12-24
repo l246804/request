@@ -1,5 +1,5 @@
 import type { MaybeFn, MaybeGetter } from '@rhao/types-base'
-import { toValue } from '@rhao/lodash-x'
+import { toValue } from 'nice-fns'
 import type { RequestMiddleware } from '../middleware'
 
 export function RequestSingle() {

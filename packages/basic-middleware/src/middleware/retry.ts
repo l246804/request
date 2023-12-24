@@ -1,6 +1,6 @@
 /* eslint-disable unused-imports/no-unused-vars */
 import type { RequestContext, RequestMiddleware } from '@rhao/request'
-import { castError, sleep, toValue } from '@rhao/lodash-x'
+import { castError, sleep, toValue } from 'nice-fns'
 import type { AwaitableFn, Fn, MaybeFn, MaybeGetter } from '@rhao/types-base'
 import { assign } from 'lodash-unified'
 

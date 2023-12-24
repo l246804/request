@@ -1,5 +1,5 @@
 import { assign, castArray, isString, omit, uniq } from 'lodash-unified'
-import { castError, controllablePromise, createSwitch, toValue } from '@rhao/lodash-x'
+import { castError, createSwitch, promiseWithControl, toValue } from 'nice-fns'
 import { type RequestBasicOptions, type RequestOptions, normalizeBasicOptions } from './options'
 import type { RequestResult } from './result'
 import type { RequestFetcher } from './fetcher'
@@ -82,16 +82,15 @@ export function createRequestHook(options?: RequestBasicOptions) {
     const store = createStore()
 
     // 创建资源状态开关
-    const [isDisposed, { open: dispose }] = createSwitch({
-      once: true,
-      onToggle: () => {
-        toValue(options.cancelWhenDispose) && cancel()
-        // eslint-disable-next-line @typescript-eslint/no-use-before-define
-        hooks.callHook('dispose', basicContext).finally(() => {
-          hooks.removeAllHooks()
-          store.clear()
-        })
-      },
+    const [isDisposed, { open: dispose, on: onToggleDisposed }] = createSwitch({ once: true })
+    const offToggleDisposed = onToggleDisposed(() => {
+      toValue(options.cancelWhenDispose) && cancel()
+      // eslint-disable-next-line @typescript-eslint/no-use-before-define
+      hooks.callHook('dispose', basicContext).finally(() => {
+        offToggleDisposed()
+        hooks.removeAllHooks()
+        store.clear()
+      })
     })
 
     // 创建原始数据引用
@@ -153,7 +152,7 @@ export function createRequestHook(options?: RequestBasicOptions) {
       if (isDisposed()) return
 
       // 创建可中断的 `promise`，用于取消执行的 `fetcher()`
-      const { promise, resolve } = controllablePromise()
+      const { promise, resolve } = promiseWithControl()
       const promiseResult = Symbol('promiseResult')
 
       // 创建取消开关

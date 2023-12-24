@@ -1,4 +1,4 @@
-import { toValue } from '@rhao/lodash-x'
+import { toValue } from 'nice-fns'
 import type { MaybeGetter } from '@rhao/types-base'
 import type { RequestMiddleware } from '../middleware'
 

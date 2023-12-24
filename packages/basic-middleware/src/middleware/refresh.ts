@@ -1,6 +1,6 @@
 /* eslint-disable unused-imports/no-unused-vars */
 import { type RequestMiddleware } from '@rhao/request'
-import { pauseableTimer, toValue } from '@rhao/lodash-x'
+import { timerWithControl, toValue } from 'nice-fns'
 import type { Fn, Getter, MaybeGetter } from '@rhao/types-base'
 import { assign, once, pick } from 'lodash-unified'
 
@@ -111,26 +111,23 @@ export function RequestRefresh(initialOptions?: Pick<RequestRefreshOptions, 'err
       ctx.isPolling = () => polling
 
       // 创建计时器
-      const timer = pauseableTimer(refresh, options.interval, {
-        timerType: 'setTimeout',
-        immediate: false,
-      })
-      const immediateResume = () => {
+      const timer = timerWithControl(refresh, { ms: options.interval })
+      const immediateStart = () => {
         polling = true
         refresh()
       }
-      const resumeTimer = () => {
+      const startTimer = () => {
         if (!navigator.onLine && !toValue(options.whenOffline)) {
           polling = false
           return
         }
 
         polling = true
-        timer.resume()
+        timer.start()
       }
-      const pauseTimer = () => {
+      const stopTimer = () => {
         polling = false
-        timer.pause()
+        timer.stop()
       }
 
       // 注册获焦、网络重连事件
@@ -155,11 +152,11 @@ export function RequestRefresh(initialOptions?: Pick<RequestRefreshOptions, 'err
       const visibilityHandler = (hidden: boolean) => {
         if (toValue(options.whenHidden!)) return
         if (hidden) {
-          pauseTimer()
+          stopTimer()
         }
         else {
           // 页面显示时立即轮询
-          immediateResume()
+          immediateStart()
         }
       }
 
@@ -178,16 +175,16 @@ export function RequestRefresh(initialOptions?: Pick<RequestRefreshOptions, 'err
       })
       ctx.hooks.hook('cancel', (_, ctx) => {
         if (ctx.pollingDisabled) return
-        pauseTimer()
+        stopTimer()
         removeListen()
       })
       ctx.hooks.hook('success', (_, ctx) => {
         if (ctx.pollingDisabled) return
         if (!toValue(options.whenHidden) && document.hidden) return
-        resumeTimer()
+        startTimer()
       })
       ctx.hooks.hookOnce('dispose', () => {
-        pauseTimer()
+        stopTimer()
         removeListen()
       })
 

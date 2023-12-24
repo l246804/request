@@ -1,6 +1,6 @@
 /* eslint-disable unused-imports/no-unused-vars */
 import type { RequestMiddleware } from '@rhao/request'
-import { toValue } from '@rhao/lodash-x'
+import { toValue } from 'nice-fns'
 import { assign, isNil, mapValues, pick, throttle } from 'lodash-unified'
 import type { MaybeGetter } from '@rhao/types-base'
 

@@ -1,6 +1,6 @@
 /* eslint-disable unused-imports/no-unused-vars */
 import type { BasicRequestHook, RequestContext, RequestMiddleware } from '@rhao/request'
-import { castError, toValue } from '@rhao/lodash-x'
+import { castError, toValue } from 'nice-fns'
 import type { AwaitableFn, PromiseFn } from '@rhao/types-base'
 import { assign, once, pick } from 'lodash-unified'
 
